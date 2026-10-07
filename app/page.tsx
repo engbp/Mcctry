@@ -1,3 +1,90 @@
-import Link from "next/link";import {ArrowRight,ArrowUpRight,CalendarDays,Code2,Sparkles} from "lucide-react";
-const courses=[{track:"AI & Data",title:"Applied AI Foundations",desc:"A practical introduction to thinking, building, and experimenting with modern AI.",meta:"8 lessons · 2h 40m · Beginner"},{track:"Software",title:"Build with Modern Web",desc:"From interface ideas to a polished product experience.",meta:"10 lessons · 3h 15m · Intermediate"},{track:"Cloud",title:"Cloud Concepts, Clearly",desc:"Understand the systems behind scalable applications.",meta:"7 lessons · 2h 05m · Beginner"}];
-export default function Home(){return <><section className="hero"><div><span className="eyebrow">Microsoft Campus Club · MNU</span><h1>Build what’s next.</h1><p>Learn, create, and connect through the Microsoft Campus Club at MNU.</p><div className="hero-actions"><Link className="primary" href="/courses">Explore learning <ArrowRight size={17}/></Link><Link className="secondary" href="/join">Join MCC</Link></div></div><div className="visual" aria-label="Abstract MCC technology composition"><div className="orbit"/></div></section><section className="section"><div className="section-head"><div><span className="eyebrow">Microsoft Campus Club · MNU</span><h2>Where students turn curiosity into capability.</h2></div><p>One place to discover learning, see what students are building, and find your next opportunity.</p></div><div className="ecosystem"><div className="eco"><span>01 / LEARN</span><h3>Grow your skills.</h3><p>Focused courses and lessons that keep learning practical and lightweight.</p></div><div className="eco"><span>02 / BUILD</span><h3>Turn ideas into work.</h3><p>Explore projects, experiments, and the people behind them.</p></div><div className="eco"><span>03 / CONNECT</span><h3>Find your people.</h3><p>Events, opportunities, and a community that helps you move forward.</p></div></div></section><section className="section"><div className="section-head"><div><span className="eyebrow">Featured learning</span><h2>Learn something that moves you forward.</h2></div><Link href="/courses">View all courses <ArrowRight size={16}/></Link></div><div className="feature"><div><div className="meta"><span>AI & Data</span><span>Demo course</span></div><h3>Applied AI Foundations</h3><p>Learn the mental models behind modern AI, then use them to build small experiments you can explain and improve.</p><div className="hero-actions"><Link className="primary" href="/courses/applied-ai-foundations">View course <ArrowRight size={17}/></Link></div></div><div><div className="meta">COURSE AT A GLANCE</div><h3 style={{fontSize:24}}>8 lessons</h3><p>2h 40m · Beginner</p><p>Progress is simple: watch, continue, finish.</p></div></div><div className="course-rail">{courses.map(c=><Link className="card" href="/courses/applied-ai-foundations" key={c.title}><span className="tag">{c.track}</span><h3>{c.title}</h3><p>{c.desc}</p><small>{c.meta}</small></Link>)}</div></section><section className="section" style={{background:"#0078D4",maxWidth:"none",color:"#fff"}}><div style={{maxWidth:1216,margin:"auto"}}><span className="eyebrow" style={{color:"#fff"}}>MCC MNU</span><h2 style={{fontSize:50,maxWidth:760}}>Technology is better when you build with it.</h2></div></section><section className="section dark-section"><div className="section-head"><div><span className="eyebrow">Projects</span><h2>Students are building.</h2></div><Link href="/projects">Explore projects <ArrowRight size={16}/></Link></div><div className="event-grid"><Link href="/projects/visionlab" className="event-large"><Code2 size={26}/><div><div className="meta">DEMO PROJECT · AI</div><h3>VisionLab</h3><p>Computer vision experiments for students.</p></div></Link><div><Link href="/projects/campusos" className="opportunity"><Sparkles/><h3>CampusOS</h3><p>A student-focused digital community concept.</p></Link><Link href="/projects/medtech-monitor" className="opportunity"><Code2/><h3>MedTech Monitor</h3><p>A prototype for visualizing biomedical signals.</p></Link></div></div></section><section className="section"><div className="section-head"><div><span className="eyebrow">Events</span><h2>What’s happening.</h2></div><Link href="/events">View all events <ArrowRight size={16}/></Link></div><div className="event-grid" style={{borderTop:"1px solid #E1E1E1"}}><div className="event-large" style={{background:"#F5F5F5",color:"#1A1A1A",borderRight:"1px solid #E1E1E1"}}><CalendarDays/><div><div className="meta" style={{color:"#605E5C"}}>DEMO EVENT · OCT 18 · MNU</div><h3>Build Night: From idea to prototype</h3><p>Bring an idea, meet other builders, and leave with a clearer next step.</p></div></div><div><div className="opportunity" style={{background:"#fff",color:"#1A1A1A",borderBottom:"1px solid #E1E1E1"}}><h3>AI Builders Meetup</h3><p>A demo community session.</p></div><div className="opportunity" style={{background:"#fff",color:"#1A1A1A"}}><h3>Git & Open Source Night</h3><p>A practical introduction to contributing.</p></div></div></div></section><section className="section"><div className="section-head"><div><span className="eyebrow">Opportunities</span><h2>Keep moving.</h2></div><Link href="/opportunities">Explore opportunities <ArrowRight size={16}/></Link></div><div className="lesson-list"><Link className="lesson" href="/opportunities"><strong>Campus AI Challenge</strong><span style={{marginLeft:"auto",color:"#605E5C"}}>Hackathon · Demo · Oct 24</span><ArrowRight size={17}/></Link><Link className="lesson" href="/opportunities"><strong>Student Cloud Sprint</strong><span style={{marginLeft:"auto",color:"#605E5C"}}>Competition · Demo</span><ArrowRight size={17}/></Link><Link className="lesson" href="/opportunities"><strong>Open Source Starter Week</strong><span style={{marginLeft:"auto",color:"#605E5C"}}>Community · Demo</span><ArrowRight size={17}/></Link></div></section><section className="cta"><div className="cta-box"><span className="eyebrow" style={{color:"#fff"}}>MCC MNU</span><h2>Your next project starts here.</h2><p>Learn something. Build something. Find people who want to build too.</p><Link className="secondary" href="/join">Join MCC <ArrowUpRight size={16}/></Link></div></section><footer className="footer">MCC MNU · Presentation prototype · Demo content is clearly marked where applicable.</footer></>}
+import Link from "next/link";
+import {ArrowRight,ChevronRight,CalendarDays,Code2,BookOpen,Users} from "lucide-react";
+
+const learning=[
+ {title:"Applied AI Foundations",track:"AI & Data",meta:"8 lessons · 2h 40m · Beginner"},
+ {title:"Modern Web Builder",track:"Software Development",meta:"10 lessons · 3h 15m · Intermediate"},
+ {title:"Cloud Concepts, Clearly",track:"Cloud",meta:"7 lessons · 2h 05m · Beginner"}
+];
+const paths=[
+ ["AI & Data","Explore practical AI concepts and experiments.","8 courses","2h 40m"],
+ ["Software Development","Build interfaces, products, and useful tools.","12 courses","6h 10m"],
+ ["Cloud","Understand modern infrastructure and cloud systems.","6 courses","3h 25m"],
+ ["Cybersecurity","Learn foundations of secure digital systems.","7 courses","4h 05m"]
+];
+const events=[["18","Oct","Build Night: From idea to prototype","MNU · Demo event"],["02","Nov","AI Builders Meetup","MNU · Demo event"],["16","Nov","Git & Open Source Night","MNU · Demo event"]];
+const opportunities=[["Campus AI Challenge","Hackathon","Oct 24"],["Student Cloud Sprint","Competition","Nov 02"],["Open Source Starter Week","Community","Nov 16"]];
+
+function Arrow(){return <ArrowRight className="arrow" size={16}/>}
+
+export default function Home(){
+ return <>
+  <section className="home-hero">
+   <div className="hero-copy">
+    <span className="eyebrow blue">MCC MNU</span>
+    <h1>Learn. Build. Connect.</h1>
+    <p>A student technology community at Mansoura National University for people who want to learn useful skills, build real projects, and meet others who are building too.</p>
+    <div className="hero-actions"><Link className="primary" href="/courses">Explore learning <Arrow/></Link><Link className="secondary" href="/join">Join MCC <Arrow/></Link></div>
+   </div>
+   <div className="hero-media" aria-label="MCC technical project visual">
+    <div className="hero-visual">
+      <div className="hero-visual-top"><span className="hero-dot"/><span className="hero-dot"/><span className="hero-dot"/><span style={{marginLeft:"auto",fontSize:12,color:"#666"}}>MCC project workspace</span></div>
+      <div className="hero-visual-body">
+       <div className="hero-visual-code"><b>const</b> community = {"{"}<br/>{"  "}learn: <em>true</em>,<br/>{"  "}build: <em>true</em>,<br/>{"  "}connect: <em>true</em><br/>{"}"};<br/><br/>ship(idea);<br/>learn(from: work);</div>
+       <div className="hero-visual-project"><span className="eyebrow" style={{color:"#fff"}}>Student technology</span><h3>From idea to working prototype.</h3><p>Projects, learning and community in one place.</p></div>
+      </div>
+    </div>
+   </div>
+  </section>
+
+  <section className="intro"><div className="container">
+   <div className="editorial-grid"><h2>A community for students who want to build what's next.</h2><p>MCC brings learning, projects, events and opportunities into one clear experience. Start with a course, explore what other students are building, or find a reason to get involved.</p></div>
+   <div className="value-row">
+    <div className="value-item"><span className="value-number">01</span><h3>Learn</h3><p>Short, practical learning experiences organized into clear paths.</p></div>
+    <div className="value-item"><span className="value-number">02</span><h3>Build</h3><p>See projects, experiments and technical work created by students.</p></div>
+    <div className="value-item"><span className="value-number">03</span><h3>Connect</h3><p>Find events, opportunities and people with similar interests.</p></div>
+   </div>
+  </div></section>
+
+  <section className="section alt"><div className="container">
+   <div className="section-head"><div><span className="eyebrow blue">Featured learning</span><h2>Learn something new.</h2></div><Link className="text-link" href="/courses">Browse all learning <Arrow/></Link></div>
+   <div className="feature-learning">
+    <div className="feature-learning-media"><div><span className="eyebrow" style={{color:"#9edcff"}}>AI & Data · Demo course</span><h3>Applied AI Foundations</h3></div></div>
+    <div className="feature-learning-copy"><span className="eyebrow blue">Featured course</span><h3>Understand modern AI without the noise.</h3><p>Learn the mental models behind AI, experiment with practical tools, and understand how to evaluate what you build.</p><Link className="text-link" href="/courses/applied-ai-foundations">View course <Arrow/></Link></div>
+   </div>
+   <div className="learning-links">{learning.slice(1).map(c=><Link className="learning-link" href="/courses/applied-ai-foundations" key={c.title}><span className="eyebrow blue">{c.track}</span><h3>{c.title}</h3><p>{c.meta}</p><span className="text-link">Learn more <Arrow/></span></Link>)}<Link className="learning-link" href="/courses"><span className="eyebrow blue">All courses</span><h3>Find your next course</h3><p>Browse the full learning catalogue.</p><span className="text-link">Browse courses <Arrow/></span></Link></div>
+  </div></section>
+
+  <section className="section"><div className="container">
+   <div className="section-head"><div><span className="eyebrow blue">Learning paths</span><h2>Explore learning paths.</h2></div><Link className="text-link" href="/tracks">View all tracks <Arrow/></Link></div>
+   <div className="path-list">{paths.map((p,i)=><Link className="path-row" href="/tracks/ai-data" key={p[0]}><span className="path-icon">{i===0?<BookOpen size={19}/>:i===1?<Code2 size={19}/>:i===2?<span style={{fontWeight:700}}>☁</span>:<Users size={19}/>}</span><div><h3>{p[0]}</h3><p>{p[1]}</p></div><div className="path-meta">{p[2]}<br/>{p[3]}</div><ChevronRight className="arrow" size={18}/></Link>)}</div>
+  </div></section>
+
+  <section className="section alt"><div className="container">
+   <div className="section-head"><div><span className="eyebrow blue">Student projects</span><h2>Build something real.</h2></div><Link className="text-link" href="/projects">Explore projects <Arrow/></Link></div>
+   <div className="feature-project"><div className="project-media" aria-label="Project visual"/><div className="project-copy"><span className="eyebrow" style={{color:"#8fd8ff"}}>Featured project · Demo content</span><h3>VisionLab</h3><p>A presentation project exploring computer vision experiments and practical AI workflows.</p><div className="tech-list"><span className="tech">Python</span><span className="tech">OpenCV</span><span className="tech">AI</span></div><Link className="text-link" style={{color:"#8fd8ff"}} href="/projects/visionlab">View project <Arrow/></Link></div></div>
+   <div className="project-links"><Link className="project-link" href="/projects/campusos"><span className="eyebrow blue">Demo project</span><h3>CampusOS <Arrow/></h3><p>A student-focused digital community concept.</p></Link><Link className="project-link" href="/projects/medtech-monitor"><span className="eyebrow blue">Demo project</span><h3>MedTech Monitor <Arrow/></h3><p>A prototype for visualizing biomedical signals.</p></Link></div>
+  </div></section>
+
+  <section className="section"><div className="container">
+   <div className="section-head"><div><span className="eyebrow blue">Events</span><h2>What's happening at MCC.</h2></div><Link className="text-link" href="/events">View all events <Arrow/></Link></div>
+   <div className="event-feature"><div className="event-date"><strong>18</strong><span>October</span></div><div className="event-copy"><span className="eyebrow" style={{color:"#fff"}}>Upcoming · Demo event</span><h3>Build Night: From idea to prototype</h3><p>Bring an idea, meet other builders, and leave with a clearer next step.</p></div><div className="event-cta"><Link className="secondary" href="/events/build-night">View event <Arrow/></Link></div></div>
+   <div className="event-list">{events.slice(1).map(e=><Link className="event-row" href="/events/build-night" key={e[2]}><time>{e[0]} {e[1]}</time><div><h3>{e[2]}</h3><p>{e[3]}</p></div><span className="event-type">Demo event</span><Arrow/></Link>)}</div>
+  </div></section>
+
+  <section className="section alt"><div className="container">
+   <div className="section-head"><div><span className="eyebrow blue">Opportunities</span><h2>Find your next opportunity.</h2></div><Link className="text-link" href="/opportunities">Explore opportunities <Arrow/></Link></div>
+   <div className="opportunity-list">{opportunities.map(o=><Link className="op-row" href="/opportunities" key={o[0]}><strong>{o[0]}</strong><span>{o[1]}</span><span>{o[2]}</span><span className="arrow-cell"><Arrow/></span></Link>)}</div>
+  </div></section>
+
+  <section className="cta"><div className="container cta-inner"><div><h2>Ready to get involved?</h2><p>Join MCC MNU and find a place to learn, build and connect.</p></div><Link className="secondary" href="/join">Join MCC MNU <Arrow/></Link></div></section>
+
+  <footer className="site-footer"><div className="container footer-grid">
+   <div><div className="footer-brand">MCC MNU</div><p className="muted" style={{fontSize:13,lineHeight:1.6,maxWidth:270}}>A Microsoft-inspired student technology community experience for Mansoura National University.</p></div>
+   <div><h3>Learning</h3><Link href="/courses">Courses</Link><Link href="/tracks">Tracks</Link><Link href="/resources">Resources</Link></div>
+   <div><h3>Community</h3><Link href="/events">Events</Link><Link href="/projects">Projects</Link><Link href="/opportunities">Opportunities</Link></div>
+   <div><h3>About</h3><Link href="/about">About MCC</Link><Link href="/join">Join MCC</Link><Link href="/demo/dashboard">Demo experience</Link></div>
+   <div><h3>Connect</h3><Link href="/join">Get involved</Link><Link href="/resources">Useful links</Link><Link href="/about">More about MCC</Link></div>
+  </div><div className="container footer-bottom"><span>© MCC MNU · Presentation prototype</span><span>Demo content is clearly marked where applicable.</span></div></footer>
+ </>
+}
