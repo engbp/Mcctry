@@ -1,250 +1,317 @@
+"use client";
+
 import Link from "next/link";
-import { PageHero, SectionHeader } from "@/components/layout/PageHero";
-import { TextLink, CardLink } from "@/components/ui/Links";
-import { ArrowRight, BookOpen, Clock, CheckCircle, CalendarDays, Users, TrendingUp, Target, ChevronRight, MapPin } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/Card";
-import { Badge } from "@/components/ui/Badge";
+import { useMemo, useState } from "react";
+import {
+  ArrowRight, ArrowUpRight, BookOpen, CalendarDays, CheckCircle, ChevronRight,
+  Clock, Flame, MapPin, Sparkles, Target, TrendingUp, Users, X,
+} from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { coursesData, lessonsData, eventsData } from "@/lib/data";
+import { BandHero } from "@/components/layout/BandHero";
+import { coursesData, lessonsData, eventsData, formatDate } from "@/lib/data";
+
+const currentCourse = coursesData[0];
+const upcomingEvent = eventsData[0];
+
+const initialGoals = [
+  { id: "ai", title: "Complete AI Foundations", target: "Finish all 8 lessons", progress: 25, color: "#0078d4" },
+  { id: "portfolio", title: "Build first portfolio project", target: "Deploy a complete project", progress: 10, color: "#8c52ff" },
+  { id: "events", title: "Attend 3 events this semester", target: "Network & learn", progress: 33, color: "#10b981" },
+];
+
+const recommendations = coursesData.slice(1, 4);
 
 export default function DashboardPage() {
-  const currentCourse = coursesData[0];
-  const currentLesson = lessonsData[0];
-  const nextLesson = lessonsData[1];
-  const upcomingEvent = eventsData[0];
-  const completedLessons = 2;
+  const [done, setDone] = useState<string[]>(["introduction", "thinking-in-models"]);
+  const [goals, setGoals] = useState(initialGoals);
+  const [noticeVisible, setNoticeVisible] = useState(true);
+
+  const completedCount = done.length;
   const totalLessons = lessonsData.length;
-  const progressPercent = Math.round((completedLessons / totalLessons) * 100);
-  const streakDays = 7;
+  const progressPercent = Math.round((completedCount / totalLessons) * 100);
+  const nextLesson = useMemo(
+    () => lessonsData.find((l) => !done.includes(l.slug)),
+    [done]
+  );
+
+  const toggleLesson = (slug: string) => {
+    setDone((prev) =>
+      prev.includes(slug) ? prev.filter((s) => s !== slug) : [...prev, slug]
+    );
+  };
+
+  const logSession = (id: string) => {
+    setGoals((prev) =>
+      prev.map((g) => (g.id === id ? { ...g, progress: Math.min(100, g.progress + 10) } : g))
+    );
+  };
+
+  const eventDate = formatDate(upcomingEvent.date);
 
   return (
     <>
-      <PageHero
-        label="Demo Dashboard"
-        title="Welcome back."
-        lede="Continue learning, see what's next, and pick up where you left off. This is a demo student experience — no real authentication."
-        badge="DEMO MODE"
-        badgeVariant="demo"
-        kicker="01 / DASHBOARD"
+      <BandHero
+        crumbs={[{ label: "Demo Dashboard" }]}
+        kicker="CONNECT · STUDENT VIEW"
+        title="Welcome back, demo learner."
+        lede="Continue learning, see what's next, and pick up where you left off. This is a demo student experience — no real authentication or persistence."
+        color="#5c2d91"
+        meta={
+          <>
+            <span className="band-meta-pill"><Flame size={14} /> 7-day streak</span>
+            <span className="band-meta-pill"><BookOpen size={14} /> {progressPercent}% complete</span>
+          </>
+        }
+        icon={<Sparkles size={56} />}
       />
+
+      {noticeVisible && (
+        <div className="db-notice" role="status">
+          <div className="container db-notice-inner">
+            <span>
+              <strong>Demo mode:</strong> No real authentication, data persistence, or progress
+              tracking — everything below is mock content you can interact with.
+            </span>
+            <button type="button" onClick={() => setNoticeVisible(false)} aria-label="Dismiss demo notice">
+              <X size={16} />
+            </button>
+          </div>
+        </div>
+      )}
 
       <section className="section" aria-labelledby="overview-title">
         <div className="container">
-          <SectionHeader number="01" label="OVERVIEW" title="Your learning snapshot." />
-          <div className="grid-4" role="list" style={{ marginTop: "32px" }}>
-            <Card variant="default" className="stat-card" role="listitem">
-              <CardContent>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "12px" }}>
-                  <span className="micro" style={{ color: "var(--mcc-text-light)" }}>COURSES STARTED</span>
-                  <div className="stat-icon" aria-hidden="true" style={{ width: "40px", height: "40px", background: "var(--mcc-blue)", borderRadius: "var(--radius-sm)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--mcc-white)" }}>
-                    <BookOpen size={20} />
-                  </div>
-                </div>
-                <strong style={{ fontSize: "36px", fontWeight: 700, display: "block", lineHeight: 1 }}>3</strong>
-                <p className="body-sm" style={{ color: "var(--mcc-text-muted)", marginTop: "4px" }}>Active tracks</p>
-              </CardContent>
-            </Card>
-            <Card variant="default" className="stat-card" role="listitem">
-              <CardContent>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "12px" }}>
-                  <span className="micro" style={{ color: "var(--mcc-text-light)" }}>LESSONS COMPLETED</span>
-                  <div className="stat-icon" aria-hidden="true" style={{ width: "40px", height: "40px", background: "var(--mcc-accent-green)", borderRadius: "var(--radius-sm)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--mcc-white)" }}>
-                    <CheckCircle size={20} />
-                  </div>
-                </div>
-                <strong style={{ fontSize: "36px", fontWeight: 700, display: "block", lineHeight: 1 }}>{completedLessons}</strong>
-                <p className="body-sm" style={{ color: "var(--mcc-text-muted)", marginTop: "4px" }}>of {totalLessons} in current course</p>
-              </CardContent>
-            </Card>
-            <Card variant="default" className="stat-card" role="listitem">
-              <CardContent>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "12px" }}>
-                  <span className="micro" style={{ color: "var(--mcc-text-light)" }}>LEARNING STREAK</span>
-                  <div className="stat-icon" aria-hidden="true" style={{ width: "40px", height: "40px", background: "var(--mcc-accent-yellow)", borderRadius: "var(--radius-sm)", display: "flex", alignItems: "center", justifyContent: "center", color: "#333" }}>
-                    <TrendingUp size={20} />
-                  </div>
-                </div>
-                <strong style={{ fontSize: "36px", fontWeight: 700, display: "block", lineHeight: 1 }}>{streakDays}</strong>
-                <p className="body-sm" style={{ color: "var(--mcc-text-muted)", marginTop: "4px" }}>Days in a row</p>
-              </CardContent>
-            </Card>
-            <Card variant="default" className="stat-card" role="listitem">
-              <CardContent>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "12px" }}>
-                  <span className="micro" style={{ color: "var(--mcc-text-light)" }}>TOTAL LEARNING TIME</span>
-                  <div className="stat-icon" aria-hidden="true" style={{ width: "40px", height: "40px", background: "var(--mcc-cyan)", borderRadius: "var(--radius-sm)", display: "flex", alignItems: "center", justifyContent: "center", color: "#03121f" }}>
-                    <Clock size={20} />
-                  </div>
-                </div>
-                <strong style={{ fontSize: "36px", fontWeight: 700, display: "block", lineHeight: 1 }}>1h 24m</strong>
-                <p className="body-sm" style={{ color: "var(--mcc-text-muted)", marginTop: "4px" }}>This week</p>
-              </CardContent>
-            </Card>
+          <div className="lk-section-head">
+            <div>
+              <span className="hp-section-kicker">OVERVIEW</span>
+              <h2 id="overview-title" className="hp-section-title">Your learning snapshot.</h2>
+            </div>
+            <Link href="/courses" className="hp-section-link">
+              Browse all courses <ArrowRight size={15} />
+            </Link>
+          </div>
+
+          <div className="db-stats" role="list">
+            <div className="db-stat" role="listitem" style={{ "--stat-color": "#0078d4" } as React.CSSProperties}>
+              <span className="db-stat-icon"><BookOpen size={20} /></span>
+              <strong>3</strong>
+              <span className="db-stat-label">Courses started</span>
+              <span className="db-stat-sub">Across 3 active tracks</span>
+            </div>
+            <div className="db-stat" role="listitem" style={{ "--stat-color": "#10b981" } as React.CSSProperties}>
+              <span className="db-stat-icon"><CheckCircle size={20} /></span>
+              <strong>{completedCount}</strong>
+              <span className="db-stat-label">Lessons completed</span>
+              <span className="db-stat-sub">of {totalLessons} in current course</span>
+            </div>
+            <div className="db-stat" role="listitem" style={{ "--stat-color": "#ffb900" } as React.CSSProperties}>
+              <span className="db-stat-icon db-stat-icon-dark"><Flame size={20} /></span>
+              <strong>7</strong>
+              <span className="db-stat-label">Day learning streak</span>
+              <span className="db-stat-sub">Days in a row</span>
+            </div>
+            <div className="db-stat" role="listitem" style={{ "--stat-color": "#00b7c3" } as React.CSSProperties}>
+              <span className="db-stat-icon db-stat-icon-dark"><Clock size={20} /></span>
+              <strong>1h 24m</strong>
+              <span className="db-stat-label">Learning time</span>
+              <span className="db-stat-sub">This week</span>
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="section" aria-labelledby="continue-title">
+      <section className="section lk-steps-section" aria-labelledby="continue-title">
         <div className="container">
-          <SectionHeader number="02" label="CONTINUE LEARNING" title="Pick up where you left off." action={<TextLink href="/courses">Browse all courses</TextLink>} />
-          <div className="grid-2-uneven" style={{ gap: "24px", marginTop: "32px" }}>
-            <CardLink href={`/courses/${currentCourse.slug}/lessons/${currentLesson.slug}`} className="continue-card" style={{ background: "var(--mcc-navy-2)", color: "var(--mcc-white)", borderColor: "var(--mcc-line-dark)", minHeight: "280px", display: "flex", flexDirection: "column" }}>
-              <CardContent style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "24px" }}>
-                <div>
-                  <div style={{ display: "flex", gap: "8px", marginBottom: "12px" }}>
-                    <Badge variant="cyan">{currentCourse.track}</Badge>
-                    <Badge variant="demo">Demo Course</Badge>
-                  </div>
-                  <h2 style={{ fontSize: "28px", fontWeight: 600, marginBottom: "8px" }}>{currentCourse.title}</h2>
-                  <p className="body" style={{ color: "#91b3c5" }}>{currentCourse.description}</p>
-                </div>
-                <div style={{ marginTop: "24px" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px", fontSize: "13px", color: "#91b3c5" }}>
-                    <span>Lesson {completedLessons + 1} of {totalLessons}</span>
-                    <span>{progressPercent}% complete</span>
-                  </div>
-                  <div style={{ height: "6px", background: "#213748", borderRadius: "3px", overflow: "hidden" }}>
-                    <div style={{ height: "100%", width: `${progressPercent}%`, background: "var(--mcc-cyan)", borderRadius: "3px", transition: "width var(--transition-slow)" }} />
-                  </div>
-                  <p className="body-sm" style={{ color: "#91b3c5", marginTop: "12px" }}>Next: {nextLesson?.title} ({nextLesson?.duration})</p>
-                </div>
-              </CardContent>
-            </CardLink>
+          <div className="lk-section-head">
+            <div>
+              <span className="hp-section-kicker">CONTINUE LEARNING</span>
+              <h2 id="continue-title" className="hp-section-title">Pick up where you left off.</h2>
+            </div>
+          </div>
 
-            <Card variant="default" className="next-up-card" style={{ display: "flex", flexDirection: "column" }}>
-              <CardContent style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
-                  <span className="micro" style={{ color: "var(--mcc-text-light)" }}>NEXT LESSON</span>
-                  <Badge variant="blue">Ready to Start</Badge>
+          <div className="db-grid">
+            <Link href={`/courses/${currentCourse.slug}/lessons/${nextLesson?.slug ?? lessonsData[0].slug}`} className="db-continue">
+              <div className="db-continue-body">
+                <div className="db-continue-badges">
+                  <span className="cat-chip cat-chip-active" style={{ background: "rgba(255,255,255,.14)", color: "#fff" }}>
+                    {currentCourse.track}
+                  </span>
+                  <span className="cat-chip" style={{ background: "rgba(255,255,255,.14)", color: "#fff" }}>
+                    Demo course
+                  </span>
                 </div>
-                <div style={{ marginBottom: "20px" }}>
-                  <h3 style={{ marginBottom: "8px" }}>{nextLesson?.title}</h3>
-                  <p className="body-sm" style={{ color: "var(--mcc-text-muted)" }}>{nextLesson?.duration} · Video lesson</p>
+                <h3>{currentCourse.title}</h3>
+                <p>{currentCourse.description}</p>
+
+                <div className="db-continue-progress">
+                  <div className="db-progress-meta">
+                    <span>Lesson {Math.min(completedCount + 1, totalLessons)} of {totalLessons}</span>
+                    <strong>{progressPercent}% complete</strong>
+                  </div>
+                  <div className="db-progress-track" role="progressbar" aria-valuenow={progressPercent} aria-valuemin={0} aria-valuemax={100}>
+                    <div className="db-progress-fill" style={{ width: `${progressPercent}%` }} />
+                  </div>
+                  <p className="db-continue-next">
+                    {nextLesson ? `Next: ${nextLesson.title} (${nextLesson.duration})` : "Course complete — pick a new one!"}
+                  </p>
                 </div>
-                <div style={{ display: "flex", gap: "12px", marginBottom: "20px" }}>
-                  <span style={{ fontSize: "13px", color: "var(--mcc-text-light)" }}><Clock size={14} /> {nextLesson?.duration}</span>
-                  <span style={{ fontSize: "13px", color: "var(--mcc-text-light)" }}>Lesson {completedLessons + 1} of {totalLessons}</span>
-                </div>
-                <Button variant="primary" asChild style={{ marginTop: "auto" }}>
-                  <Link href={`/courses/${currentCourse.slug}/lessons/${nextLesson?.slug}`}>Start Lesson <ArrowRight size={16} /></Link>
-                </Button>
-              </CardContent>
-            </Card>
+              </div>
+              <span className="db-continue-cta">
+                {nextLesson ? "Continue lesson" : "Browse courses"} <ArrowRight size={17} />
+              </span>
+            </Link>
+
+            <div className="db-checklist">
+              <div className="db-checklist-head">
+                <span className="hp-section-kicker">LESSON CHECKLIST</span>
+                <span className="db-checklist-count">{completedCount}/{totalLessons}</span>
+              </div>
+              <ul>
+                {lessonsData.map((lesson, i) => {
+                  const isDone = done.includes(lesson.slug);
+                  return (
+                    <li key={lesson.slug} className={isDone ? "is-done" : ""}>
+                      <label>
+                        <input
+                          type="checkbox"
+                          checked={isDone}
+                          onChange={() => toggleLesson(lesson.slug)}
+                        />
+                        <span className="db-check-box" aria-hidden="true">
+                          <CheckCircle size={15} />
+                        </span>
+                        <span className="db-check-title">
+                          <em>{String(i + 1).padStart(2, "0")}</em>
+                          {lesson.title}
+                        </span>
+                        <span className="db-check-duration">{lesson.duration}</span>
+                      </label>
+                    </li>
+                  );
+                })}
+              </ul>
+              <p className="db-checklist-hint">Demo — tick lessons to watch your progress update.</p>
+            </div>
           </div>
         </div>
       </section>
 
       <section className="section" aria-labelledby="upcoming-title">
         <div className="container">
-          <SectionHeader number="03" label="UPCOMING EVENT" title="Don't miss out." action={<TextLink href="/events">View all events</TextLink>} />
-          <div className="grid-2-uneven" style={{ gap: "24px", marginTop: "32px" }}>
-            <Card variant="default" className="event-dashboard-card" style={{ minHeight: "280px" }}>
-              <CardContent style={{ display: "flex", flexDirection: "column", height: "100%" }}>
-                <div style={{ display: "flex", gap: "16px", marginBottom: "20px" }}>
-                  <div style={{ background: "var(--mcc-blue)", color: "var(--mcc-white)", padding: "16px", borderRadius: "var(--radius-sm)", textAlign: "center", minWidth: "70px" }}>
-                    <strong style={{ fontSize: "28px", lineHeight: 1, display: "block" }}>{formatDate(upcomingEvent.date).day}</strong>
-                    <span style={{ fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.05em" }}>{formatDate(upcomingEvent.date).month}</span>
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: "flex", gap: "8px", marginBottom: "8px" }}>
-                      <Badge variant="blue">{upcomingEvent.category}</Badge>
-                      <Badge variant="demo">Demo Event</Badge>
-                    </div>
-                    <h3 style={{ marginBottom: "4px" }}>{upcomingEvent.title}</h3>
-                    <p className="body-sm" style={{ color: "var(--mcc-text-muted)" }}>{upcomingEvent.description}</p>
-                  </div>
-                </div>
-                <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", marginBottom: "20px", fontSize: "13px", color: "var(--mcc-text-light)" }}>
-                  <span><CalendarDays size={14} /> {formatDate(upcomingEvent.date).day} {formatDate(upcomingEvent.date).month} {formatDate(upcomingEvent.date).year}</span>
+          <div className="lk-section-head">
+            <div>
+              <span className="hp-section-kicker">UPCOMING EVENT</span>
+              <h2 id="upcoming-title" className="hp-section-title">Don&apos;t miss out.</h2>
+            </div>
+            <Link href="/events" className="hp-section-link">
+              View all events <ArrowRight size={15} />
+            </Link>
+          </div>
+
+          <div className="db-grid db-grid-bottom">
+            <div className="db-event">
+              <div className="db-event-date" aria-hidden="true">
+                <strong>{eventDate.day}</strong>
+                <span>{eventDate.month}</span>
+              </div>
+              <div className="db-event-body">
+                <span className="db-event-cat">{upcomingEvent.category}</span>
+                <h3>{upcomingEvent.title}</h3>
+                <p>{upcomingEvent.description}</p>
+                <div className="db-event-meta">
+                  <span><CalendarDays size={14} /> {eventDate.full}</span>
                   <span><Clock size={14} /> {upcomingEvent.time}</span>
                   <span><MapPin size={14} /> {upcomingEvent.location}</span>
                 </div>
-                <Button variant="primary" asChild style={{ marginTop: "auto" }}>
-                  <Link href={`/events/${upcomingEvent.slug}`}>View Event Details <ArrowRight size={16} /></Link>
-                </Button>
-              </CardContent>
-            </Card>
+                <Link href={`/events/${upcomingEvent.slug}`} className="db-event-link">
+                  View event details <ArrowRight size={16} />
+                </Link>
+              </div>
+            </div>
 
-            <Card variant="default" className="recommendations-card">
-              <CardContent>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
-                  <span className="micro" style={{ color: "var(--mcc-text-light)" }}>RECOMMENDED FOR YOU</span>
-                  <TextLink href="/courses" variant="muted">View all</TextLink>
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                  {coursesData.slice(1, 4).map((course) => (
-                    <CardLink key={course.slug} href={`/courses/${course.slug}`} className="rec-course" style={{ display: "flex", gap: "12px", padding: "12px", borderRadius: "var(--radius-sm)", background: "var(--mcc-paper)", border: "1px solid var(--mcc-line)" }}>
-                      <div style={{ width: "48px", height: "48px", background: "var(--mcc-blue)", borderRadius: "var(--radius-sm)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--mcc-white)", flexShrink: 0 }}>
-                        <BookOpen size={20} />
-                      </div>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <h4 style={{ marginBottom: "4px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{course.title}</h4>
-                        <p className="body-sm" style={{ color: "var(--mcc-text-muted)", margin: 0 }}>{course.lessonsCount} lessons · {course.duration} · {course.level}</p>
-                      </div>
-                      <ChevronRight size={18} style={{ color: "var(--mcc-blue)" }} />
-                    </CardLink>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+            <div className="db-recs">
+              <div className="db-recs-head">
+                <span className="hp-section-kicker">RECOMMENDED FOR YOU</span>
+                <Link href="/courses">View all</Link>
+              </div>
+              <ul>
+                {recommendations.map((course) => (
+                  <li key={course.slug}>
+                    <Link href={`/courses/${course.slug}`}>
+                      <span className="db-rec-icon" style={{ background: course.color }}>
+                        <BookOpen size={18} />
+                      </span>
+                      <span className="db-rec-body">
+                        <strong>{course.title}</strong>
+                        <em>{course.lessonsCount} lessons · {course.duration} · {course.level}</em>
+                      </span>
+                      <ChevronRight size={17} aria-hidden="true" />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="section" style={{ background: "var(--mcc-paper)" }} aria-labelledby="goals-title">
-        <div className="container" style={{ maxWidth: "800px" }}>
-          <SectionHeader number="04" label="LEARNING GOALS" title="Set your direction." />
-          <div className="grid-3" role="list" style={{ marginTop: "32px" }}>
-            {[
-              { title: "Complete AI Foundations", target: "Finish all 8 lessons", progress: 25, icon: Target },
-              { title: "Build First Portfolio Project", target: "Deploy a complete project", progress: 10, icon: TrendingUp },
-              { title: "Attend 3 Events This Semester", target: "Network & learn", progress: 33, icon: Users },
-            ].map((goal, i) => (
-              <Card key={i} variant="default" className="goal-card" role="listitem">
-                <CardContent>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "16px" }}>
-                    <div className="goal-icon" aria-hidden="true" style={{ width: "40px", height: "40px", background: "var(--mcc-blue)", borderRadius: "var(--radius-sm)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--mcc-white)" }}>
-                      <goal.icon size={20} />
-                    </div>
-                    <Badge variant="blue">{goal.progress}%</Badge>
-                  </div>
-                  <h3>{goal.title}</h3>
-                  <p className="body-sm" style={{ color: "var(--mcc-text-muted)", marginTop: "4px", marginBottom: "16px" }}>{goal.target}</p>
-                  <div style={{ height: "6px", background: "var(--mcc-line)", borderRadius: "3px", overflow: "hidden" }}>
-                    <div style={{ height: "100%", width: `${goal.progress}%`, background: "var(--mcc-blue)", borderRadius: "3px" }} />
-                  </div>
-                </CardContent>
-              </Card>
+      <section className="section lk-steps-section" aria-labelledby="goals-title">
+        <div className="container">
+          <div className="lk-section-head">
+            <div>
+              <span className="hp-section-kicker">LEARNING GOALS</span>
+              <h2 id="goals-title" className="hp-section-title">Set your direction.</h2>
+            </div>
+            <span className="db-goals-hint">Demo — log sessions to move the bars.</span>
+          </div>
+
+          <div className="db-goals" role="list">
+            {goals.map((goal) => (
+              <div key={goal.id} className="db-goal" role="listitem" style={{ "--track-color": goal.color } as React.CSSProperties}>
+                <div className="db-goal-top">
+                  <span className="db-goal-icon">
+                    {goal.id === "ai" ? <Target size={19} /> : goal.id === "portfolio" ? <TrendingUp size={19} /> : <Users size={19} />}
+                  </span>
+                  <span className={`db-goal-badge ${goal.progress >= 100 ? "is-complete" : ""}`}>
+                    {goal.progress >= 100 ? "Complete" : `${goal.progress}%`}
+                  </span>
+                </div>
+                <h3>{goal.title}</h3>
+                <p>{goal.target}</p>
+                <div className="db-goal-bar">
+                  <div style={{ width: `${goal.progress}%` }} />
+                </div>
+                <button
+                  type="button"
+                  className="db-goal-btn"
+                  onClick={() => logSession(goal.id)}
+                  disabled={goal.progress >= 100}
+                >
+                  {goal.progress >= 100 ? "Goal reached" : "Log session +10%"}
+                </button>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="section" style={{ background: "var(--mcc-navy)", color: "var(--mcc-white)" }} aria-labelledby="demo-notice-title">
-        <div className="container" style={{ textAlign: "center", maxWidth: "700px" }}>
-          <div style={{ border: "1px solid #213748", borderRadius: "var(--radius-md)", padding: "32px" }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true" style={{ color: "var(--mcc-accent-yellow)", marginBottom: "16px" }}>
-              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
-              <line x1="12" y1="9" x2="12" y2="13" />
-              <line x1="12" y1="17" x2="12.01" y2="17" />
-            </svg>
-            <h2 id="demo-notice-title" style={{ marginBottom: "12px" }}>Demo Dashboard Notice</h2>
-            <p className="body-lg" style={{ color: "#d9e5ed", marginBottom: "24px" }}>This is a presentation prototype. No real authentication, data persistence, or progress tracking is implemented. All data is mock/demo content.</p>
-            <TextLink href="/join" variant="light" style={{ fontSize: "16px" }}>
-              Join MCC for Real <ArrowRight size={18} />
-            </TextLink>
+      <section className="lk-cta-band" aria-labelledby="demo-notice-title">
+        <div className="container lk-cta-inner">
+          <div>
+            <span className="hp-section-kicker" style={{ color: "var(--mcc-cyan)" }}>DEMO NOTICE</span>
+            <h2 id="demo-notice-title" className="hp-section-title" style={{ color: "#fff" }}>
+              This is a presentation prototype.
+            </h2>
+            <p>
+              No real authentication, data persistence, or progress tracking is implemented.
+              All data above is mock/demo content.
+            </p>
           </div>
+          <Link href="/join" className="lk-cta-btn">
+            Join MCC for real <ArrowUpRight size={17} />
+          </Link>
         </div>
       </section>
     </>
   );
-}
-
-function formatDate(dateString: string) {
-  const date = new Date(dateString);
-  return {
-    day: date.getDate().toString().padStart(2, "0"),
-    month: date.toLocaleString("en-US", { month: "short" }),
-    year: date.getFullYear().toString(),
-  };
 }
