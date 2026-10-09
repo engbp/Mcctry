@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, Search, ChevronDown, ArrowUpRight, GraduationCap } from "lucide-react";
+import { Menu, X, Search, ChevronDown, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { tracksData, coursesData, eventsData } from "@/lib/data";
 
@@ -120,12 +120,7 @@ export function Header() {
     <header className="site-header" role="banner" ref={headerRef}>
       <div className="nav-wrap">
         <Link className="brand" href="/" aria-label="MCC MNU home">
-          <span className="brand-logo" aria-hidden="true">
-            <GraduationCap size={20} />
-          </span>
-          <span className="brand-mcc">MCC</span>
-          <span className="brand-rule" aria-hidden="true" />
-          <span className="brand-mnu">MNU</span>
+          <img className="brand-image" src="/mcc-mnu-logo.svg" alt="Microsoft Campus Club - MNU" width="228" height="54" />
         </Link>
 
         <nav className="desktop-nav" aria-label="Primary navigation">
