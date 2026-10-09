@@ -1,11 +1,12 @@
 import { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
-import { PageHero, SectionHeader } from "@/components/layout/PageHero";
-import { TextLink, CardLink } from "@/components/ui/Links";
-import { ArrowRight, BookOpen, Code2, Cloud, ShieldCheck, Clock, Users, ChevronRight } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/Card";
+import { ArrowRight, BookOpen, Code2, Cloud, ShieldCheck, Clock, Users, Layers, Sparkles, Award } from "lucide-react";
+import { BandHero } from "@/components/layout/BandHero";
 import { Badge } from "@/components/ui/Badge";
 import { tracksData, getCoursesByTrack } from "@/lib/data";
+
+const trackIcons = { BookOpen, Code2, Cloud, ShieldCheck } as const;
 
 interface TrackPageProps {
   params: Promise<{ slug: string }>;
@@ -27,112 +28,114 @@ export default async function TrackPage({ params }: TrackPageProps) {
   if (!track) notFound();
 
   const courses = getCoursesByTrack(slug);
+  const TrackIcon = trackIcons[track.icon as keyof typeof trackIcons] ?? BookOpen;
 
-  const trackIcons = {
-    "BookOpen": BookOpen,
-    "Code2": Code2,
-    "Cloud": Cloud,
-    "ShieldCheck": ShieldCheck,
-  };
-  const TrackIcon = trackIcons[track.icon as keyof typeof trackIcons] || BookOpen;
+  const gains = [
+    { icon: BookOpen, title: "Structured Curriculum", text: "Courses designed to build on each other, taking you from fundamentals to applied projects." },
+    { icon: Clock, title: "Self-Paced Learning", text: "Progress through lessons on your schedule. No deadlines, no pressure — just consistent progress." },
+    { icon: Users, title: "Community Support", text: "Connect with peers in the same track. Share progress, ask questions, collaborate on projects." },
+  ];
 
   return (
     <>
-      <PageHero
-        label="Tracks"
+      <BandHero
+        crumbs={[{ label: "Tracks", href: "/tracks" }, { label: track.title }]}
+        kicker={`TRACK · ${track.title.toUpperCase()}`}
         title={track.title}
         lede={track.description}
-        badge={`${track.coursesCount} Courses · ${track.duration}`}
-        badgeVariant="blue"
-        kicker="01 / TRACK"
-        visual={
-          <div className="track-hero-visual" aria-hidden="true" style={{ background: track.gradient, borderRadius: "var(--radius-md)", minHeight: "300px", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", overflow: "hidden" }}>
-            <div className="track-hero-pattern" aria-hidden="true" style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg,rgba(255,255,255,.08) 1px,transparent 1px),linear-gradient(rgba(255,255,255,.08) 1px,transparent 1px); background-size: 60px 60px;" }} />
-            <div className="track-hero-icon" style={{ position: "relative", zIndex: 1, width: "120px", height: "120px", background: "rgba(255,255,255,.15)", borderRadius: "var(--radius-md)", display: "flex", alignItems: "center", justifyContent: "center", backdropFilter: "blur(10px)" }}>
-              <TrackIcon size={48} />
-            </div>
-          </div>
+        color={track.color}
+        meta={
+          <>
+            <span className="band-meta-pill"><BookOpen size={14} /> {track.coursesCount} courses</span>
+            <span className="band-meta-pill"><Clock size={14} /> {track.duration}</span>
+          </>
         }
+        icon={<TrackIcon size={56} />}
       />
 
       <section className="section" aria-labelledby="courses-title">
         <div className="container">
-          <SectionHeader number="01" label="COURSES IN THIS TRACK" title={`${track.coursesCount} courses to build your skills.`} />
-          <div className="grid-2" role="list" style={{ marginTop: "32px" }}>
+          <div className="lk-section-head">
+            <div>
+              <span className="hp-section-kicker">COURSES IN THIS TRACK</span>
+              <h2 id="courses-title" className="hp-section-title">{courses.length} courses to build your skills.</h2>
+            </div>
+            <Link href="/courses" className="hp-section-link">All courses <ArrowRight size={15} /></Link>
+          </div>
+
+          <div className="lk-course-rows" role="list">
             {courses.map((course, i) => (
-              <CardLink key={course.slug} href={`/courses/${course.slug}`} className="course-card" role="listitem">
-                <CardContent className="course-card-content">
-                  <div className="course-card-header">
+              <Link key={course.slug} href={`/courses/${course.slug}`} className="lk-course-row" role="listitem" style={{ "--track-color": course.color } as React.CSSProperties}>
+                <span className="lk-course-row-index">0{i + 1}</span>
+                <div className="lk-course-row-main">
+                  <div className="lk-course-row-tags">
                     <Badge variant="blue">{course.track}</Badge>
-                    <span className="course-card-number">0{i + 1}</span>
+                    <span className="lk-course-row-level">{course.level}</span>
+                    {course.featured && <span className="lk-course-row-flag">Featured</span>}
                   </div>
-                  <h3 className="course-card-title">{course.title}</h3>
-                  <p className="course-card-description">{course.description}</p>
-                  <div className="course-card-meta">
-                    <span><Clock size={14} /> {course.lessonsCount} lessons</span>
-                    <span>{course.duration}</span>
-                    <span>{course.level}</span>
-                  </div>
-                  <div className="course-card-action">
-                    <TextLink href={`/courses/${course.slug}`} variant="default">Start course</TextLink>
-                  </div>
-                </CardContent>
-              </CardLink>
+                  <h3>{course.title}</h3>
+                  <p>{course.description}</p>
+                </div>
+                <div className="lk-course-row-meta">
+                  <span><BookOpen size={14} /> {course.lessonsCount} lessons</span>
+                  <span><Clock size={14} /> {course.duration}</span>
+                </div>
+                <span className="lk-course-row-arrow"><ArrowRight size={18} /></span>
+              </Link>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="section" style={{ background: "var(--mcc-paper)" }} aria-labelledby="track-info-title">
+      <section className="section lk-steps-section" aria-labelledby="track-info-title">
         <div className="container">
-          <SectionHeader number="02" label="TRACK DETAILS" title="What you'll gain." />
-          <div className="grid-3" role="list" style={{ marginTop: "32px" }}>
-            <Card variant="default" className="detail-card" role="listitem">
-              <CardContent>
-                <div className="detail-card-icon" aria-hidden="true"><BookOpen size={24} /></div>
-                <h3>Structured Curriculum</h3>
-                <p>Courses designed to build on each other, taking you from fundamentals to applied projects.</p>
-              </CardContent>
-            </Card>
-            <Card variant="default" className="detail-card" role="listitem">
-              <CardContent>
-                <div className="detail-card-icon" aria-hidden="true"><Clock size={24} /></div>
-                <h3>Self-Paced Learning</h3>
-                <p>Progress through lessons on your schedule. No deadlines, no pressure — just consistent progress.</p>
-              </CardContent>
-            </Card>
-            <Card variant="default" className="detail-card" role="listitem">
-              <CardContent>
-                <div className="detail-card-icon" aria-hidden="true"><Users size={24} /></div>
-                <h3>Community Support</h3>
-                <p>Connect with peers in the same track. Share progress, ask questions, collaborate on projects.</p>
-              </CardContent>
-            </Card>
+          <div className="lk-section-head">
+            <div>
+              <span className="hp-section-kicker">TRACK DETAILS</span>
+              <h2 id="track-info-title" className="hp-section-title">What you&apos;ll gain.</h2>
+            </div>
+          </div>
+          <div className="lk-steps" role="list">
+            {gains.map((gain, i) => (
+              <div key={gain.title} className="lk-step" role="listitem" style={{ "--track-color": track.color } as React.CSSProperties}>
+                <span className="lk-step-number">0{i + 1}</span>
+                <span className="lk-step-icon"><gain.icon size={24} /></span>
+                <h3>{gain.title}</h3>
+                <p>{gain.text}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
       <section className="section" aria-labelledby="related-title">
         <div className="container">
-          <SectionHeader number="03" label="EXPLORE MORE" title="Other learning paths." action={<TextLink href="/tracks">View all tracks</TextLink>} />
-          <div className="grid-3" role="list" style={{ marginTop: "32px" }}>
-            {tracksData.filter((t) => t.slug !== slug).map((otherTrack, i) => (
-              <CardLink key={otherTrack.slug} href={`/tracks/${otherTrack.slug}`} className="related-track-card" role="listitem">
-                <CardContent className="related-track-content">
-                  <div className="related-track-icon" style={{ background: `${otherTrack.color}1a`, color: otherTrack.color }} aria-hidden="true">
-                    {otherTrack.icon === "BookOpen" && <BookOpen size={22} />}
-                    {otherTrack.icon === "Code2" && <Code2 size={22} />}
-                    {otherTrack.icon === "Cloud" && <Cloud size={22} />}
-                    {otherTrack.icon === "ShieldCheck" && <ShieldCheck size={22} />}
+          <div className="lk-section-head">
+            <div>
+              <span className="hp-section-kicker">EXPLORE MORE</span>
+              <h2 id="related-title" className="hp-section-title">Other learning paths.</h2>
+            </div>
+            <Link href="/tracks" className="hp-section-link">View all tracks <ArrowRight size={15} /></Link>
+          </div>
+          <div className="hp-track-grid" role="list">
+            {tracksData.filter((t) => t.slug !== slug).map((otherTrack) => {
+              const OtherIcon = trackIcons[otherTrack.icon as keyof typeof trackIcons] ?? BookOpen;
+              return (
+                <Link key={otherTrack.slug} href={`/tracks/${otherTrack.slug}`} className="hp-track-card" role="listitem" style={{ "--track-color": otherTrack.color } as React.CSSProperties}>
+                  <div className="hp-track-top">
+                    <span className="hp-track-icon"><OtherIcon size={24} /></span>
                   </div>
                   <h3>{otherTrack.title}</h3>
                   <p>{otherTrack.description}</p>
-                  <div className="related-track-meta">
-                    {otherTrack.coursesCount} courses · {otherTrack.duration}
+                  <div className="hp-track-meta">
+                    <span>{otherTrack.coursesCount} courses</span>
+                    <span aria-hidden="true">·</span>
+                    <span>{otherTrack.duration}</span>
+                    <span className="hp-track-arrow"><ArrowRight size={16} /></span>
                   </div>
-                </CardContent>
-              </CardLink>
-            ))}
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>

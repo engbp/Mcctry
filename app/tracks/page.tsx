@@ -1,90 +1,93 @@
-import { PageHero, SectionHeader } from "@/components/layout/PageHero";
-import { TextLink } from "@/components/ui/Links";
-import { ArrowRight, BookOpen, Code2, Cloud, ShieldCheck, ChevronRight } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/Card";
-import { CardLink } from "@/components/ui/Links";
+import Link from "next/link";
+import { ArrowRight, BookOpen, Code2, Cloud, ShieldCheck, Map, Rocket, Award } from "lucide-react";
+import { BandHero } from "@/components/layout/BandHero";
 import { tracksData } from "@/lib/data";
+
+const trackIcons = { BookOpen, Code2, Cloud, ShieldCheck } as const;
+
+const steps = [
+  { icon: Map, title: "Pick a Track", text: "Choose from AI & Data, Software Development, Cloud, or Cybersecurity based on your interests." },
+  { icon: BookOpen, title: "Take Courses", text: "Progress through structured courses with short video lessons, resources, and checkpoints." },
+  { icon: Rocket, title: "Build Projects", text: "Apply what you've learned in guided projects and showcase your work to the community." },
+];
 
 export default function TracksPage() {
   return (
     <>
-      <PageHero
-        label="Tracks"
+      <BandHero
+        crumbs={[{ label: "Tracks" }]}
+        kicker="LEARN · DISCOVER"
         title="Explore learning paths."
         lede="Choose a direction, then follow a clear path through courses and lessons. Learning stays lightweight and practical."
-        badge="4 Tracks"
-        badgeVariant="blue"
-        kicker="01 / DISCOVER"
+        meta={<span className="band-meta-pill"><BookOpen size={14} /> {tracksData.length} tracks · 33+ lessons</span>}
+        icon={<BookOpen size={56} />}
       />
 
       <section className="section" aria-labelledby="tracks-list-title">
         <div className="container">
-          <SectionHeader number="01" label="ALL TRACKS" title="Find your path." action={<TextLink href="/courses">Browse all courses instead</TextLink>} />
-          <div className="grid-2" role="list" style={{ marginTop: "32px" }}>
-            {tracksData.map((track, i) => (
-              <CardLink key={track.slug} href={`/tracks/${track.slug}`} className="track-card" role="listitem" style={{ minHeight: "320px" }}>
-                <CardContent className="track-card-content">
-                  <div className="track-card-header">
-                    <span className="track-card-number">0{i + 1}</span>
-                    <div className="track-card-icon" style={{ background: `${track.color}1a`, color: track.color }} aria-hidden="true">
-                      {track.icon === "BookOpen" && <BookOpen size={24} />}
-                      {track.icon === "Code2" && <Code2 size={24} />}
-                      {track.icon === "Cloud" && <Cloud size={24} />}
-                      {track.icon === "ShieldCheck" && <ShieldCheck size={24} />}
-                    </div>
+          <div className="lk-section-head">
+            <div>
+              <span className="hp-section-kicker">ALL TRACKS</span>
+              <h2 id="tracks-list-title" className="hp-section-title">Find your path.</h2>
+            </div>
+            <Link href="/courses" className="hp-section-link">Browse all courses <ArrowRight size={15} /></Link>
+          </div>
+
+          <div className="hp-track-grid" role="list">
+            {tracksData.map((track, i) => {
+              const Icon = trackIcons[track.icon as keyof typeof trackIcons] ?? BookOpen;
+              return (
+                <Link key={track.slug} href={`/tracks/${track.slug}`} className="hp-track-card" role="listitem" style={{ "--track-color": track.color } as React.CSSProperties}>
+                  <div className="hp-track-top">
+                    <span className="hp-track-icon"><Icon size={24} /></span>
+                    <span className="hp-track-number">0{i + 1}</span>
                   </div>
-                  <h3 className="track-card-title">{track.title}</h3>
-                  <p className="track-card-description">{track.description}</p>
-                  <div className="track-card-meta">
+                  <h3>{track.title}</h3>
+                  <p>{track.description}</p>
+                  <div className="hp-track-meta">
                     <span>{track.coursesCount} courses</span>
+                    <span aria-hidden="true">·</span>
                     <span>{track.duration}</span>
+                    <span className="hp-track-arrow"><ArrowRight size={16} /></span>
                   </div>
-                  <div className="track-card-action">
-                    <TextLink href={`/tracks/${track.slug}`} variant="default">Explore track</TextLink>
-                  </div>
-                </CardContent>
-              </CardLink>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      <section className="section lk-steps-section" aria-labelledby="how-it-works-title">
+        <div className="container">
+          <div className="lk-section-head">
+            <div>
+              <span className="hp-section-kicker">HOW IT WORKS</span>
+              <h2 id="how-it-works-title" className="hp-section-title">Simple by design.</h2>
+            </div>
+          </div>
+          <div className="lk-steps" role="list">
+            {steps.map((step, i) => (
+              <div key={step.title} className="lk-step" role="listitem">
+                <span className="lk-step-number">0{i + 1}</span>
+                <span className="lk-step-icon"><step.icon size={24} /></span>
+                <h3>{step.title}</h3>
+                <p>{step.text}</p>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="section" style={{ background: "var(--mcc-paper)" }} aria-labelledby="how-it-works-title">
-        <div className="container">
-          <SectionHeader number="02" label="HOW IT WORKS" title="Simple by design." />
-          <div className="grid-3" role="list" style={{ marginTop: "32px" }}>
-            <Card variant="default" className="step-card" role="listitem">
-              <CardContent>
-                <span className="step-number">01</span>
-                <h3>Pick a Track</h3>
-                <p>Choose from AI & Data, Software Development, Cloud, or Cybersecurity based on your interests.</p>
-              </CardContent>
-            </Card>
-            <Card variant="default" className="step-card" role="listitem">
-              <CardContent>
-                <span className="step-number">02</span>
-                <h3>Take Courses</h3>
-                <p>Progress through structured courses with short video lessons, resources, and checkpoints.</p>
-              </CardContent>
-            </Card>
-            <Card variant="default" className="step-card" role="listitem">
-              <CardContent>
-                <span className="step-number">03</span>
-                <h3>Build Projects</h3>
-                <p>Apply what you've learned in guided projects and showcase your work to the community.</p>
-              </CardContent>
-            </Card>
+      <section className="lk-cta-band" aria-labelledby="tracks-cta-title">
+        <div className="container lk-cta-inner">
+          <div>
+            <span className="hp-section-kicker" style={{ color: "var(--mcc-cyan)" }}>READY TO START</span>
+            <h2 id="tracks-cta-title" className="hp-section-title" style={{ color: "#fff" }}>Your learning journey begins here.</h2>
+            <p>Pick a track and start with the first course. No prerequisites, no pressure — just practical learning.</p>
           </div>
-        </div>
-      </section>
-
-      <section className="section" aria-labelledby="cta-title">
-        <div className="container" style={{ textAlign: "center", maxWidth: "700px" }}>
-          <SectionHeader number="03" label="READY TO START" title="Your learning journey begins here." />
-          <p className="body-lg" style={{ color: "var(--mcc-text-muted)", marginTop: "16px", marginBottom: "32px" }}>Pick a track and start with the first course. No prerequisites, no pressure — just practical learning.</p>
-          <TextLink href="/courses" style={{ fontSize: "16px" }}>
-            Browse All Courses <ArrowRight size={18} />
-          </TextLink>
+          <Link href="/courses" className="lk-cta-btn">
+            Browse all courses <ArrowRight size={17} />
+          </Link>
         </div>
       </section>
     </>

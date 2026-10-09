@@ -1,28 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { PageHero } from "@/components/layout/PageHero";
-import { TextLink } from "@/components/ui/Links";
-import { ArrowRight, ArrowLeft, Play, Volume2, VolumeX, SkipBack, SkipForward, Settings, ChevronRight, X, CheckCircle, ChevronDown } from "lucide-react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { ArrowRight, ArrowLeft, Play, Pause, Volume2, VolumeX, SkipBack, SkipForward, CheckCircle, ChevronRight, Sparkles, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
-import { Card, CardContent } from "@/components/ui/Card";
-import { CardLink } from "@/components/ui/Links";
 import { lessonsData } from "@/lib/data";
 
 interface LessonClientProps {
-  course: {
-    slug: string;
-    track: string;
-    title: string;
-  };
-  lesson: {
-    slug: string;
-    title: string;
-    duration: string;
-    type: string;
-  };
+  course: { slug: string; track: string; title: string };
+  lesson: { slug: string; title: string; duration: string; type: string };
   lessonIndex: number;
   lessonNumber: number;
   totalLessons: number;
@@ -31,202 +18,271 @@ interface LessonClientProps {
   slug: string;
 }
 
-export function LessonClient({ 
-  course, 
-  lesson, 
-  lessonIndex, 
-  lessonNumber, 
-  totalLessons, 
-  prevLesson, 
-  nextLesson, 
-  slug 
+function parseDuration(d: string): number {
+  const [m, s] = d.split(":").map(Number);
+  return (m || 0) * 60 + (s || 0);
+}
+
+function formatTime(total: number): string {
+  const m = Math.floor(total / 60);
+  const s = Math.floor(total % 60);
+  return `${m}:${s.toString().padStart(2, "0")}`;
+}
+
+const speeds = [0.75, 1, 1.25, 1.5, 2];
+
+export function LessonClient({
+  course, lesson, lessonIndex, lessonNumber, totalLessons, prevLesson, nextLesson, slug,
 }: LessonClientProps) {
-  const [volume, setVolume] = useState(1);
-  const [playbackSpeed, setPlaybackSpeed] = useState(1);
-  const [showSettings, setShowSettings] = useState(false);
+  const duration = parseDuration(lesson.duration);
+  const [playing, setPlaying] = useState(false);
+  const [time, setTime] = useState(0);
+  const [speed, setSpeed] = useState(1);
+  const [muted, setMuted] = useState(false);
+  const [completed, setCompleted] = useState(false);
+  const [rating, setRating] = useState<number | null>(null);
+  const [submitted, setSubmitted] = useState(false);
+  const progressRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setPlaying(false);
+    setTime(0);
+    setCompleted(false);
+    setRating(null);
+    setSubmitted(false);
+  }, [lesson.slug]);
+
+  useEffect(() => {
+    if (!playing) return;
+    const id = window.setInterval(() => {
+      setTime((t) => {
+        const next = t + speed;
+        if (next >= duration) {
+          setPlaying(false);
+          return duration;
+        }
+        return next;
+      });
+    }, 1000);
+    return () => window.clearInterval(id);
+  }, [playing, speed, duration]);
+
+  const seek = useCallback((clientX: number) => {
+    const el = progressRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const ratio = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
+    setTime(ratio * duration);
+  }, [duration]);
+
+  const skip = (delta: number) => setTime((t) => Math.min(duration, Math.max(0, t + delta)));
+  const progress = duration ? (time / duration) * 100 : 0;
+  const done = time >= duration;
 
   return (
     <>
-      <PageHero
-        label={`Courses / ${course.track} / ${course.title}`}
-        title={lesson.title}
-        lede={`Lesson ${lessonNumber} of ${totalLessons} · ${lesson.duration} · ${lesson.type}`}
-        badge={`Lesson ${lessonNumber} of ${totalLessons}`}
-        badgeVariant="blue"
-        kicker="01 / LESSON"
-        visual={
-          <div className="lesson-hero-visual" aria-hidden="true" style={{ background: "var(--mcc-navy-2)", borderRadius: "var(--radius-md)", minHeight: "280px", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", overflow: "hidden" }}>
-            <div className="lesson-hero-pattern" aria-hidden="true" style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg,rgba(0,199,232,.08) 1px,transparent 1px),linear-gradient(rgba(0,199,232,.08) 1px,transparent 1px); background-size: 50px 50px;" }} />
-            <div className="lesson-hero-play" style={{ position: "relative", zIndex: 1, width: "80px", height: "80px", background: "var(--mcc-cyan)", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 0 0 4px rgba(0,199,232,.2), 0 0 0 8px rgba(0,199,232,.1)" }}>
-              <Play size={28} style={{ color: "#03121f", marginLeft: "3px" }} />
-            </div>
-          </div>
-        }
-      />
-
-      <section className="section" aria-labelledby="video-player-title">
-        <div className="container">
-          <div className="video-layout">
-            <div className="video-main">
-              <div className="video-player-wrapper">
-                <div className="video-player" role="region" aria-label="Video player" style={{ aspectRatio: "16/9", background: "#0b0b0b", borderRadius: "var(--radius-md)", overflow: "hidden", position: "relative" }}>
-                  <div className="video-placeholder" aria-hidden="true" style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "16px", color: "#fff" }}>
-                    <div className="video-placeholder-content" style={{ textAlign: "center" }}>
-                      <Play className="video-play-btn" size={64} />
-                      <p className="video-placeholder-text" style={{ fontSize: "18px", fontWeight: 600, marginTop: "16px" }}>Demo Video Player</p>
-                      <p className="video-placeholder-subtext" style={{ fontSize: "14px", color: "#888", maxWidth: "400px" }}>Production video security and storage will be connected after MCC requirements are finalized.</p>
-                    </div>
-                    <div className="video-controls" aria-hidden="true" style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "16px", background: "linear-gradient(transparent, rgba(0,0,0,.9))", display: "flex", flexDirection: "column", gap: "12px" }}>
-                      <div className="video-progress" style={{ cursor: "pointer" }}>
-                        <div className="video-progress-bar" style={{ height: "4px", background: "rgba(255,255,255,.3)", borderRadius: "2px", overflow: "hidden" }}>
-                          <div style={{ width: "0%", height: "100%", background: "var(--mcc-cyan)", borderRadius: "2px", transition: "width 0.1s linear" }} />
-                        </div>
-                      </div>
-                      <div className="video-controls-row" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                          <Button variant="ghost" size="sm" aria-label="Play"><Play size={18} /></Button>
-                          <Button variant="ghost" size="sm" aria-label="Rewind 10s"><SkipBack size={18} /></Button>
-                          <Button variant="ghost" size="sm" aria-label="Forward 10s"><SkipForward size={18} /></Button>
-                        </div>
-                        <div className="video-time" style={{ fontSize: "13px", color: "#ccc", fontVariantNumeric: "tabular-nums" }}>0:00 / {lesson.duration}</div>
-                        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                          <Button variant="ghost" size="sm" aria-label="Volume" onClick={() => setVolume(volume > 0 ? 0 : 1)}>
-                            {volume > 0 ? <Volume2 size={18} /> : <VolumeX size={18} />}
-                          </Button>
-                          <Button variant="ghost" size="sm" aria-label="Playback speed" onClick={() => setShowSettings(!showSettings)}>
-                            <Settings size={18} />
-                          </Button>
-                          <Button variant="ghost" size="sm" aria-label="Fullscreen"><span style={{ fontSize: "12px", fontWeight: 700 }}>⛶</span></Button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="video-info" style={{ marginTop: "24px" }}>
-                <div className="video-meta" style={{ display: "flex", gap: "16px", flexWrap: "wrap", marginBottom: "16px", fontSize: "13px", color: "var(--mcc-text-light)" }}>
-                  <span><Badge variant="blue">Lesson {lessonNumber} of {totalLessons}</Badge></span>
-                  <span><Badge variant="demo">{course.title}</Badge></span>
-                </div>
-                <h1 className="display-sm" style={{ marginBottom: "12px" }}>{lesson.title}</h1>
-                <p className="body-lg" style={{ color: "var(--mcc-text-muted)", maxWidth: "800px" }}>This demo lesson introduces the course and sets expectations for a lightweight, practical learning experience. In production, this would be replaced with actual video content, transcripts, and interactive resources.</p>
-
-                <div className="video-resources" style={{ marginTop: "24px", display: "flex", gap: "8px", flexWrap: "wrap" }}>
-                  <Button variant="secondary" size="sm"><span>Lesson Resources</span></Button>
-                  <Button variant="secondary" size="sm"><span>Transcript</span></Button>
-                  <Button variant="secondary" size="sm"><span>Notes</span></Button>
-                  <Button variant="secondary" size="sm"><span>Discussion</span></Button>
-                </div>
-
-                <div className="notice notice-info" style={{ marginTop: "24px" }}>
-                  <strong>Demo Mode:</strong> Video playback, progress tracking, and resources are simulated. Production implementation will connect to MCC's video infrastructure.
-                </div>
-
-                <div className="video-navigation" style={{ display: "flex", gap: "12px", marginTop: "32px", paddingTop: "24px", borderTop: "1px solid var(--mcc-line)" }}>
-                  <Button variant="secondary" asChild disabled={!prevLesson} style={{ minWidth: "160px" }}>
-                    <Link href={prevLesson ? `/courses/${slug}/lessons/${prevLesson.slug}` : "#"}>
-                      <ArrowLeft size={16} /> Previous Lesson
-                    </Link>
-                  </Button>
-                  <TextLink href={`/courses/${slug}`} variant="muted" style={{ marginLeft: "auto", display: "flex", alignItems: "center" }}>
-                    <ArrowLeft size={14} /> Back to Course
-                  </TextLink>
-                  <Button variant="primary" asChild disabled={!nextLesson} style={{ minWidth: "160px", marginLeft: "auto" }}>
-                    <Link href={nextLesson ? `/courses/${slug}/lessons/${nextLesson.slug}` : "#"}>
-                      Next Lesson <ArrowRight size={16} />
-                    </Link>
-                  </Button>
-                </div>
-              </div>
-            </div>
-
-            <aside className="video-sidebar" aria-labelledby="course-contents-title">
-              <Card variant="default" className="sidebar-card" style={{ position: "sticky", top: "90px" }}>
-                <CardContent style={{ padding: "20px" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px", paddingBottom: "16px", borderBottom: "1px solid var(--mcc-line)" }}>
-                    <h3 id="course-contents-title" style={{ fontSize: "18px", fontWeight: 600, margin: 0 }}>Course Contents</h3>
-                    <Badge variant="blue">{totalLessons} Lessons</Badge>
-                  </div>
-                  <nav className="lesson-nav" aria-label="Lesson navigation">
-                    {lessonsData.map((l, i) => {
-                      const isCurrent = i === lessonIndex;
-                      const isCompleted = i < lessonIndex;
-                      return (
-                        <CardLink
-                          key={l.slug}
-                          href={`/courses/${slug}/lessons/${l.slug}`}
-                          className={`lesson-nav-item ${isCurrent ? "current" : ""} ${isCompleted ? "completed" : ""}`}
-                          style={{
-                            display: "flex",
-                            alignItems: "flex-start",
-                            gap: "12px",
-                            padding: "12px",
-                            borderRadius: "var(--radius-sm)",
-                            marginBottom: "8px",
-                            background: isCurrent ? "var(--mcc-blue)" : isCompleted ? "var(--mcc-paper)" : "transparent",
-                            color: isCurrent ? "var(--mcc-white)" : "inherit",
-                            border: "1px solid transparent",
-                            transition: "all var(--transition-fast)",
-                          }}
-                        >
-                          <span className="lesson-nav-number" style={{
-                            flexShrink: 0,
-                            width: "28px",
-                            height: "28px",
-                            borderRadius: "50%",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            fontSize: "11px",
-                            fontWeight: 700,
-                            background: isCurrent ? "var(--mcc-white)" : isCompleted ? "var(--mcc-blue)" : "var(--mcc-line)",
-                            color: isCurrent ? "var(--mcc-blue)" : isCompleted ? "var(--mcc-white)" : "var(--mcc-text-light)",
-                          }}>
-                            {isCompleted ? <CheckCircle size={14} /> : (i + 1).toString().padStart(2, "0")}
-                          </span>
-                          <div className="lesson-nav-info" style={{ flex: 1, minWidth: 0 }}>
-                            <h4 style={{ margin: "0 0 4px", fontSize: "14px", fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{l.title}</h4>
-                            <span style={{ fontSize: "12px", color: isCurrent ? "rgba(255,255,255,0.7)" : isCompleted ? "var(--mcc-blue)" : "var(--mcc-text-light)" }}>{l.duration} · {l.type}</span>
-                          </div>
-                        </CardLink>
-                      );
-                    })}
-                  </nav>
-                </CardContent>
-              </Card>
-            </aside>
-          </div>
+      <header className="lesson-topbar">
+        <div className="container lesson-topbar-inner">
+          <Link href={`/courses/${slug}`} className="lesson-back">
+            <ArrowLeft size={16} /> {course.title}
+          </Link>
+          <span className="lesson-topbar-progress">
+            Lesson {lessonNumber} of {totalLessons}
+            <span className="lesson-topbar-bar"><i style={{ width: `${((lessonIndex + (completed ? 1 : 0)) / totalLessons) * 100}%` }} /></span>
+          </span>
         </div>
-      </section>
+      </header>
 
-      <section className="section" style={{ background: "var(--mcc-paper)" }} aria-labelledby="feedback-title">
-        <div className="container" style={{ maxWidth: "800px" }}>
-          <h2 id="feedback-title" className="heading-md" style={{ marginBottom: "24px" }}>Feedback on This Lesson</h2>
-          <div className="notice notice-info" style={{ marginBottom: "24px" }}>
-            <strong>Demo Mode:</strong> Feedback infrastructure will be connected after MCC requirements are finalized.
-          </div>
-          <form className="feedback-form" style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-            <fieldset>
-              <legend style={{ fontSize: "14px", fontWeight: 600, marginBottom: "12px" }}>How useful was this lesson?</legend>
-              <div className="rating-row" style={{ display: "flex", gap: "8px" }}>
-                {[1, 2, 3, 4, 5].map((n) => (
-                  <Button key={n} variant="ghost" size="sm" style={{ flex: 1, minHeight: "44px" }}>{n}</Button>
-                ))}
+      <section className="section lesson-section" aria-labelledby="video-title">
+        <div className="container lesson-layout">
+          <div className="lesson-main">
+            <div className={`lesson-player ${playing ? "lesson-player-playing" : ""}`}>
+              <button
+                className="lesson-player-screen"
+                aria-label={playing ? "Pause video" : "Play video"}
+                onClick={() => setPlaying((p) => !p)}
+              >
+                <span className="lesson-player-bg" aria-hidden="true" />
+                <span className="lesson-player-title" aria-hidden="true">
+                  <Badge variant="demo">DEMO VIDEO</Badge>
+                  <strong>{lesson.title}</strong>
+                </span>
+                <span className="lesson-player-bigplay" aria-hidden="true">
+                  {playing ? <Pause size={34} fill="currentColor" /> : <Play size={34} fill="currentColor" />}
+                </span>
+                {done && <span className="lesson-player-done"><CheckCircle size={48} /> Lesson complete</span>}
+              </button>
+
+              <div className="lesson-controls">
+                <div
+                  className="lesson-progress"
+                  ref={progressRef}
+                  role="slider"
+                  tabIndex={0}
+                  aria-label="Video progress"
+                  aria-valuemin={0}
+                  aria-valuemax={duration}
+                  aria-valuenow={Math.floor(time)}
+                  onClick={(e) => seek(e.clientX)}
+                  onKeyDown={(e) => {
+                    if (e.key === "ArrowRight") skip(5);
+                    if (e.key === "ArrowLeft") skip(-5);
+                  }}
+                >
+                  <div className="lesson-progress-fill" style={{ width: `${progress}%` }}>
+                    <span className="lesson-progress-knob" />
+                  </div>
+                </div>
+
+                <div className="lesson-controls-row">
+                  <div className="lesson-controls-group">
+                    <button className="lesson-ctl" aria-label={playing ? "Pause" : "Play"} onClick={() => setPlaying((p) => !p)}>
+                      {playing ? <Pause size={18} fill="currentColor" /> : <Play size={18} fill="currentColor" />}
+                    </button>
+                    <button className="lesson-ctl" aria-label="Back 10 seconds" onClick={() => skip(-10)}>
+                      <SkipBack size={17} />
+                    </button>
+                    <button className="lesson-ctl" aria-label="Forward 10 seconds" onClick={() => skip(10)}>
+                      <SkipForward size={17} />
+                    </button>
+                    <span className="lesson-time">{formatTime(time)} / {lesson.duration}</span>
+                  </div>
+
+                  <div className="lesson-controls-group">
+                    <button className="lesson-ctl" aria-label={muted ? "Unmute" : "Mute"} onClick={() => setMuted((m) => !m)}>
+                      {muted ? <VolumeX size={17} /> : <Volume2 size={17} />}
+                    </button>
+                    <button
+                      className="lesson-ctl lesson-ctl-speed"
+                      aria-label={`Playback speed ${speed}x`}
+                      onClick={() => setSpeed(speeds[(speeds.indexOf(speed) + 1) % speeds.length])}
+                    >
+                      {speed}×
+                    </button>
+                    <button
+                      className={`lesson-ctl lesson-ctl-done ${completed || done ? "is-done" : ""}`}
+                      aria-pressed={completed || done}
+                      onClick={() => setCompleted((c) => !c)}
+                    >
+                      <CheckCircle size={17} /> {completed || done ? "Completed" : "Mark done"}
+                    </button>
+                  </div>
+                </div>
               </div>
-            </fieldset>
-            <fieldset>
-              <legend style={{ fontSize: "14px", fontWeight: 600, marginBottom: "12px" }}>What did you like?</legend>
-              <textarea className="textarea" rows={3} placeholder="What worked well?" style={{ width: "100%", padding: "12px", border: "1px solid var(--mcc-line)", borderRadius: "var(--radius-sm)", fontSize: "14px", fontFamily: "inherit", resize: "vertical" }} />
-            </fieldset>
-            <fieldset>
-              <legend style={{ fontSize: "14px", fontWeight: 600, marginBottom: "12px" }}>What could improve?</legend>
-              <textarea className="textarea" rows={3} placeholder="What would make this better?" style={{ width: "100%", padding: "12px", border: "1px solid var(--mcc-line)", borderRadius: "var(--radius-sm)", fontSize: "14px", fontFamily: "inherit", resize: "vertical" }} />
-            </fieldset>
-            <Button variant="primary" type="submit" style={{ alignSelf: "flex-start" }}>
-              Submit Feedback <ArrowRight size={16} />
-            </Button>
-          </form>
+            </div>
+
+            <div className="lesson-info">
+              <div className="lesson-info-meta">
+                <Badge variant="blue">Lesson {lessonNumber} of {totalLessons}</Badge>
+                <Badge variant="demo">{course.title}</Badge>
+                <span className="lesson-info-duration">{lesson.duration} · {lesson.type}</span>
+              </div>
+              <h1 id="video-title">{lesson.title}</h1>
+              <p>
+                This demo lesson introduces the course and sets expectations for a lightweight,
+                practical learning experience. In production, this would be replaced with actual
+                video content, transcripts, and interactive resources.
+              </p>
+
+              <div className="notice notice-info">
+                <strong>Demo mode:</strong> Video playback, progress tracking, and resources are simulated. Production implementation will connect to MCC&apos;s video infrastructure.
+              </div>
+
+              <div className="lesson-nav-buttons">
+                {prevLesson ? (
+                  <Link href={`/courses/${slug}/lessons/${prevLesson.slug}`} className="lesson-nav-btn">
+                    <ArrowLeft size={16} />
+                    <span><small>Previous</small>{prevLesson.title}</span>
+                  </Link>
+                ) : (
+                  <span className="lesson-nav-btn lesson-nav-btn-disabled"><ArrowLeft size={16} /><span><small>Previous</small>Start of course</span></span>
+                )}
+                {nextLesson ? (
+                  <Link href={`/courses/${slug}/lessons/${nextLesson.slug}`} className="lesson-nav-btn lesson-nav-btn-next">
+                    <span><small>Next</small>{nextLesson.title}</span>
+                    <ArrowRight size={16} />
+                  </Link>
+                ) : (
+                  <Link href={`/courses/${slug}`} className="lesson-nav-btn lesson-nav-btn-next">
+                    <span><small>Finish</small>Back to course</span>
+                    <ArrowRight size={16} />
+                  </Link>
+                )}
+              </div>
+            </div>
+
+            <div className="lesson-feedback">
+              <h2><MessageSquare size={19} /> Feedback on this lesson</h2>
+              {submitted ? (
+                <p className="lesson-feedback-thanks">
+                  <CheckCircle size={17} /> Thanks — your feedback was recorded locally (demo).
+                </p>
+              ) : (
+                <form
+                  className="lesson-feedback-form"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    setSubmitted(true);
+                  }}
+                >
+                  <fieldset>
+                    <legend>How useful was this lesson?</legend>
+                    <div className="lesson-rating" role="radiogroup" aria-label="Rating">
+                      {[1, 2, 3, 4, 5].map((n) => (
+                        <button
+                          key={n}
+                          type="button"
+                          role="radio"
+                          aria-checked={rating === n}
+                          className={`lesson-rating-btn ${rating === n ? "is-active" : ""}`}
+                          onClick={() => setRating(n)}
+                        >
+                          {n}
+                        </button>
+                      ))}
+                    </div>
+                  </fieldset>
+                  <label className="lesson-feedback-label">
+                    Anything to improve? <span>(optional)</span>
+                    <textarea rows={3} placeholder="What would make this better?" />
+                  </label>
+                  <Button variant="primary" type="submit" disabled={rating === null}>
+                    Submit feedback <ArrowRight size={16} />
+                  </Button>
+                </form>
+              )}
+            </div>
+          </div>
+
+          <aside className="lesson-sidebar" aria-labelledby="course-contents-title">
+            <div className="lesson-side-head">
+              <h3 id="course-contents-title">Course contents</h3>
+              <Badge variant="blue">{totalLessons}</Badge>
+            </div>
+            <nav className="lesson-side-nav" aria-label="Lesson navigation">
+              {lessonsData.map((l, i) => {
+                const isCurrent = i === lessonIndex;
+                const isCompleted = i < lessonIndex;
+                return (
+                  <Link
+                    key={l.slug}
+                    href={`/courses/${slug}/lessons/${l.slug}`}
+                    className={`lesson-side-item ${isCurrent ? "current" : ""} ${isCompleted ? "completed" : ""}`}
+                    aria-current={isCurrent ? "page" : undefined}
+                  >
+                    <span className="lesson-side-number">
+                      {isCompleted ? <CheckCircle size={14} /> : String(i + 1).padStart(2, "0")}
+                    </span>
+                    <span className="lesson-side-copy">
+                      <strong>{l.title}</strong>
+                      <small>{l.duration} · {l.type}</small>
+                    </span>
+                    {isCurrent && <ChevronRight size={15} className="lesson-side-chevron" />}
+                  </Link>
+                );
+              })}
+            </nav>
+          </aside>
         </div>
       </section>
     </>
