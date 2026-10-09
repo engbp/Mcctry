@@ -2822,6 +2822,12 @@ button:hover .arrow-icon {
   transition: all var(--transition-base);
 }
 
+a.hp-pillar {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
 .hp-pillar:hover {
   background: var(--mcc-white);
   box-shadow: var(--shadow-xl);
@@ -7843,6 +7849,51 @@ a.cm-res-card:hover h3 {
 }
 
 
+/* --- 404 helpers --- */
+.band-hero-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  background: #fff;
+  color: #16181d;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 14px 24px;
+  border-radius: 999px;
+  text-decoration: none;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+  transition: all var(--transition-base);
+}
+
+.band-hero-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.28);
+}
+
+.band-hero-btn-ghost {
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  border: 1.5px solid rgba(255, 255, 255, 0.55);
+  box-shadow: none;
+  backdrop-filter: blur(8px);
+}
+
+.band-hero-btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.26);
+}
+
+.hp-pillar-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--mcc-blue);
+}
+
+.hp-pillar:hover .hp-pillar-link {
+  gap: 11px;
+}
 /* ===== RESPONSIVE ADJUSTMENTS ===== */
 @media (max-width: 1280px) {
   .mcc-hero {
