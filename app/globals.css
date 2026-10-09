@@ -7894,6 +7894,133 @@ a.cm-res-card:hover h3 {
 .hp-pillar:hover .hp-pillar-link {
   gap: 11px;
 }
+/* ===== MOBILE HEADER + HERO FIXES (visual QA) ===== */
+@media (max-width: 768px) {
+  /* Header: collapse desktop actions, keep icon search + hamburger */
+  .nav-join,
+  .join-button {
+    display: none;
+  }
+
+  .search-btn-label,
+  .search-kbd {
+    display: none;
+  }
+
+  .search-btn {
+    padding: 0 11px;
+    gap: 0;
+  }
+
+  .search-overlay {
+    inset: 60px 0 0;
+  }
+
+  .menu-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: var(--radius-md);
+  }
+
+  .menu-btn:hover {
+    background: var(--mcc-blue-50);
+    color: var(--mcc-blue);
+  }
+
+  .nav-actions {
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  /* Homepage hero: single column, floats contained */
+  .hp-hero-inner {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+
+  .hp-hero-visual {
+    min-height: 0;
+    width: 100%;
+    max-width: 560px;
+    margin-inline: auto;
+  }
+
+  .hp-window-main {
+    transform: none;
+  }
+
+  .hp-hero-visual:hover .hp-window-main {
+    transform: translateY(-4px);
+  }
+
+  .hp-float-event {
+    top: -22px;
+    left: 6px;
+  }
+
+  .hp-float-badge {
+    right: 6px;
+    bottom: 18px;
+  }
+
+  .hp-tab-grid,
+  .hp-track-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .hp-events-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .hp-project-feature {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hp-hero {
+    padding: 56px 0 64px;
+  }
+
+  .hp-tab-grid,
+  .hp-track-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hp-project-grid,
+  .hp-opp-grid,
+  .hp-pillar-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hp-hero-title {
+    font-size: clamp(40px, 13vw, 54px);
+  }
+
+  .hp-hero-lede {
+    font-size: 17px;
+  }
+
+  .hp-hero-inner {
+    gap: 40px;
+  }
+
+  .hp-float {
+    padding: 12px 14px;
+  }
+
+  .hp-float-event {
+    left: 4px;
+  }
+
+  .hp-float-badge {
+    right: 4px;
+  }
+}
 /* ===== RESPONSIVE ADJUSTMENTS ===== */
 @media (max-width: 1280px) {
   .mcc-hero {

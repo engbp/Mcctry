@@ -57,6 +57,8 @@ export function Header() {
   const pathname = usePathname();
   const searchRef = useRef<HTMLInputElement>(null);
   const headerRef = useRef<HTMLElement>(null);
+  const menuBtnRef = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMobileOpen(false);
@@ -69,11 +71,26 @@ export function Header() {
   }, [searchOpen]);
 
   useEffect(() => {
+    if (mobileOpen) {
+      panelRef.current?.querySelector<HTMLElement>("button, a")?.focus();
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileOpen]);
+
+  useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         setSearchOpen(false);
         setOpenDropdown(null);
-        setMobileOpen(false);
+        if (mobileOpen) {
+          setMobileOpen(false);
+          menuBtnRef.current?.focus();
+        }
       }
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
@@ -91,7 +108,7 @@ export function Header() {
       document.removeEventListener("keydown", onKey);
       document.removeEventListener("mousedown", onClick);
     };
-  }, []);
+  }, [mobileOpen]);
 
   const results = query.trim()
     ? searchIndex.filter((item) => item.label.toLowerCase().includes(query.trim().toLowerCase())).slice(0, 7)
@@ -155,6 +172,7 @@ export function Header() {
             className={`search-btn ${searchOpen ? "search-btn-open" : ""}`}
             aria-label="Search"
             aria-expanded={searchOpen}
+            aria-controls="site-search-overlay"
             onClick={() => setSearchOpen((s) => !s)}
           >
             <Search size={16} />
@@ -164,14 +182,21 @@ export function Header() {
           <Button variant="primary" asChild className="nav-join">
             <Link href="/join">Join MCC <ArrowUpRight size={15} /></Link>
           </Button>
-          <button className="menu-btn" aria-label="Open navigation" onClick={() => setMobileOpen(true)}>
-            <Menu size={21} />
+          <button
+            ref={menuBtnRef}
+            className="menu-btn"
+            aria-label={mobileOpen ? "Close navigation" : "Open navigation"}
+            aria-expanded={mobileOpen}
+            aria-controls="mobile-menu-panel"
+            onClick={() => setMobileOpen((o) => !o)}
+          >
+            {mobileOpen ? <X size={21} /> : <Menu size={21} />}
           </button>
         </div>
       </div>
 
       {searchOpen && (
-        <div className="search-overlay" role="dialog" aria-modal="true" aria-label="Site search">
+        <div className="search-overlay" id="site-search-overlay" role="dialog" aria-modal="true" aria-label="Site search">
           <div className="search-panel">
             <div className="search-input-row">
               <Search size={18} aria-hidden="true" />
@@ -202,27 +227,36 @@ export function Header() {
       )}
 
       {mobileOpen && (
-        <div className="mobile-panel" role="dialog" aria-modal="true" aria-label="Navigation menu">
+        <div className="mobile-panel" id="mobile-menu-panel" ref={panelRef} role="dialog" aria-modal="true" aria-label="Navigation menu">
           <div className="mobile-panel-head">
             <strong>MCC MNU</strong>
-            <button className="menu-btn" aria-label="Close navigation" onClick={() => setMobileOpen(false)}>
+            <button
+              className="menu-btn"
+              aria-label="Close navigation"
+              onClick={() => {
+                setMobileOpen(false);
+                menuBtnRef.current?.focus();
+              }}
+            >
               <X size={22} />
             </button>
           </div>
           {navigation.map((item) => {
             const expanded = mobileSection === item.label;
+            const subId = `mobile-sub-${item.label.toLowerCase()}`;
             return (
               <div key={item.label} className="mobile-nav-section">
                 <button
                   className={`mobile-nav-link ${expanded ? "mobile-nav-link-open" : ""}`}
                   aria-expanded={expanded}
+                  aria-controls={subId}
                   onClick={() => setMobileSection(expanded ? null : item.label)}
                 >
                   {item.label}
                   <ChevronDown className={expanded ? "rotated" : ""} size={16} />
                 </button>
                 {expanded && (
-                  <div className="mobile-nav-sublinks">
+                  <div className="mobile-nav-sublinks" id={subId}>
                     {item.children.map((child) => (
                       <Link key={child.label} href={child.href} className="mobile-nav-sublink" onClick={() => setMobileOpen(false)}>
                         {child.label}
