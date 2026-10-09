@@ -1,79 +1,143 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { Menu, X, Search, ChevronDown, ArrowUpRight } from "lucide-react";
-import { TextLink } from "@/components/ui/Links";
+import { usePathname } from "next/navigation";
+import { Menu, X, Search, ChevronDown, ArrowUpRight, GraduationCap } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { Badge } from "@/components/ui/Badge";
+import { tracksData, coursesData, eventsData } from "@/lib/data";
 
 const navigation = [
-  { 
-    label: "Learn", 
-    href: "/courses", 
+  {
+    label: "Learn",
+    href: "/courses",
     children: [
       { label: "All Courses", href: "/courses", description: "Browse the complete course catalogue" },
       { label: "Learning Tracks", href: "/tracks", description: "Guided paths from beginner to advanced" },
       { label: "Resources", href: "/resources", description: "Tools, references, and learning materials" },
-    ]
+    ],
   },
-  { 
-    label: "Build", 
-    href: "/projects", 
+  {
+    label: "Build",
+    href: "/projects",
     children: [
       { label: "Student Projects", href: "/projects", description: "See what MCC members are building" },
       { label: "Events & Workshops", href: "/events", description: "Hands-on sessions and build nights" },
       { label: "Opportunities", href: "/opportunities", description: "Hackathons, competitions, programs" },
-    ]
+    ],
   },
-  { 
-    label: "Connect", 
-    href: "/about", 
+  {
+    label: "Connect",
+    href: "/about",
     children: [
       { label: "About MCC", href: "/about", description: "Our mission, values, and community" },
       { label: "Join MCC", href: "/join", description: "Become a member today" },
       { label: "Student Dashboard", href: "/demo/dashboard", description: "Track your learning progress" },
-    ]
+    ],
   },
+];
+
+const searchIndex = [
+  ...coursesData.map((c) => ({ label: c.title, href: `/courses/${c.slug}`, type: "Course" })),
+  ...tracksData.map((t) => ({ label: t.title, href: `/tracks/${t.slug}`, type: "Track" })),
+  ...eventsData.map((e) => ({ label: e.title, href: `/events/${e.slug}`, type: "Event" })),
+  { label: "About MCC", href: "/about", type: "Page" },
+  { label: "Join MCC", href: "/join", type: "Page" },
+  { label: "Student Projects", href: "/projects", type: "Page" },
+  { label: "Opportunities", href: "/opportunities", type: "Page" },
+  { label: "Resources", href: "/resources", type: "Page" },
 ];
 
 export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [mobileSection, setMobileSection] = useState<string | null>(null);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const pathname = usePathname();
+  const searchRef = useRef<HTMLInputElement>(null);
+  const headerRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    setMobileOpen(false);
+    setSearchOpen(false);
+    setOpenDropdown(null);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (searchOpen) searchRef.current?.focus();
+  }, [searchOpen]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setSearchOpen(false);
+        setOpenDropdown(null);
+        setMobileOpen(false);
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setSearchOpen((s) => !s);
+      }
+    };
+    const onClick = (e: MouseEvent) => {
+      if (headerRef.current && !headerRef.current.contains(e.target as Node)) {
+        setOpenDropdown(null);
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    document.addEventListener("mousedown", onClick);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("mousedown", onClick);
+    };
+  }, []);
+
+  const results = query.trim()
+    ? searchIndex.filter((item) => item.label.toLowerCase().includes(query.trim().toLowerCase())).slice(0, 7)
+    : searchIndex.slice(0, 6);
+
+  const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
 
   return (
-    <header className="site-header" role="banner">
+    <header className="site-header" role="banner" ref={headerRef}>
       <div className="nav-wrap">
         <Link className="brand" href="/" aria-label="MCC MNU home">
+          <span className="brand-logo" aria-hidden="true">
+            <GraduationCap size={20} />
+          </span>
           <span className="brand-mcc">MCC</span>
           <span className="brand-rule" aria-hidden="true" />
           <span className="brand-mnu">MNU</span>
         </Link>
 
         <nav className="desktop-nav" aria-label="Primary navigation">
-          {navigation.map((item) => (
-            <div key={item.label} className="nav-item">
-              <Link
-                href={item.href}
-                className="nav-link"
-                onMouseEnter={() => setActiveDropdown(item.label)}
-                onMouseLeave={() => setActiveDropdown(null)}
-              >
-                {item.label}
-                <ChevronDown className="nav-chevron" size={14} />
-              </Link>
-              {activeDropdown === item.label && (
-                <div 
-                  className="nav-dropdown" 
-                  onMouseEnter={() => setActiveDropdown(item.label)} 
-                  onMouseLeave={() => setActiveDropdown(null)}
+          {navigation.map((item) => {
+            const open = openDropdown === item.label;
+            return (
+              <div key={item.label} className={`nav-item ${open ? "nav-item-open" : ""}`}>
+                <button
+                  className={`nav-link ${isActive(item.href) || item.children.some((c) => isActive(c.href)) ? "nav-link-active" : ""}`}
+                  aria-expanded={open}
+                  aria-haspopup="true"
+                  onClick={() => setOpenDropdown(open ? null : item.label)}
+                  onMouseEnter={() => setOpenDropdown(item.label)}
+                >
+                  {item.label}
+                  <ChevronDown className="nav-chevron" size={14} />
+                </button>
+                <div
+                  className={`nav-dropdown ${open ? "nav-dropdown-open" : ""}`}
+                  onMouseEnter={() => setOpenDropdown(item.label)}
+                  onMouseLeave={() => setOpenDropdown(null)}
                   role="menu"
                 >
+                  <span className="nav-dropdown-heading">{item.label}</span>
                   {item.children.map((child) => (
-                    <Link 
-                      key={child.label} 
-                      href={child.href} 
-                      className="nav-dropdown-link"
+                    <Link
+                      key={child.label}
+                      href={child.href}
+                      className={`nav-dropdown-link ${isActive(child.href) ? "nav-dropdown-link-active" : ""}`}
                       role="menuitem"
                     >
                       <span className="nav-dropdown-label">{child.label}</span>
@@ -81,20 +145,23 @@ export function Header() {
                     </Link>
                   ))}
                 </div>
-              )}
-            </div>
-          ))}
+              </div>
+            );
+          })}
         </nav>
 
         <div className="nav-actions">
-          <button className="search-btn" aria-label="Search">
+          <button
+            className={`search-btn ${searchOpen ? "search-btn-open" : ""}`}
+            aria-label="Search"
+            aria-expanded={searchOpen}
+            onClick={() => setSearchOpen((s) => !s)}
+          >
             <Search size={16} />
-            <span>Search</span>
+            <span className="search-btn-label">Search</span>
+            <kbd className="search-kbd">Ctrl K</kbd>
           </button>
-          <button className="language-btn" aria-label="Change language">
-            عربي
-          </button>
-          <Button variant="primary" asChild>
+          <Button variant="primary" asChild className="nav-join">
             <Link href="/join">Join MCC <ArrowUpRight size={15} /></Link>
           </Button>
           <button className="menu-btn" aria-label="Open navigation" onClick={() => setMobileOpen(true)}>
@@ -102,6 +169,37 @@ export function Header() {
           </button>
         </div>
       </div>
+
+      {searchOpen && (
+        <div className="search-overlay" role="dialog" aria-modal="true" aria-label="Site search">
+          <div className="search-panel">
+            <div className="search-input-row">
+              <Search size={18} aria-hidden="true" />
+              <input
+                ref={searchRef}
+                type="search"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search courses, tracks, events…"
+                aria-label="Search courses, tracks, events"
+              />
+              <button className="search-close" aria-label="Close search" onClick={() => setSearchOpen(false)}>
+                <X size={18} />
+              </button>
+            </div>
+            <div className="search-results" role="listbox">
+              {results.length === 0 && <p className="search-empty">No results for “{query}”.</p>}
+              {results.map((item) => (
+                <Link key={`${item.type}-${item.label}`} href={item.href} className="search-result" role="option">
+                  <span className="search-result-type">{item.type}</span>
+                  <span className="search-result-label">{item.label}</span>
+                  <ArrowUpRight size={15} aria-hidden="true" />
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {mobileOpen && (
         <div className="mobile-panel" role="dialog" aria-modal="true" aria-label="Navigation menu">
@@ -111,23 +209,32 @@ export function Header() {
               <X size={22} />
             </button>
           </div>
-          {navigation.map((item) => (
-            <div key={item.label} className="mobile-nav-section">
-              <Link href={item.href} className="mobile-nav-link" onClick={() => setMobileOpen(false)}>
-                {item.label}
-                <ChevronDown size={16} />
-              </Link>
-              <div className="mobile-nav-sublinks">
-                {item.children.map((child) => (
-                  <Link key={child.label} href={child.href} className="mobile-nav-sublink" onClick={() => setMobileOpen(false)}>
-                    {child.label}
-                  </Link>
-                ))}
+          {navigation.map((item) => {
+            const expanded = mobileSection === item.label;
+            return (
+              <div key={item.label} className="mobile-nav-section">
+                <button
+                  className={`mobile-nav-link ${expanded ? "mobile-nav-link-open" : ""}`}
+                  aria-expanded={expanded}
+                  onClick={() => setMobileSection(expanded ? null : item.label)}
+                >
+                  {item.label}
+                  <ChevronDown className={expanded ? "rotated" : ""} size={16} />
+                </button>
+                {expanded && (
+                  <div className="mobile-nav-sublinks">
+                    {item.children.map((child) => (
+                      <Link key={child.label} href={child.href} className="mobile-nav-sublink" onClick={() => setMobileOpen(false)}>
+                        {child.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
               </div>
-            </div>
-          ))}
-          <Button variant="primary" className="mobile-join" asChild onClick={() => setMobileOpen(false)}>
-            <Link href="/join">Join MCC <ArrowUpRight size={15} /></Link>
+            );
+          })}
+          <Button variant="primary" className="mobile-join" asChild>
+            <Link href="/join" onClick={() => setMobileOpen(false)}>Join MCC <ArrowUpRight size={15} /></Link>
           </Button>
         </div>
       )}
