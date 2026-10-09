@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Space_Grotesk, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import { MainLayout } from "@/components/layout/MainLayout";
+import { ParticleBackground } from "@/components/fx/ParticleBackground";
+import { CursorGlow } from "@/components/fx/CursorGlow";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -72,6 +74,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <a href="#main-content" className="skip-link">
           Skip to main content
         </a>
+        <ParticleBackground />
+        <CursorGlow />
         <MainLayout>{children}</MainLayout>
       </body>
     </html>

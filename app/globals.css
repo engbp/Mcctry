@@ -1534,7 +1534,7 @@ button:hover .arrow-icon {
 .hp-hero {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(180deg, #0b1224 0%, #07090f 75%);
+  background: linear-gradient(180deg, rgba(11, 18, 36, 0.72) 0%, rgba(7, 9, 15, 0.5) 75%);
   padding: 84px 0 96px;
 }
 
@@ -2015,7 +2015,7 @@ button:hover .arrow-icon {
 /* --- Learning tabs --- */
 .hp-learning {
   padding: 96px 0;
-  background: var(--mcc-white);
+  background: transparent;
 }
 
 .hp-tabs {
@@ -2163,7 +2163,7 @@ button:hover .arrow-icon {
 /* --- Tracks --- */
 .hp-tracks {
   padding: 96px 0;
-  background: linear-gradient(180deg, #0a0f1e 0%, #07090f 100%);
+  background: linear-gradient(180deg, rgba(10, 15, 30, 0.65) 0%, rgba(7, 9, 15, 0.3) 100%);
   border-top: 1px solid var(--mcc-line);
 }
 
@@ -2491,7 +2491,7 @@ button:hover .arrow-icon {
 /* --- Events --- */
 .hp-events {
   padding: 96px 0;
-  background: var(--mcc-white);
+  background: transparent;
 }
 
 .hp-events-layout {
@@ -2698,7 +2698,7 @@ button:hover .arrow-icon {
 /* --- Opportunities --- */
 .hp-opps {
   padding: 96px 0;
-  background: linear-gradient(180deg, #0a0f1e 0%, #07090f 100%);
+  background: linear-gradient(180deg, rgba(10, 15, 30, 0.65) 0%, rgba(7, 9, 15, 0.3) 100%);
   border-top: 1px solid var(--mcc-line);
 }
 
@@ -2804,7 +2804,7 @@ button:hover .arrow-icon {
 /* --- Pillars --- */
 .hp-pillars {
   padding: 88px 0;
-  background: var(--mcc-white);
+  background: transparent;
   border-top: 1px solid var(--mcc-line);
 }
 
@@ -9189,4 +9189,63 @@ samp,
 
 .lk-side-card-notice strong {
   color: #5d4a00;
+}
+
+
+/* ============================================================
+   STAGE 3 — fx layer: particle canvas, cursor glow, stack order
+   ============================================================ */
+html {
+  background: var(--bg);
+}
+
+.fx-particles {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.fx-cursor-glow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 420px;
+  height: 420px;
+  border-radius: 50%;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(circle, rgba(0, 164, 239, 0.17) 0%, rgba(0, 164, 239, 0.05) 42%, transparent 70%);
+  opacity: 0;
+  animation: fx-glow-in 0.6s ease 0.2s forwards;
+  will-change: transform;
+}
+
+@keyframes fx-glow-in {
+  to {
+    opacity: 1;
+  }
+}
+
+@media (hover: none) {
+  .fx-cursor-glow {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-cursor-glow {
+    display: none;
+  }
+}
+
+#main-content {
+  position: relative;
+  z-index: 2;
+}
+
+.site-footer {
+  position: relative;
+  z-index: 2;
 }
