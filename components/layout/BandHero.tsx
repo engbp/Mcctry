@@ -1,6 +1,8 @@
 import { ReactNode } from "react";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
+import { ScrambleText } from "@/components/fx/ScrambleText";
+import { Reveal } from "@/components/fx/Reveal";
 
 interface Crumb {
   label: string;
@@ -28,7 +30,7 @@ export function BandHero({ crumbs, kicker, title, lede, meta, color = "#0078d4",
         <span className="band-hero-grid" />
       </div>
       <div className="container band-hero-inner">
-        <div className="band-hero-copy">
+        <Reveal className="band-hero-copy">
           <nav className="breadcrumbs band-crumbs" aria-label="Breadcrumb">
             <Link href="/">Home</Link>
             <ChevronRight size={14} aria-hidden="true" />
@@ -40,11 +42,11 @@ export function BandHero({ crumbs, kicker, title, lede, meta, color = "#0078d4",
             ))}
           </nav>
           <span className="band-hero-kicker">{kicker}</span>
-          <h1 className="band-hero-title">{title}</h1>
+          <ScrambleText as="h1" className="band-hero-title" text={title} />
           {lede && <p className="band-hero-lede">{lede}</p>}
           {meta && <div className="band-hero-meta">{meta}</div>}
           {actions && <div className="band-hero-actions">{actions}</div>}
-        </div>
+        </Reveal>
         {(icon || children) && (
           <div className="band-hero-visual" aria-hidden="true">
             {children ?? (
