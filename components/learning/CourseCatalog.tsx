@@ -5,6 +5,8 @@ import Link from "next/link";
 import { Search, Clock, BookOpen, ArrowRight, X } from "lucide-react";
 import { coursesData, tracksData } from "@/lib/data";
 import { Badge } from "@/components/ui/Badge";
+import { SpotlightCard } from "@/components/fx/SpotlightCard";
+import { Reveal } from "@/components/fx/Reveal";
 
 const levels = ["Beginner", "Intermediate"];
 
@@ -98,9 +100,9 @@ export function CourseCatalog() {
           </button>
         </div>
       ) : (
-        <div className="cat-grid" role="list">
+        <Reveal className="cat-grid" role="list">
           {filtered.map((course, i) => (
-            <Link key={course.slug} href={`/courses/${course.slug}`} className="cat-card" role="listitem" style={{ "--track-color": course.color } as React.CSSProperties}>
+            <SpotlightCard key={course.slug} as="a" href={`/courses/${course.slug}`} className="cat-card" role="listitem" style={{ "--track-color": course.color } as React.CSSProperties}>
               <div className="cat-card-media" aria-hidden="true">
                 <span className="cat-card-index">0{i + 1}</span>
                 {course.featured && <span className="cat-card-flag">Featured</span>}
@@ -119,9 +121,9 @@ export function CourseCatalog() {
                   Start course <ArrowRight size={15} />
                 </span>
               </div>
-            </Link>
+            </SpotlightCard>
           ))}
-        </div>
+        </Reveal>
       )}
     </div>
   );

@@ -2,6 +2,7 @@ import { ReactNode, HTMLAttributes, ForwardRefExoticComponent, RefAttributes, SV
 import { CardLink } from "./Links";
 import { ArrowRight } from "lucide-react";
 import { Badge } from "./Badge";
+import { SpotlightCard } from "@/components/fx/SpotlightCard";
 
 type LucideIcon = ForwardRefExoticComponent<Omit<SVGProps<SVGSVGElement>, "ref"> & RefAttributes<SVGSVGElement>>;
 
@@ -43,9 +44,16 @@ export function Card({
   const hoverClass = hover ? "card-hover" : "";
 
   return (
-    <Component className={`${variantClasses[variant]} ${paddingClasses[padding]} ${hoverClass} ${className}`.trim()} style={style} role={role} {...props}>
+    <SpotlightCard
+      as={Component}
+      tilt={hover}
+      className={`${variantClasses[variant]} ${paddingClasses[padding]} ${hoverClass} ${className}`.trim()}
+      style={style}
+      role={role}
+      {...props}
+    >
       {children}
-    </Component>
+    </SpotlightCard>
   );
 }
 
@@ -123,7 +131,7 @@ export function FeatureCard({
   ...props
 }: FeatureCardProps) {
   const content = (
-    <article className="feature-card">
+    <SpotlightCard as="article" className="feature-card">
       {number && <span className="feature-card-number">{number}</span>}
       {image && <div className="feature-card-media">{image}</div>}
       {icon && <div className="feature-card-icon" aria-hidden="true">{icon}</div>}
@@ -141,7 +149,7 @@ export function FeatureCard({
           </CardLink>
         </div>
       )}
-    </article>
+    </SpotlightCard>
   );
 
   if (href) {
@@ -228,7 +236,7 @@ export function MediaCard({
   ...props
 }: MediaCardProps) {
   const content = (
-    <article className={`media-card ${featured ? "media-card-featured" : ""}`}>
+    <SpotlightCard as="article" className={`media-card ${featured ? "media-card-featured" : ""}`.trim()}>
       <div className="media-card-media" aria-hidden="true">
         {image}
         <div className="media-card-category">{category}</div>
@@ -251,7 +259,7 @@ export function MediaCard({
           </CardLink>
         </div>
       )}
-    </article>
+    </SpotlightCard>
   );
 
   if (href) {

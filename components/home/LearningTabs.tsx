@@ -4,6 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { ArrowRight, BookOpen, CalendarDays, Layers } from "lucide-react";
 import { tracksData, coursesData, eventsData, formatDate } from "@/lib/data";
+import { SpotlightCard } from "@/components/fx/SpotlightCard";
+import { Reveal } from "@/components/fx/Reveal";
 
 type TabKey = "courses" | "tracks" | "events";
 
@@ -35,48 +37,48 @@ export function LearningTabs() {
 
       <div className="hp-tabpanel" role="tabpanel">
         {active === "courses" && (
-          <div className="hp-tab-grid">
+          <Reveal className="hp-tab-grid">
             {coursesData.slice(0, 4).map((course, i) => (
-              <Link key={course.slug} href={`/courses/${course.slug}`} className="hp-mini-card">
+              <SpotlightCard key={course.slug} as="a" href={`/courses/${course.slug}`} className="hp-mini-card">
                 <span className="hp-mini-index">0{i + 1}</span>
                 <span className="hp-mini-track">{course.track}</span>
                 <strong>{course.title}</strong>
                 <small>{course.lessonsCount} lessons · {course.duration} · {course.level}</small>
                 <span className="hp-mini-arrow"><ArrowRight size={16} /></span>
-              </Link>
+              </SpotlightCard>
             ))}
-          </div>
+          </Reveal>
         )}
 
         {active === "tracks" && (
-          <div className="hp-tab-grid">
+          <Reveal className="hp-tab-grid">
             {tracksData.map((track, i) => (
-              <Link key={track.slug} href={`/tracks/${track.slug}`} className="hp-mini-card">
+              <SpotlightCard key={track.slug} as="a" href={`/tracks/${track.slug}`} className="hp-mini-card">
                 <span className="hp-mini-index">0{i + 1}</span>
                 <span className="hp-mini-track">Track</span>
                 <strong>{track.title}</strong>
                 <small>{track.coursesCount} courses · {track.duration}</small>
                 <span className="hp-mini-arrow"><ArrowRight size={16} /></span>
-              </Link>
+              </SpotlightCard>
             ))}
-          </div>
+          </Reveal>
         )}
 
         {active === "events" && (
-          <div className="hp-tab-grid">
+          <Reveal className="hp-tab-grid">
             {eventsData.map((event) => {
               const d = formatDate(event.date);
               return (
-                <Link key={event.slug} href={`/events/${event.slug}`} className="hp-mini-card">
+                <SpotlightCard key={event.slug} as="a" href={`/events/${event.slug}`} className="hp-mini-card">
                   <span className="hp-mini-date">{d.day} {d.month}</span>
                   <span className="hp-mini-track">{event.location}</span>
                   <strong>{event.title}</strong>
                   <small>{event.category} · {event.time}</small>
                   <span className="hp-mini-arrow"><ArrowRight size={16} /></span>
-                </Link>
+                </SpotlightCard>
               );
             })}
-          </div>
+          </Reveal>
         )}
       </div>
 

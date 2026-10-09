@@ -4,7 +4,7 @@ import { useRef } from "react";
 import { useReducedMotion } from "./useReducedMotion";
 
 type SpotlightCardProps = React.HTMLAttributes<HTMLElement> & {
-  as?: "div" | "article" | "a" | "li" | "span";
+  as?: "div" | "article" | "a" | "li" | "span" | "section" | "ul" | "header";
   children?: React.ReactNode;
   tilt?: boolean;
   href?: string;
