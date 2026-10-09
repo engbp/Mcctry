@@ -6,6 +6,8 @@ import { BandHero } from "@/components/layout/BandHero";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { projectsData } from "@/lib/data";
+import { Reveal } from "@/components/fx/Reveal";
+import { SpotlightCard } from "@/components/fx/SpotlightCard";
 
 interface ProjectPageProps {
   params: Promise<{ slug: string }>;
@@ -72,12 +74,12 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
       <section className="section" aria-labelledby="project-details-title">
         <div className="container detail-grid">
           <div className="project-main">
-            <div className="lk-section-head">
+            <Reveal className="lk-section-head">
               <div>
                 <span className="hp-section-kicker">PROJECT OVERVIEW</span>
                 <h2 id="project-details-title" className="hp-section-title">The story behind the build.</h2>
               </div>
-            </div>
+            </Reveal>
 
             <div className="cm-tech-row" aria-label="Technologies">
               {project.technologies.map((tech) => (
@@ -98,23 +100,23 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
               </ul>
             </div>
 
-            <div className="lk-section-head" style={{ marginTop: "48px" }}>
+            <Reveal className="lk-section-head" style={{ marginTop: "48px" }}>
               <div>
                 <span className="hp-section-kicker">PROJECT DETAILS</span>
                 <h2 className="hp-section-title">Technical information.</h2>
               </div>
-            </div>
+            </Reveal>
 
-            <div className="cm-detail-grid" role="list">
+            <Reveal className="cm-detail-grid" role="list">
               {detailCards.map((item) => (
-                <div key={item.title} className="cm-detail-card" role="listitem">
+                <SpotlightCard key={item.title} className="cm-detail-card" role="listitem">
                   <span className="cm-detail-icon"><item.icon size={21} /></span>
                   <h3>{item.title}</h3>
                   <strong>{item.main}</strong>
                   <p>{item.sub}</p>
-                </div>
+                </SpotlightCard>
               ))}
-            </div>
+            </Reveal>
           </div>
 
           <aside className="project-sidebar" aria-labelledby="related-title">

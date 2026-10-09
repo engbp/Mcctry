@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { ArrowRight, Users, BookOpen, Code2, Lightbulb, Target, Heart, CheckCircle, Rocket, Sparkles } from "lucide-react";
 import { BandHero } from "@/components/layout/BandHero";
+import { SpotlightCard } from "@/components/fx/SpotlightCard";
+import { Reveal } from "@/components/fx/Reveal";
 
 type IconName = "Users" | "BookOpen" | "Code2" | "Lightbulb" | "Target" | "Heart" | "CheckCircle";
 
@@ -59,13 +61,13 @@ export default function AboutPage() {
 
       <section className="section" aria-labelledby="values-title">
         <div className="container">
-          <div className="lk-section-head">
+<Reveal className="lk-section-head">
             <div>
               <span className="hp-section-kicker">OUR VALUES</span>
               <h2 id="values-title" className="hp-section-title">What drives us.</h2>
             </div>
-          </div>
-          <div className="lk-steps lk-steps-6" role="list">
+          </Reveal>
+          <Reveal className="lk-steps lk-steps-6" role="list">
             {values.map((value, i) => {
               const Icon = iconComponents[value.icon];
               return (
@@ -77,7 +79,7 @@ export default function AboutPage() {
                 </div>
               );
             })}
-          </div>
+          </Reveal>
         </div>
       </section>
 
@@ -94,12 +96,12 @@ export default function AboutPage() {
 
       <section className="section" aria-labelledby="structure-title">
         <div className="container">
-          <div className="lk-section-head">
+<Reveal className="lk-section-head">
             <div>
               <span className="hp-section-kicker">COMMUNITY STRUCTURE</span>
               <h2 id="structure-title" className="hp-section-title">How we&apos;re organized.</h2>
             </div>
-          </div>
+          </Reveal>
 
           <div className="cm-about-structure">
             <div className="cm-about-copy">
@@ -113,32 +115,32 @@ export default function AboutPage() {
                 organizational and leadership skills alongside their technical growth.
               </p>
             </div>
-            <div className="cm-team-grid" role="list">
+            <Reveal className="cm-team-grid" role="list">
               {team.map((member) => {
                 const Icon = iconComponents[member.icon];
                 return (
-                  <div key={member.role} className="cm-team-card" role="listitem" style={{ "--track-color": member.color } as React.CSSProperties}>
+                  <SpotlightCard key={member.role} className="cm-team-card" role="listitem" style={{ "--track-color": member.color } as React.CSSProperties}>
                     <span className="cm-team-icon"><Icon size={22} /></span>
                     <h3>{member.role}</h3>
                     <p>{member.description}</p>
-                  </div>
+                  </SpotlightCard>
                 );
               })}
-            </div>
+            </Reveal>
           </div>
         </div>
       </section>
 
       <section className="section lk-steps-section" aria-labelledby="history-title">
         <div className="container">
-          <div className="lk-section-head">
+<Reveal className="lk-section-head">
             <div>
               <span className="hp-section-kicker">OUR STORY</span>
               <h2 id="history-title" className="hp-section-title">From idea to community.</h2>
             </div>
-          </div>
+          </Reveal>
 
-          <div className="cm-story">
+          <Reveal className="cm-story">
             <div className="cm-story-copy">
               <h3>How it started</h3>
               <p>MCC MNU began with a simple observation: students wanted a space to learn technology together, not alone. A small group approached Microsoft&apos;s Campus Club program with a vision for a community that would be visually distinctive, technically rigorous, and genuinely welcoming.</p>
@@ -157,7 +159,7 @@ export default function AboutPage() {
                 </li>
               ))}
             </ol>
-          </div>
+          </Reveal>
         </div>
       </section>
 

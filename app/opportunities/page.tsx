@@ -2,6 +2,8 @@ import Link from "next/link";
 import { ArrowRight, ArrowUpRight, CalendarDays, Award, Target, Clock, Trophy, Lightbulb, Users, Rocket } from "lucide-react";
 import { BandHero } from "@/components/layout/BandHero";
 import { opportunitiesData, formatDate } from "@/lib/data";
+import { SpotlightCard } from "@/components/fx/SpotlightCard";
+import { Reveal } from "@/components/fx/Reveal";
 
 const types = [
   { icon: Award, title: "Hackathons", text: "Intensive build events where teams create projects in 24–48 hours. Great for learning, networking, and prizes." },
@@ -31,16 +33,16 @@ export default function OpportunitiesPage() {
 
       <section className="section" aria-labelledby="opportunities-list-title">
         <div className="container">
-          <div className="lk-section-head">
+          <Reveal className="lk-section-head">
             <div>
               <span className="hp-section-kicker">CURRENT OPPORTUNITIES</span>
               <h2 id="opportunities-list-title" className="hp-section-title">Open for applications.</h2>
             </div>
-          </div>
+          </Reveal>
 
-          <div className="hp-opp-grid" role="list">
+          <Reveal className="hp-opp-grid" role="list">
             {opportunitiesData.map((opp) => (
-              <Link key={opp.slug} href="/opportunities" className="hp-opp-card" role="listitem" style={{ "--track-color": opp.color } as React.CSSProperties}>
+              <SpotlightCard key={opp.slug} as="a" href="/opportunities" className="hp-opp-card" role="listitem" style={{ "--track-color": opp.color } as React.CSSProperties}>
                 <span className="hp-opp-type">{opp.type}</span>
                 <h3>{opp.title}</h3>
                 <p>{opp.description}</p>
@@ -49,9 +51,9 @@ export default function OpportunitiesPage() {
                   <span>Deadline {formatDate(opp.deadline).day} {formatDate(opp.deadline).month}</span>
                   <ArrowUpRight size={15} style={{ marginLeft: "auto" }} />
                 </div>
-              </Link>
+              </SpotlightCard>
             ))}
-          </div>
+          </Reveal>
         </div>
       </section>
 
@@ -63,7 +65,7 @@ export default function OpportunitiesPage() {
               <h2 id="categories-title" className="hp-section-title">Ways to get involved.</h2>
             </div>
           </div>
-          <div className="lk-steps" role="list">
+          <Reveal className="lk-steps" role="list">
             {types.map((type, i) => (
               <div key={type.title} className="lk-step" role="listitem" style={{ ["--track-color" as string]: ["#0078d4", "#00b7c3", "#8c52ff"][i] } as React.CSSProperties}>
                 <span className="lk-step-number">0{i + 1}</span>
@@ -72,7 +74,7 @@ export default function OpportunitiesPage() {
                 <p>{type.text}</p>
               </div>
             ))}
-          </div>
+          </Reveal>
         </div>
       </section>
 
@@ -84,7 +86,7 @@ export default function OpportunitiesPage() {
               <h2 id="tips-title" className="hp-section-title">Make the most of opportunities.</h2>
             </div>
           </div>
-          <div className="cm-tip-grid" role="list">
+          <Reveal className="cm-tip-grid" role="list">
             {tips.map((tip) => (
               <div key={tip.title} className="cm-tip" role="listitem">
                 <span className="cm-tip-icon"><tip.icon size={19} /></span>
@@ -94,7 +96,7 @@ export default function OpportunitiesPage() {
                 </div>
               </div>
             ))}
-          </div>
+          </Reveal>
         </div>
       </section>
 

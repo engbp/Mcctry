@@ -9,6 +9,8 @@ import {
 import { Button } from "@/components/ui/Button";
 import { BandHero } from "@/components/layout/BandHero";
 import { coursesData, lessonsData, eventsData, formatDate } from "@/lib/data";
+import { Reveal } from "@/components/fx/Reveal";
+import { SpotlightCard } from "@/components/fx/SpotlightCard";
 
 const currentCourse = coursesData[0];
 const upcomingEvent = eventsData[0];
@@ -81,7 +83,7 @@ export default function DashboardPage() {
 
       <section className="section" aria-labelledby="overview-title">
         <div className="container">
-          <div className="lk-section-head">
+          <Reveal className="lk-section-head">
             <div>
               <span className="hp-section-kicker">OVERVIEW</span>
               <h2 id="overview-title" className="hp-section-title">Your learning snapshot.</h2>
@@ -89,48 +91,48 @@ export default function DashboardPage() {
             <Link href="/courses" className="hp-section-link">
               Browse all courses <ArrowRight size={15} />
             </Link>
-          </div>
+          </Reveal>
 
-          <div className="db-stats" role="list">
-            <div className="db-stat" role="listitem" style={{ "--stat-color": "#0078d4" } as React.CSSProperties}>
+          <Reveal className="db-stats" role="list">
+            <SpotlightCard className="db-stat" role="listitem" style={{ "--stat-color": "#0078d4" } as React.CSSProperties}>
               <span className="db-stat-icon"><BookOpen size={20} /></span>
               <strong>3</strong>
               <span className="db-stat-label">Courses started</span>
               <span className="db-stat-sub">Across 3 active tracks</span>
-            </div>
-            <div className="db-stat" role="listitem" style={{ "--stat-color": "#10b981" } as React.CSSProperties}>
+            </SpotlightCard>
+            <SpotlightCard className="db-stat" role="listitem" style={{ "--stat-color": "#10b981" } as React.CSSProperties}>
               <span className="db-stat-icon"><CheckCircle size={20} /></span>
               <strong>{completedCount}</strong>
               <span className="db-stat-label">Lessons completed</span>
               <span className="db-stat-sub">of {totalLessons} in current course</span>
-            </div>
-            <div className="db-stat" role="listitem" style={{ "--stat-color": "#ffb900" } as React.CSSProperties}>
+            </SpotlightCard>
+            <SpotlightCard className="db-stat" role="listitem" style={{ "--stat-color": "#ffb900" } as React.CSSProperties}>
               <span className="db-stat-icon db-stat-icon-dark"><Flame size={20} /></span>
               <strong>7</strong>
               <span className="db-stat-label">Day learning streak</span>
               <span className="db-stat-sub">Days in a row</span>
-            </div>
-            <div className="db-stat" role="listitem" style={{ "--stat-color": "#00b7c3" } as React.CSSProperties}>
+            </SpotlightCard>
+            <SpotlightCard className="db-stat" role="listitem" style={{ "--stat-color": "#00b7c3" } as React.CSSProperties}>
               <span className="db-stat-icon db-stat-icon-dark"><Clock size={20} /></span>
               <strong>1h 24m</strong>
               <span className="db-stat-label">Learning time</span>
               <span className="db-stat-sub">This week</span>
-            </div>
-          </div>
+            </SpotlightCard>
+          </Reveal>
         </div>
       </section>
 
       <section className="section lk-steps-section" aria-labelledby="continue-title">
         <div className="container">
-          <div className="lk-section-head">
+          <Reveal className="lk-section-head">
             <div>
               <span className="hp-section-kicker">CONTINUE LEARNING</span>
               <h2 id="continue-title" className="hp-section-title">Pick up where you left off.</h2>
             </div>
-          </div>
+          </Reveal>
 
-          <div className="db-grid">
-            <Link href={`/courses/${currentCourse.slug}/lessons/${nextLesson?.slug ?? lessonsData[0].slug}`} className="db-continue">
+          <Reveal className="db-grid">
+            <SpotlightCard as="a" href={`/courses/${currentCourse.slug}/lessons/${nextLesson?.slug ?? lessonsData[0].slug}`} className="db-continue">
               <div className="db-continue-body">
                 <div className="db-continue-badges">
                   <span className="cat-chip cat-chip-active" style={{ background: "rgba(255,255,255,.14)", color: "#fff" }}>
@@ -159,7 +161,7 @@ export default function DashboardPage() {
               <span className="db-continue-cta">
                 {nextLesson ? "Continue lesson" : "Browse courses"} <ArrowRight size={17} />
               </span>
-            </Link>
+            </SpotlightCard>
 
             <div className="db-checklist">
               <div className="db-checklist-head">
@@ -192,13 +194,13 @@ export default function DashboardPage() {
               </ul>
               <p className="db-checklist-hint">Demo — tick lessons to watch your progress update.</p>
             </div>
-          </div>
+          </Reveal>
         </div>
       </section>
 
       <section className="section" aria-labelledby="upcoming-title">
         <div className="container">
-          <div className="lk-section-head">
+          <Reveal className="lk-section-head">
             <div>
               <span className="hp-section-kicker">UPCOMING EVENT</span>
               <h2 id="upcoming-title" className="hp-section-title">Don&apos;t miss out.</h2>
@@ -206,9 +208,9 @@ export default function DashboardPage() {
             <Link href="/events" className="hp-section-link">
               View all events <ArrowRight size={15} />
             </Link>
-          </div>
+          </Reveal>
 
-          <div className="db-grid db-grid-bottom">
+          <Reveal className="db-grid db-grid-bottom">
             <div className="db-event">
               <div className="db-event-date" aria-hidden="true">
                 <strong>{eventDate.day}</strong>
@@ -251,21 +253,21 @@ export default function DashboardPage() {
                 ))}
               </ul>
             </div>
-          </div>
+          </Reveal>
         </div>
       </section>
 
       <section className="section lk-steps-section" aria-labelledby="goals-title">
         <div className="container">
-          <div className="lk-section-head">
+          <Reveal className="lk-section-head">
             <div>
               <span className="hp-section-kicker">LEARNING GOALS</span>
               <h2 id="goals-title" className="hp-section-title">Set your direction.</h2>
             </div>
             <span className="db-goals-hint">Demo — log sessions to move the bars.</span>
-          </div>
+          </Reveal>
 
-          <div className="db-goals" role="list">
+          <Reveal className="db-goals" role="list">
             {goals.map((goal) => (
               <div key={goal.id} className="db-goal" role="listitem" style={{ "--track-color": goal.color } as React.CSSProperties}>
                 <div className="db-goal-top">
@@ -291,7 +293,7 @@ export default function DashboardPage() {
                 </button>
               </div>
             ))}
-          </div>
+          </Reveal>
         </div>
       </section>
 

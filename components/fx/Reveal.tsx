@@ -22,19 +22,36 @@ export function Reveal({ as = "div", className = "", delay = 0, children, style,
       setVisible(true);
       return;
     }
-    const io = new IntersectionObserver(
+    let io: IntersectionObserver | null = null;
+    let done = false;
+    const reveal = () => {
+      if (done) return;
+      done = true;
+      if (io) io.disconnect();
+      window.removeEventListener("scroll", check);
+      setVisible(true);
+    };
+    const check = () => {
+      if (el.getBoundingClientRect().top < window.innerHeight * 0.92) reveal();
+    };
+    io = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
           if (entry.isIntersecting) {
-            setVisible(true);
-            io.disconnect();
+            reveal();
+            return;
           }
         }
       },
       { threshold: 0.12 }
     );
     io.observe(el);
-    return () => io.disconnect();
+    window.addEventListener("scroll", check, { passive: true });
+    check();
+    return () => {
+      if (io) io.disconnect();
+      window.removeEventListener("scroll", check);
+    };
   }, [reduced]);
 
   const Tag = as;

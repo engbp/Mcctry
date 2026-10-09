@@ -6,6 +6,8 @@ import { BandHero } from "@/components/layout/BandHero";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { eventsData, formatDate } from "@/lib/data";
+import { Reveal } from "@/components/fx/Reveal";
+import { SpotlightCard } from "@/components/fx/SpotlightCard";
 
 interface EventPageProps {
   params: Promise<{ slug: string }>;
@@ -63,23 +65,23 @@ export default async function EventPage({ params }: EventPageProps) {
       <section className="section" aria-labelledby="event-details-title">
         <div className="container detail-grid">
           <div className="event-main">
-            <div className="lk-section-head">
+            <Reveal className="lk-section-head">
               <div>
                 <span className="hp-section-kicker">EVENT DETAILS</span>
                 <h2 id="event-details-title" className="hp-section-title">Everything you need to know.</h2>
               </div>
-            </div>
+            </Reveal>
 
-            <div className="cm-detail-grid" role="list">
+            <Reveal className="cm-detail-grid" role="list">
               {detailCards.map((item) => (
-                <div key={item.title} className="cm-detail-card" role="listitem">
+                <SpotlightCard key={item.title} className="cm-detail-card" role="listitem">
                   <span className="cm-detail-icon"><item.icon size={21} /></span>
                   <h3>{item.title}</h3>
                   <strong>{item.main}</strong>
                   <p>{item.sub}</p>
-                </div>
+                </SpotlightCard>
               ))}
-            </div>
+            </Reveal>
 
             <div className="cm-about-box">
               <h3>About this event</h3>
@@ -87,12 +89,12 @@ export default async function EventPage({ params }: EventPageProps) {
               <p>This is a demo event for presentation purposes. Actual event details, speakers, agenda and registration will be confirmed closer to the date.</p>
             </div>
 
-            <div className="lk-section-head" style={{ marginTop: "48px" }}>
+            <Reveal className="lk-section-head" style={{ marginTop: "48px" }}>
               <div>
                 <span className="hp-section-kicker">AGENDA</span>
                 <h2 className="hp-section-title">What&apos;s happening.</h2>
               </div>
-            </div>
+            </Reveal>
 
             <ol className="cm-agenda">
               {agenda.map((item) => (

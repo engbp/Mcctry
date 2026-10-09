@@ -3,6 +3,8 @@ import { ArrowRight, CalendarDays, MapPin, Clock, Users, Sparkles } from "lucide
 import { BandHero } from "@/components/layout/BandHero";
 import { Badge } from "@/components/ui/Badge";
 import { eventsData, formatDate } from "@/lib/data";
+import { SpotlightCard } from "@/components/fx/SpotlightCard";
+import { Reveal } from "@/components/fx/Reveal";
 
 export default function EventsPage() {
   const featuredEvent = eventsData.find((e) => e.featured) ?? eventsData[0];
@@ -28,14 +30,14 @@ export default function EventsPage() {
 
       <section className="section" aria-labelledby="featured-event-title">
         <div className="container">
-          <div className="lk-section-head">
+          <Reveal className="lk-section-head">
             <div>
               <span className="hp-section-kicker">FEATURED EVENT</span>
               <h2 id="featured-event-title" className="hp-section-title">Don&apos;t miss this.</h2>
             </div>
-          </div>
+          </Reveal>
 
-          <Link href={`/events/${featuredEvent.slug}`} className="cm-featured-event">
+          <SpotlightCard as="a" href={`/events/${featuredEvent.slug}`} className="cm-featured-event">
             <div className="cm-fe-date" aria-hidden="true">
               <span>{fd.month}</span>
               <strong>{fd.day}</strong>
@@ -55,24 +57,24 @@ export default function EventsPage() {
               <span className="cm-fe-cta">View event details <ArrowRight size={16} /></span>
             </div>
             <span className="cm-fe-arrow" aria-hidden="true"><ArrowRight size={26} /></span>
-          </Link>
+          </SpotlightCard>
         </div>
       </section>
 
       <section className="section cm-soft-section" aria-labelledby="upcoming-title">
         <div className="container">
-          <div className="lk-section-head">
+          <Reveal className="lk-section-head">
             <div>
               <span className="hp-section-kicker">UPCOMING EVENTS</span>
               <h2 id="upcoming-title" className="hp-section-title">More to explore.</h2>
             </div>
-          </div>
+          </Reveal>
 
-          <div className="cm-event-grid" role="list">
+          <Reveal className="cm-event-grid" role="list">
             {otherEvents.map((event) => {
               const d = formatDate(event.date);
               return (
-                <Link key={event.slug} href={`/events/${event.slug}`} className="cm-event-card" role="listitem" style={{ "--track-color": event.color } as React.CSSProperties}>
+                <SpotlightCard key={event.slug} as="a" href={`/events/${event.slug}`} className="cm-event-card" role="listitem" style={{ "--track-color": event.color } as React.CSSProperties}>
                   <div className="cm-event-card-top">
                     <span className="cm-event-tile">
                       <strong>{d.day}</strong>
@@ -87,10 +89,10 @@ export default function EventsPage() {
                     <span><MapPin size={13} /> {event.location}</span>
                   </div>
                   <span className="cm-event-card-cta">View details <ArrowRight size={15} /></span>
-                </Link>
+                </SpotlightCard>
               );
             })}
-          </div>
+          </Reveal>
         </div>
       </section>
 

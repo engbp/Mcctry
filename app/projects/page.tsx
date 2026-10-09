@@ -3,6 +3,8 @@ import { ArrowRight, Code2, Github, ExternalLink, Rocket } from "lucide-react";
 import { BandHero } from "@/components/layout/BandHero";
 import { Badge } from "@/components/ui/Badge";
 import { projectsData } from "@/lib/data";
+import { SpotlightCard } from "@/components/fx/SpotlightCard";
+import { Reveal } from "@/components/fx/Reveal";
 
 export default function ProjectsPage() {
   const featuredProject = projectsData.find((p) => p.featured) ?? projectsData[0];
@@ -27,14 +29,14 @@ export default function ProjectsPage() {
 
       <section className="section" aria-labelledby="featured-project-title">
         <div className="container">
-          <div className="lk-section-head">
+          <Reveal className="lk-section-head">
             <div>
               <span className="hp-section-kicker">FEATURED PROJECT</span>
               <h2 id="featured-project-title" className="hp-section-title">Spotlight build.</h2>
             </div>
-          </div>
+          </Reveal>
 
-          <Link href={`/projects/${featuredProject.slug}`} className="cm-featured-project" style={{ "--track-color": featuredProject.color } as React.CSSProperties}>
+          <SpotlightCard as="a" href={`/projects/${featuredProject.slug}`} className="cm-featured-project" style={{ "--track-color": featuredProject.color } as React.CSSProperties}>
             <div className="cm-fp-visual" aria-hidden="true">
               <div className="cm-fp-window">
                 <div className="hp-window-bar">
@@ -60,22 +62,22 @@ export default function ProjectsPage() {
               </div>
               <span className="cm-fe-cta">View project <ArrowRight size={16} /></span>
             </div>
-          </Link>
+          </SpotlightCard>
         </div>
       </section>
 
       <section className="section cm-soft-section" aria-labelledby="all-projects-title">
         <div className="container">
-          <div className="lk-section-head">
+          <Reveal className="lk-section-head">
             <div>
               <span className="hp-section-kicker">ALL PROJECTS</span>
               <h2 id="all-projects-title" className="hp-section-title">More student work.</h2>
             </div>
-          </div>
+          </Reveal>
 
-          <div className="cm-project-grid" role="list">
+          <Reveal className="cm-project-grid" role="list">
             {otherProjects.map((project) => (
-              <Link key={project.slug} href={`/projects/${project.slug}`} className="cm-project-card" role="listitem" style={{ "--track-color": project.color } as React.CSSProperties}>
+              <SpotlightCard key={project.slug} as="a" href={`/projects/${project.slug}`} className="cm-project-card" role="listitem" style={{ "--track-color": project.color } as React.CSSProperties}>
                 <div className="cm-project-media" aria-hidden="true">
                   <span className="cm-project-code">{project.slug}</span>
                   <strong>{project.title}</strong>
@@ -93,9 +95,9 @@ export default function ProjectsPage() {
                   </div>
                   <span className="cm-event-card-cta">View details <ArrowRight size={15} /></span>
                 </div>
-              </Link>
+              </SpotlightCard>
             ))}
-          </div>
+          </Reveal>
         </div>
       </section>
 

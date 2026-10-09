@@ -6,6 +6,8 @@ import { BandHero } from "@/components/layout/BandHero";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { coursesData, getCoursesByTrack, lessonsData } from "@/lib/data";
+import { Reveal } from "@/components/fx/Reveal";
+import { SpotlightCard } from "@/components/fx/SpotlightCard";
 
 interface CoursePageProps {
   params: Promise<{ slug: string }>;
@@ -64,26 +66,26 @@ export default async function CoursePage({ params }: CoursePageProps) {
       <section className="section" aria-labelledby="about-course-title">
         <div className="container detail-grid">
           <div className="course-main">
-            <div className="lk-section-head">
+            <Reveal className="lk-section-head">
               <div>
                 <span className="hp-section-kicker">ABOUT THIS COURSE</span>
                 <h2 id="about-course-title" className="hp-section-title">What you&apos;ll learn.</h2>
               </div>
-            </div>
+            </Reveal>
             <div className="lk-prose">
               <p>{course.description}</p>
               <p>This demo course is structured like a lightweight learning path: short lessons, useful resources, and a clear next step after every lesson. Perfect for fitting learning into a busy student schedule.</p>
             </div>
 
-            <div className="lk-section-head" style={{ marginTop: "48px" }}>
+            <Reveal className="lk-section-head" style={{ marginTop: "48px" }}>
               <div>
                 <span className="hp-section-kicker">COURSE CONTENTS</span>
                 <h2 className="hp-section-title">{totalLessons} lessons, {totalDuration} total.</h2>
               </div>
-            </div>
-            <div className="lk-lesson-list" role="list">
+            </Reveal>
+            <Reveal className="lk-lesson-list" role="list">
               {lessonsData.map((lesson, i) => (
-                <Link key={lesson.slug} href={`/courses/${slug}/lessons/${lesson.slug}`} className="lk-lesson-row" role="listitem">
+                <SpotlightCard key={lesson.slug} as="a" href={`/courses/${slug}/lessons/${lesson.slug}`} className="lk-lesson-row" role="listitem">
                   <span className="lk-lesson-play" aria-hidden="true"><Play size={15} fill="currentColor" /></span>
                   <span className="lk-lesson-index">{String(i + 1).padStart(2, "0")}</span>
                   <div className="lk-lesson-info">
@@ -94,9 +96,9 @@ export default async function CoursePage({ params }: CoursePageProps) {
                     </div>
                   </div>
                   <ChevronRight className="lk-lesson-chevron" size={18} />
-                </Link>
+                </SpotlightCard>
               ))}
-            </div>
+            </Reveal>
           </div>
 
           <aside className="course-sidebar" aria-labelledby="sidebar-title">
@@ -144,7 +146,7 @@ export default async function CoursePage({ params }: CoursePageProps) {
 
       <section className="lk-cta-band" aria-labelledby="track-cta-title">
         <div className="container">
-          <div className="lk-section-head lk-section-head-dark">
+          <Reveal className="lk-section-head lk-section-head-dark">
             <div>
               <span className="hp-section-kicker" style={{ color: "var(--mcc-cyan)" }}>CONTINUE YOUR PATH</span>
               <h2 id="track-cta-title" className="hp-section-title" style={{ color: "#fff" }}>More courses in {course.track}</h2>
@@ -152,17 +154,17 @@ export default async function CoursePage({ params }: CoursePageProps) {
             <Link href={`/tracks/${course.trackSlug}`} className="hp-section-link hp-section-link-light">
               View track <ArrowRight size={15} />
             </Link>
-          </div>
-          <div className="lk-related-grid" role="list">
+          </Reveal>
+          <Reveal className="lk-related-grid" role="list">
             {trackCourses.filter((c) => c.slug !== slug).slice(0, 3).map((related) => (
-              <Link key={related.slug} href={`/courses/${related.slug}`} className="lk-related-card" role="listitem" style={{ "--track-color": related.color } as React.CSSProperties}>
+              <SpotlightCard key={related.slug} as="a" href={`/courses/${related.slug}`} className="lk-related-card" role="listitem" style={{ "--track-color": related.color } as React.CSSProperties}>
                 <span className="lk-related-level">{related.level}</span>
                 <h3>{related.title}</h3>
                 <p>{related.lessonsCount} lessons · {related.duration}</p>
                 <span className="lk-related-cta">Open course <ArrowRight size={15} /></span>
-              </Link>
+              </SpotlightCard>
             ))}
-          </div>
+          </Reveal>
         </div>
       </section>
     </>

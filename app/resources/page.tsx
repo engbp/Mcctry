@@ -2,6 +2,8 @@ import Link from "next/link";
 import { ArrowRight, BookOpen, Code2, Globe, Layers, ExternalLink, Sparkles, Send } from "lucide-react";
 import { BandHero } from "@/components/layout/BandHero";
 import { resourcesData } from "@/lib/data";
+import { SpotlightCard } from "@/components/fx/SpotlightCard";
+import { Reveal } from "@/components/fx/Reveal";
 
 const iconMap = { BookOpen, Code2, Layers, Globe } as const;
 
@@ -27,14 +29,14 @@ export default function ResourcesPage() {
 
       <section className="section" aria-labelledby="resources-grid-title">
         <div className="container">
-          <div className="lk-section-head">
+          <Reveal className="lk-section-head">
             <div>
               <span className="hp-section-kicker">CURATED RESOURCES</span>
               <h2 id="resources-grid-title" className="hp-section-title">Essential tools and references.</h2>
             </div>
-          </div>
+          </Reveal>
 
-          <div className="cm-res-grid" role="list">
+          <Reveal className="cm-res-grid" role="list">
             {resourcesData.map((resource, i) => {
               const Icon = iconMap[resource.icon as keyof typeof iconMap] ?? BookOpen;
               const body = (
@@ -55,51 +57,51 @@ export default function ResourcesPage() {
 
               if (resource.external) {
                 return (
-                  <a key={resource.title} href={resource.link} target="_blank" rel="noreferrer" className="cm-res-card" role="listitem">
+                  <SpotlightCard key={resource.title} as="a" href={resource.link} target="_blank" rel="noreferrer" className="cm-res-card" role="listitem">
                     {body}
-                  </a>
+                  </SpotlightCard>
                 );
               }
               return (
-                <div key={resource.title} className="cm-res-card cm-res-card-soon" role="listitem">
+                <SpotlightCard key={resource.title} className="cm-res-card cm-res-card-soon" role="listitem">
                   {body}
-                </div>
+                </SpotlightCard>
               );
             })}
-          </div>
+          </Reveal>
         </div>
       </section>
 
       <section className="section lk-steps-section" aria-labelledby="categories-title">
         <div className="container">
-          <div className="lk-section-head">
+          <Reveal className="lk-section-head">
             <div>
               <span className="hp-section-kicker">RESOURCE CATEGORIES</span>
               <h2 id="categories-title" className="hp-section-title">Browse by topic.</h2>
             </div>
-          </div>
-          <div className="cm-cat-grid" role="list">
+          </Reveal>
+          <Reveal className="cm-cat-grid" role="list">
             {categories.map((cat) => (
-              <Link key={cat.title} href="/resources" className="cm-cat-card" role="listitem" style={{ "--track-color": cat.color } as React.CSSProperties}>
+              <SpotlightCard key={cat.title} as="a" href="/resources" className="cm-cat-card" role="listitem" style={{ "--track-color": cat.color } as React.CSSProperties}>
                 <span className="cm-cat-icon"><cat.icon size={22} /></span>
                 <h3>{cat.title}</h3>
                 <p>{cat.count}</p>
                 <ArrowRight size={16} className="cm-cat-arrow" />
-              </Link>
+              </SpotlightCard>
             ))}
-          </div>
+          </Reveal>
         </div>
       </section>
 
       <section className="section" aria-labelledby="contribute-title">
         <div className="container">
-          <div className="lk-section-head">
+          <Reveal className="lk-section-head">
             <div>
               <span className="hp-section-kicker">CONTRIBUTE</span>
               <h2 id="contribute-title" className="hp-section-title">Help grow the library.</h2>
             </div>
-          </div>
-          <div className="cm-tip-grid" role="list">
+          </Reveal>
+          <Reveal className="cm-tip-grid" role="list">
             <div className="cm-tip" role="listitem">
               <span className="cm-tip-icon"><Send size={19} /></span>
               <div>
@@ -114,7 +116,7 @@ export default function ResourcesPage() {
                 <p>Help create official MCC learning materials — guides, cheat sheets, project templates, and more.</p>
               </div>
             </div>
-          </div>
+          </Reveal>
         </div>
       </section>
 

@@ -2,6 +2,8 @@ import Link from "next/link";
 import { ArrowRight, BookOpen, Code2, Cloud, ShieldCheck, Map, Rocket, Award } from "lucide-react";
 import { BandHero } from "@/components/layout/BandHero";
 import { tracksData } from "@/lib/data";
+import { SpotlightCard } from "@/components/fx/SpotlightCard";
+import { Reveal } from "@/components/fx/Reveal";
 
 const trackIcons = { BookOpen, Code2, Cloud, ShieldCheck } as const;
 
@@ -25,19 +27,19 @@ export default function TracksPage() {
 
       <section className="section" aria-labelledby="tracks-list-title">
         <div className="container">
-          <div className="lk-section-head">
+          <Reveal className="lk-section-head">
             <div>
               <span className="hp-section-kicker">ALL TRACKS</span>
               <h2 id="tracks-list-title" className="hp-section-title">Find your path.</h2>
             </div>
             <Link href="/courses" className="hp-section-link">Browse all courses <ArrowRight size={15} /></Link>
-          </div>
+          </Reveal>
 
-          <div className="hp-track-grid" role="list">
+          <Reveal className="hp-track-grid" role="list">
             {tracksData.map((track, i) => {
               const Icon = trackIcons[track.icon as keyof typeof trackIcons] ?? BookOpen;
               return (
-                <Link key={track.slug} href={`/tracks/${track.slug}`} className="hp-track-card" role="listitem" style={{ "--track-color": track.color } as React.CSSProperties}>
+                <SpotlightCard key={track.slug} as="a" href={`/tracks/${track.slug}`} className="hp-track-card" role="listitem" style={{ "--track-color": track.color } as React.CSSProperties}>
                   <div className="hp-track-top">
                     <span className="hp-track-icon"><Icon size={24} /></span>
                     <span className="hp-track-number">0{i + 1}</span>
@@ -50,10 +52,10 @@ export default function TracksPage() {
                     <span>{track.duration}</span>
                     <span className="hp-track-arrow"><ArrowRight size={16} /></span>
                   </div>
-                </Link>
+                </SpotlightCard>
               );
             })}
-          </div>
+          </Reveal>
         </div>
       </section>
 
@@ -65,7 +67,7 @@ export default function TracksPage() {
               <h2 id="how-it-works-title" className="hp-section-title">Simple by design.</h2>
             </div>
           </div>
-          <div className="lk-steps" role="list">
+          <Reveal className="lk-steps" role="list">
             {steps.map((step, i) => (
               <div key={step.title} className="lk-step" role="listitem">
                 <span className="lk-step-number">0{i + 1}</span>
@@ -74,7 +76,7 @@ export default function TracksPage() {
                 <p>{step.text}</p>
               </div>
             ))}
-          </div>
+          </Reveal>
         </div>
       </section>
 

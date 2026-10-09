@@ -8,6 +8,8 @@ type SpotlightCardProps = React.HTMLAttributes<HTMLElement> & {
   children?: React.ReactNode;
   tilt?: boolean;
   href?: string;
+  target?: string;
+  rel?: string;
 };
 
 export function SpotlightCard({ as = "div", className = "", children, tilt = true, ...rest }: SpotlightCardProps) {
