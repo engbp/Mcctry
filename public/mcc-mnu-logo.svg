@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 180" role="img" aria-labelledby="title desc">
+  <title id="title">Microsoft Campus Club - MNU</title>
+  <desc id="desc">Microsoft Student Ambassador shield and Microsoft Campus Club - MNU wordmark.</desc>
+  <rect width="760" height="180" rx="8" fill="#fff"/>
+  <g transform="translate(22 12)">
+    <path d="M66 5 128 27v48c0 38-25 67-62 84C29 142 4 113 4 75V27Z" fill="#0078d4"/>
+    <path d="M66 14 119 33v41c0 32-20 56-53 72C33 130 13 106 13 74V33Z" fill="#0b2a4a" stroke="#00b7c3" stroke-width="3"/>
+    <text x="66" y="48" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="13" fill="#fff">Microsoft</text>
+    <path d="M14 59 Q66 49 118 59v20Q66 93 14 79Z" fill="#173d67" stroke="#5b7895" stroke-width="1"/>
+    <text x="66" y="73" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="8.5" font-weight="700" letter-spacing=".3" fill="#fff">STUDENT AMBASSADOR</text>
+    <path d="M59 99l14 14m0-14-14 14M66 113v12" fill="none" stroke="#00d4e8" stroke-width="3" stroke-linecap="round"/>
+  </g>
+  <path d="M190 25v130" stroke="#17365c" stroke-width="5"/>
+  <text x="220" y="70" font-family="Segoe UI,Arial,sans-serif" font-size="34" font-weight="700" fill="#17365c">Microsoft Campus</text>
+  <text x="220" y="116" font-family="Segoe UI,Arial,sans-serif" font-size="34" font-weight="700" fill="#17365c">Club - MNU</text>
+</svg>
