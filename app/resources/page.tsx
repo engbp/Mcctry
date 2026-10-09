@@ -1,111 +1,133 @@
-import { PageHero, SectionHeader } from "@/components/layout/PageHero";
-import { TextLink, CardLink } from "@/components/ui/Links";
-import { ArrowRight, BookOpen, Code2, Globe, Layers, ChevronRight, ExternalLink } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/Card";
-import { Badge } from "@/components/ui/Badge";
+import Link from "next/link";
+import { ArrowRight, BookOpen, Code2, Globe, Layers, ExternalLink, Sparkles, Send } from "lucide-react";
+import { BandHero } from "@/components/layout/BandHero";
 import { resourcesData } from "@/lib/data";
+
+const iconMap = { BookOpen, Code2, Layers, Globe } as const;
+
+const categories = [
+  { title: "AI & Machine Learning", icon: BookOpen, count: "12 resources", color: "#0078d4" },
+  { title: "Web Development", icon: Code2, count: "18 resources", color: "#00b7c3" },
+  { title: "Cloud & DevOps", icon: Globe, count: "8 resources", color: "#5c2d91" },
+  { title: "Design & UX", icon: Layers, count: "6 resources", color: "#ffb900" },
+];
 
 export default function ResourcesPage() {
   return (
     <>
-      <PageHero
-        label="Resources"
+      <BandHero
+        crumbs={[{ label: "Resources" }]}
+        kicker="LEARN · LIBRARY"
         title="Resources for learning and building."
-        lede="A documentation-style place for useful links, tools, and references. Curated by the MCC MNU community."
-        badge={resourcesData.length + " Resources"}
-        badgeVariant="blue"
-        kicker="01 / LIBRARY"
+        lede="A documentation-style home for useful links, tools and references — curated by the MCC MNU community."
+        color="#00b7c3"
+        meta={<span className="band-meta-pill"><BookOpen size={14} /> {resourcesData.length} curated resources</span>}
+        icon={<BookOpen size={56} />}
       />
 
       <section className="section" aria-labelledby="resources-grid-title">
         <div className="container">
-          <SectionHeader number="01" label="CURATED RESOURCES" title="Essential tools and references." />
-          <div className="grid-3" role="list" style={{ marginTop: "32px" }}>
-            {resourcesData.map((resource, i) => (
-              <CardLink key={resource.title} href={resource.link} className="resource-card" role="listitem" external={resource.external} style={{ minHeight: "280px" }}>
-                <CardContent className="resource-card-content">
-                  <div className="resource-card-header">
-                    <Badge variant="blue">{resource.category}</Badge>
-                    <span className="resource-card-number">0{i + 1}</span>
+          <div className="lk-section-head">
+            <div>
+              <span className="hp-section-kicker">CURATED RESOURCES</span>
+              <h2 id="resources-grid-title" className="hp-section-title">Essential tools and references.</h2>
+            </div>
+          </div>
+
+          <div className="cm-res-grid" role="list">
+            {resourcesData.map((resource, i) => {
+              const Icon = iconMap[resource.icon as keyof typeof iconMap] ?? BookOpen;
+              const body = (
+                <>
+                  <div className="cm-res-top">
+                    <span className="cm-res-icon"><Icon size={24} /></span>
+                    <span className="cm-res-index">0{i + 1}</span>
                   </div>
-                  <div className="resource-card-icon" aria-hidden="true" style={{ width: "56px", height: "56px", background: "var(--mcc-paper)", border: "1px solid var(--mcc-line)", borderRadius: "var(--radius-sm)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "16px", color: "var(--mcc-blue)" }}>
-                    {resource.category === "Learning" && <BookOpen size={24} />}
-                    {resource.category === "Development" && <Code2 size={24} />}
-                    {resource.category === "Design" && <Layers size={24} />}
-                    {resource.category === "MCC MNU" && <Globe size={24} />}
-                  </div>
-                  <h3 className="resource-card-title">{resource.title}</h3>
-                  <p className="resource-card-description">{resource.description}</p>
-                  <div className="resource-card-footer" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: "16px", borderTop: "1px solid var(--mcc-line)", marginTop: "auto" }}>
-                    <TextLink href={resource.link} variant="default" external={resource.external}>
-                      {resource.external ? "Visit Site" : "Explore"} <ArrowRight size={16} />
-                    </TextLink>
-                    {resource.external && <ExternalLink size={16} style={{ color: "var(--mcc-text-light)" }} />}
-                  </div>
-                </CardContent>
-              </CardLink>
-            ))}
+                  <span className="cm-res-cat">{resource.category}</span>
+                  <h3>{resource.title}</h3>
+                  <p>{resource.description}</p>
+                  <span className="cm-res-cta">
+                    {resource.external ? "Visit site" : "Explore"} <ArrowRight size={15} />
+                    {resource.external && <ExternalLink size={13} />}
+                  </span>
+                </>
+              );
+
+              if (resource.external) {
+                return (
+                  <a key={resource.title} href={resource.link} target="_blank" rel="noreferrer" className="cm-res-card" role="listitem">
+                    {body}
+                  </a>
+                );
+              }
+              return (
+                <div key={resource.title} className="cm-res-card cm-res-card-soon" role="listitem">
+                  {body}
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
 
-      <section className="section" style={{ background: "var(--mcc-paper)" }} aria-labelledby="categories-title">
+      <section className="section lk-steps-section" aria-labelledby="categories-title">
         <div className="container">
-          <SectionHeader number="02" label="RESOURCE CATEGORIES" title="Browse by topic." />
-          <div className="grid-4" role="list" style={{ marginTop: "32px" }}>
-            {[
-              { title: "AI & Machine Learning", icon: BookOpen, count: "12 resources", href: "/resources/ai" },
-              { title: "Web Development", icon: Code2, count: "18 resources", href: "/resources/web" },
-              { title: "Cloud & DevOps", icon: Globe, count: "8 resources", href: "/resources/cloud" },
-              { title: "Design & UX", icon: Layers, count: "6 resources", href: "/resources/design" },
-            ].map((cat, i) => (
-              <CardLink key={cat.title} href={cat.href} className="category-card" role="listitem">
-                <CardContent className="category-card-content">
-                  <div className="category-icon" aria-hidden="true" style={{ width: "48px", height: "48px", background: "var(--mcc-blue)", borderRadius: "var(--radius-sm)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--mcc-white)", marginBottom: "16px" }}>
-                    <cat.icon size={22} />
-                  </div>
-                  <h3>{cat.title}</h3>
-                  <p className="body-sm" style={{ color: "var(--mcc-text-muted)" }}>{cat.count}</p>
-                </CardContent>
-              </CardLink>
+          <div className="lk-section-head">
+            <div>
+              <span className="hp-section-kicker">RESOURCE CATEGORIES</span>
+              <h2 id="categories-title" className="hp-section-title">Browse by topic.</h2>
+            </div>
+          </div>
+          <div className="cm-cat-grid" role="list">
+            {categories.map((cat) => (
+              <Link key={cat.title} href="/resources" className="cm-cat-card" role="listitem" style={{ "--track-color": cat.color } as React.CSSProperties}>
+                <span className="cm-cat-icon"><cat.icon size={22} /></span>
+                <h3>{cat.title}</h3>
+                <p>{cat.count}</p>
+                <ArrowRight size={16} className="cm-cat-arrow" />
+              </Link>
             ))}
           </div>
         </div>
       </section>
 
       <section className="section" aria-labelledby="contribute-title">
-        <div className="container" style={{ maxWidth: "800px" }}>
-          <SectionHeader number="03" label="CONTRIBUTE" title="Help grow the library." />
-          <div className="grid-2" style={{ marginTop: "32px", gap: "24px" }}>
-            <Card variant="default" className="contribute-card">
-              <CardContent>
-                <h3>Suggest a Resource</h3>
-                <p>Found a great tutorial, tool, or article? Share it with the community and we'll add it to the library.</p>
-                <TextLink href="/join" variant="default" style={{ marginTop: "16px", display: "inline-flex" }}>
-                  Submit a Resource <ArrowRight size={16} />
-                </TextLink>
-              </CardContent>
-            </Card>
-            <Card variant="default" className="contribute-card">
-              <CardContent>
-                <h3>Create MCC Resources</h3>
+        <div className="container">
+          <div className="lk-section-head">
+            <div>
+              <span className="hp-section-kicker">CONTRIBUTE</span>
+              <h2 id="contribute-title" className="hp-section-title">Help grow the library.</h2>
+            </div>
+          </div>
+          <div className="cm-tip-grid" role="list">
+            <div className="cm-tip" role="listitem">
+              <span className="cm-tip-icon"><Send size={19} /></span>
+              <div>
+                <h3>Suggest a resource</h3>
+                <p>Found a great tutorial, tool or article? Share it with the community and we&apos;ll add it to the library.</p>
+              </div>
+            </div>
+            <div className="cm-tip" role="listitem">
+              <span className="cm-tip-icon"><Sparkles size={19} /></span>
+              <div>
+                <h3>Create MCC resources</h3>
                 <p>Help create official MCC learning materials — guides, cheat sheets, project templates, and more.</p>
-                <TextLink href="/join" variant="default" style={{ marginTop: "16px", display: "inline-flex" }}>
-                  Become a Contributor <ArrowRight size={16} />
-                </TextLink>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="section" style={{ background: "var(--mcc-navy)", color: "var(--mcc-white)" }} aria-labelledby="mcc-resources-title">
-        <div className="container" style={{ textAlign: "center", maxWidth: "700px" }}>
-          <SectionHeader number="04" label="MCC RESOURCES" title="Coming soon: Official MCC materials." dark />
-          <p className="body-lg" style={{ color: "#d9e5ed", marginTop: "16px", marginBottom: "32px" }}>A dedicated space for MCC-approved learning paths, project templates, workshop materials, and member-contributed guides.</p>
-          <TextLink href="/join" variant="light" style={{ fontSize: "16px", padding: "16px 24px" }}>
-            Join to Access <ArrowRight size={18} />
-          </TextLink>
+      <section className="lk-cta-band" aria-labelledby="mcc-resources-title">
+        <div className="container lk-cta-inner">
+          <div>
+            <span className="hp-section-kicker" style={{ color: "var(--mcc-cyan)" }}>MCC RESOURCES</span>
+            <h2 id="mcc-resources-title" className="hp-section-title" style={{ color: "#fff" }}>Coming soon: official MCC materials.</h2>
+            <p>A dedicated space for MCC-approved learning paths, project templates, workshop materials and member-contributed guides.</p>
+          </div>
+          <Link href="/join" className="lk-cta-btn">
+            Join to access <ArrowRight size={17} />
+          </Link>
         </div>
       </section>
     </>

@@ -1,114 +1,113 @@
-import { PageHero, SectionHeader } from "@/components/layout/PageHero";
-import { TextLink, CardLink } from "@/components/ui/Links";
-import { ArrowRight, CalendarDays, Award, Target, ChevronRight, Clock, MapPin } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/Card";
-import { Badge } from "@/components/ui/Badge";
+import Link from "next/link";
+import { ArrowRight, ArrowUpRight, CalendarDays, Award, Target, Clock, Trophy, Lightbulb, Users, Rocket } from "lucide-react";
+import { BandHero } from "@/components/layout/BandHero";
 import { opportunitiesData, formatDate } from "@/lib/data";
+
+const types = [
+  { icon: Award, title: "Hackathons", text: "Intensive build events where teams create projects in 24–48 hours. Great for learning, networking, and prizes." },
+  { icon: Target, title: "Competitions", text: "Structured challenges with specific goals, judging criteria, and rewards. Often sponsored by industry partners." },
+  { icon: Clock, title: "Programs", text: "Multi-week learning programs, fellowships and incubators that provide mentorship, resources, and funding." },
+];
+
+const tips = [
+  { icon: Rocket, title: "Start early", text: "Applications often require proposals, portfolios or essays. Give yourself time to prepare quality submissions." },
+  { icon: Lightbulb, title: "Build in public", text: "Share your progress on GitHub, LinkedIn or the MCC community. Visible work speaks louder than credentials." },
+  { icon: Users, title: "Team up", text: "Most opportunities welcome teams. Find complementary skills in the MCC community — designers, developers, researchers." },
+  { icon: Target, title: "Ask for feedback", text: "Before submitting, get your application reviewed by peers or mentors. Fresh eyes catch gaps you might miss." },
+];
 
 export default function OpportunitiesPage() {
   return (
     <>
-      <PageHero
-        label="Opportunities"
+      <BandHero
+        crumbs={[{ label: "Opportunities" }]}
+        kicker="BUILD · DIRECTORY"
         title="Find your next opportunity."
-        lede="A curated directory for challenges, competitions, hackathons, and community opportunities. Demo content is clearly marked."
-        badge={opportunitiesData.length + " Opportunities"}
-        badgeVariant="blue"
-        kicker="01 / DIRECTORY"
+        lede="Challenges, competitions, hackathons and community programs — curated for MCC MNU students. Demo content is clearly marked."
+        color="#0078d4"
+        meta={<span className="band-meta-pill"><Trophy size={14} /> {opportunitiesData.length} open opportunities</span>}
+        icon={<Trophy size={56} />}
       />
 
       <section className="section" aria-labelledby="opportunities-list-title">
         <div className="container">
-          <SectionHeader number="01" label="CURRENT OPPORTUNITIES" title="Open for applications." />
-          <div className="opportunities-list" role="list" style={{ marginTop: "24px" }}>
-            {opportunitiesData.map((opp, i) => (
-              <CardLink key={opp.slug} href="/opportunities" className="opportunity-row" role="listitem" style={{ display: "grid", gridTemplateColumns: "40px 1.5fr 0.7fr 0.5fr 40px", gap: "18px", alignItems: "center", padding: "24px 16px", borderBottom: "1px solid var(--mcc-line)", transition: "background var(--transition-fast)" }}>
-                <span style={{ fontSize: "10px", color: "#7c8d96", fontWeight: 800 }}>0{i + 1}</span>
-                <div>
-                  <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "8px" }}>
-                    <Badge variant="blue">{opp.type}</Badge>
-                    <Badge variant="demo">Demo</Badge>
-                  </div>
-                  <h3 style={{ fontSize: "19px", fontWeight: 600, marginBottom: "4px" }}>{opp.title}</h3>
-                  <p className="body-sm" style={{ color: "var(--mcc-text-muted)" }}>{opp.description}</p>
+          <div className="lk-section-head">
+            <div>
+              <span className="hp-section-kicker">CURRENT OPPORTUNITIES</span>
+              <h2 id="opportunities-list-title" className="hp-section-title">Open for applications.</h2>
+            </div>
+          </div>
+
+          <div className="hp-opp-grid" role="list">
+            {opportunitiesData.map((opp) => (
+              <Link key={opp.slug} href="/opportunities" className="hp-opp-card" role="listitem" style={{ "--track-color": opp.color } as React.CSSProperties}>
+                <span className="hp-opp-type">{opp.type}</span>
+                <h3>{opp.title}</h3>
+                <p>{opp.description}</p>
+                <div className="hp-opp-meta">
+                  <CalendarDays size={15} />
+                  <span>Deadline {formatDate(opp.deadline).day} {formatDate(opp.deadline).month}</span>
+                  <ArrowUpRight size={15} style={{ marginLeft: "auto" }} />
                 </div>
-                <time style={{ fontSize: "12px", color: "#5c707c", fontWeight: 600 }}>{formatDate(opp.date).day} {formatDate(opp.date).month} {formatDate(opp.date).year}</time>
-                <span style={{ fontSize: "12px", color: "#5c707c" }}>Deadline: {formatDate(opp.deadline).day} {formatDate(opp.deadline).month}</span>
-                <ArrowRight className="arrow-icon" size={16} style={{ color: "var(--mcc-blue)" }} />
-              </CardLink>
+              </Link>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="section" style={{ background: "var(--mcc-paper)" }} aria-labelledby="categories-title">
+      <section className="section lk-steps-section" aria-labelledby="categories-title">
         <div className="container">
-          <SectionHeader number="02" label="OPPORTUNITY TYPES" title="Ways to get involved." />
-          <div className="grid-3" role="list" style={{ marginTop: "32px" }}>
-            <Card variant="default" className="type-card" role="listitem">
-              <CardContent>
-                <div className="type-icon" aria-hidden="true"><Award size={28} /></div>
-                <h3>Hackathons</h3>
-                <p>Intensive build events where teams create projects in 24-48 hours. Great for learning, networking, and prizes.</p>
-              </CardContent>
-            </Card>
-            <Card variant="default" className="type-card" role="listitem">
-              <CardContent>
-                <div className="type-icon" aria-hidden="true"><Target size={28} /></div>
-                <h3>Competitions</h3>
-                <p>Structured challenges with specific goals, judging criteria, and rewards. Often sponsored by industry partners.</p>
-              </CardContent>
-            </Card>
-            <Card variant="default" className="type-card" role="listitem">
-              <CardContent>
-                <div className="type-icon" aria-hidden="true"><Clock size={28} /></div>
-                <h3>Programs</h3>
-                <p>Multi-week learning programs, fellowships, and incubators that provide mentorship, resources, and funding.</p>
-              </CardContent>
-            </Card>
+          <div className="lk-section-head">
+            <div>
+              <span className="hp-section-kicker">OPPORTUNITY TYPES</span>
+              <h2 id="categories-title" className="hp-section-title">Ways to get involved.</h2>
+            </div>
+          </div>
+          <div className="lk-steps" role="list">
+            {types.map((type, i) => (
+              <div key={type.title} className="lk-step" role="listitem" style={{ ["--track-color" as string]: ["#0078d4", "#00b7c3", "#8c52ff"][i] } as React.CSSProperties}>
+                <span className="lk-step-number">0{i + 1}</span>
+                <span className="lk-step-icon"><type.icon size={24} /></span>
+                <h3>{type.title}</h3>
+                <p>{type.text}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
       <section className="section" aria-labelledby="tips-title">
-        <div className="container" style={{ maxWidth: "800px" }}>
-          <SectionHeader number="03" label="TIPS" title="Make the most of opportunities." />
-          <div className="grid-2" style={{ marginTop: "32px" }}>
-            <Card variant="default" className="tip-card">
-              <CardContent>
-                <h3>Start Early</h3>
-                <p>Applications often require project proposals, portfolios, or essays. Give yourself time to prepare quality submissions.</p>
-              </CardContent>
-            </Card>
-            <Card variant="default" className="tip-card">
-              <CardContent>
-                <h3>Build in Public</h3>
-                <p>Share your progress on GitHub, LinkedIn, or the MCC community. Visible work speaks louder than credentials alone.</p>
-              </CardContent>
-            </Card>
-            <Card variant="default" className="tip-card">
-              <CardContent>
-                <h3>Team Up</h3>
-                <p>Most opportunities welcome teams. Find complementary skills in the MCC community — designers, developers, researchers.</p>
-              </CardContent>
-            </Card>
-            <Card variant="default" className="tip-card">
-              <CardContent>
-                <h3>Ask for Feedback</h3>
-                <p>Before submitting, get your application reviewed by peers or mentors. Fresh eyes catch gaps you might miss.</p>
-              </CardContent>
-            </Card>
+        <div className="container">
+          <div className="lk-section-head">
+            <div>
+              <span className="hp-section-kicker">TIPS</span>
+              <h2 id="tips-title" className="hp-section-title">Make the most of opportunities.</h2>
+            </div>
+          </div>
+          <div className="cm-tip-grid" role="list">
+            {tips.map((tip) => (
+              <div key={tip.title} className="cm-tip" role="listitem">
+                <span className="cm-tip-icon"><tip.icon size={19} /></span>
+                <div>
+                  <h3>{tip.title}</h3>
+                  <p>{tip.text}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      <section className="section" style={{ background: "var(--mcc-navy)", color: "var(--mcc-white)" }} aria-labelledby="stay-updated-title">
-        <div className="container" style={{ textAlign: "center", maxWidth: "700px" }}>
-          <SectionHeader number="04" label="STAY UPDATED" title="Never miss an opportunity." dark />
-          <p className="body-lg" style={{ color: "#d9e5ed", marginTop: "16px", marginBottom: "32px" }}>New opportunities are added regularly. Join MCC MNU to get notified about deadlines, new programs, and exclusive member opportunities.</p>
-          <TextLink href="/join" variant="light" style={{ fontSize: "16px", padding: "16px 24px" }}>
-            Join MCC MNU <ArrowRight size={18} />
-          </TextLink>
+      <section className="lk-cta-band" aria-labelledby="stay-updated-title">
+        <div className="container lk-cta-inner">
+          <div>
+            <span className="hp-section-kicker" style={{ color: "var(--mcc-cyan)" }}>STAY UPDATED</span>
+            <h2 id="stay-updated-title" className="hp-section-title" style={{ color: "#fff" }}>Never miss an opportunity.</h2>
+            <p>New opportunities are added regularly. Join MCC MNU to get notified about deadlines, new programs and member-exclusive opportunities.</p>
+          </div>
+          <Link href="/join" className="lk-cta-btn">
+            Join MCC MNU <ArrowRight size={17} />
+          </Link>
         </div>
       </section>
     </>
