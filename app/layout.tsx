@@ -1,6 +1,20 @@
 import type { Metadata, Viewport } from "next";
+import { Space_Grotesk, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import { MainLayout } from "@/components/layout/MainLayout";
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-heading",
+  display: "swap",
+});
+
+const ibmPlexMono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-mono",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "MCC MNU — Microsoft Campus Club at Mansoura National University",
@@ -54,7 +68,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
       </head>
-      <body>
+      <body className={`${spaceGrotesk.variable} ${ibmPlexMono.variable}`}>
         <a href="#main-content" className="skip-link">
           Skip to main content
         </a>
