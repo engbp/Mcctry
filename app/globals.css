@@ -9094,3 +9094,12 @@ a.cm-res-card:hover h3 {
  .hp-course-icon{width:32px;height:32px}
  .hp-float-badge{padding:12px;gap:9px}
 }
+/* Hero actions: outline CTA must stay readable on the light hero background */
+.hp-hero-actions .btn-outline {
+  color: var(--mcc-blue-strong);
+  border-color: var(--mcc-blue);
+}
+.hp-hero-actions .btn-outline:hover {
+  background: #f0f8fc;
+  border-color: var(--mcc-blue-strong);
+}
