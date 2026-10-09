@@ -10,9 +10,10 @@ type ScrambleTextProps = {
   as?: "span" | "h1" | "h2" | "h3" | "h4" | "p" | "div";
   className?: string;
   delay?: number;
+  id?: string;
 };
 
-export function ScrambleText({ text, as = "span", className = "", delay = 0 }: ScrambleTextProps) {
+export function ScrambleText({ text, as = "span", className = "", delay = 0, id }: ScrambleTextProps) {
   const ref = useRef<HTMLElement | null>(null);
   const reduced = useReducedMotion();
   const [display, setDisplay] = useState(text);
@@ -71,7 +72,7 @@ export function ScrambleText({ text, as = "span", className = "", delay = 0 }: S
 
   const Tag = as;
   return (
-    <Tag ref={ref as never} className={`scramble-text${className ? ` ${className}` : ""}`}>
+    <Tag ref={ref as never} id={id} className={`scramble-text${className ? ` ${className}` : ""}`}>
       {display}
     </Tag>
   );

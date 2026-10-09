@@ -9,6 +9,7 @@ type TypedTerminalProps = {
   className?: string;
   speed?: number;
   loop?: boolean;
+  showBar?: boolean;
 };
 
 export function TypedTerminal({
@@ -17,6 +18,7 @@ export function TypedTerminal({
   className = "",
   speed = 28,
   loop = true,
+  showBar = true,
 }: TypedTerminalProps) {
   const reduced = useReducedMotion();
   const [shown, setShown] = useState<string[]>(() => (reduced ? lines : []));
@@ -78,12 +80,14 @@ export function TypedTerminal({
 
   return (
     <div className={`term${className ? ` ${className}` : ""}`} aria-label={fullText}>
-      <div className="term-bar" aria-hidden="true">
-        <span className="term-dot term-dot-r" />
-        <span className="term-dot term-dot-y" />
-        <span className="term-dot term-dot-g" />
-        <span className="term-name">{label}</span>
-      </div>
+      {showBar ? (
+        <div className="term-bar" aria-hidden="true">
+          <span className="term-dot term-dot-r" />
+          <span className="term-dot term-dot-y" />
+          <span className="term-dot term-dot-g" />
+          <span className="term-name">{label}</span>
+        </div>
+      ) : null}
       <pre className="term-body" aria-hidden="true">
         {shown.map((line, i) => (
           <div key={i} className="term-line">

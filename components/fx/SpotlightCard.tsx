@@ -3,26 +3,27 @@
 import { useRef } from "react";
 import { useReducedMotion } from "./useReducedMotion";
 
-type SpotlightCardProps = {
+type SpotlightCardProps = React.HTMLAttributes<HTMLElement> & {
   as?: "div" | "article" | "a" | "li" | "span";
-  className?: string;
   children?: React.ReactNode;
   tilt?: boolean;
+  href?: string;
 };
 
-export function SpotlightCard({ as = "div", className = "", children, tilt = true }: SpotlightCardProps) {
+export function SpotlightCard({ as = "div", className = "", children, tilt = true, ...rest }: SpotlightCardProps) {
   const ref = useRef<HTMLElement | null>(null);
   const reduced = useReducedMotion();
 
   const onPointerMove = (e: React.PointerEvent<HTMLElement>) => {
     const el = ref.current;
-    if (!el || reduced || e.pointerType !== "mouse" || !tilt) return;
+    if (!el || reduced || e.pointerType !== "mouse") return;
     const rect = el.getBoundingClientRect();
     const px = (e.clientX - rect.left) / rect.width;
     const py = (e.clientY - rect.top) / rect.height;
     el.style.setProperty("--mx", `${(px * 100).toFixed(1)}%`);
     el.style.setProperty("--my", `${(py * 100).toFixed(1)}%`);
     el.style.setProperty("--spot", "1");
+    if (!tilt) return;
     const rotY = (px - 0.5) * 12;
     const rotX = (0.5 - py) * 12;
     el.style.transform = `perspective(900px) rotateX(${rotX.toFixed(2)}deg) rotateY(${rotY.toFixed(2)}deg) scale(1.02)`;
@@ -41,9 +42,11 @@ export function SpotlightCard({ as = "div", className = "", children, tilt = tru
     <Tag
       ref={ref as never}
       className={`spot-card${className ? ` ${className}` : ""}`}
+      {...rest}
       onPointerMove={onPointerMove}
       onPointerLeave={onPointerLeave}
     >
+      <span className="spot-layer" aria-hidden="true" />
       {children}
     </Tag>
   );

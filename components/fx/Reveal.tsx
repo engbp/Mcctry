@@ -3,14 +3,14 @@
 import { useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "./useReducedMotion";
 
-type RevealProps = {
-  as?: "div" | "section" | "article" | "span" | "li" | "ul" | "header";
-  className?: string;
-  delay?: number;
+type RevealProps = React.HTMLAttributes<HTMLElement> & {
+  as?: "div" | "section" | "article" | "span" | "li" | "ul" | "header" | "a";
   children?: React.ReactNode;
+  delay?: number;
+  href?: string;
 };
 
-export function Reveal({ as = "div", className = "", delay = 0, children }: RevealProps) {
+export function Reveal({ as = "div", className = "", delay = 0, children, style, ...rest }: RevealProps) {
   const ref = useRef<HTMLElement | null>(null);
   const reduced = useReducedMotion();
   const [visible, setVisible] = useState(false);
@@ -42,7 +42,8 @@ export function Reveal({ as = "div", className = "", delay = 0, children }: Reve
     <Tag
       ref={ref as never}
       className={`reveal${visible ? " is-visible" : ""}${className ? ` ${className}` : ""}`}
-      style={delay ? { transitionDelay: `${delay}ms` } : undefined}
+      style={{ ...(delay ? { transitionDelay: `${delay}ms` } : null), ...style }}
+      {...rest}
     >
       {children}
     </Tag>

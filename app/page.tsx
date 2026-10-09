@@ -7,6 +7,13 @@ import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { tracksData, coursesData, eventsData, projectsData, opportunitiesData, formatDate } from "@/lib/data";
 import { LearningTabs } from "@/components/home/LearningTabs";
+import { Reveal } from "@/components/fx/Reveal";
+import { ScrambleText } from "@/components/fx/ScrambleText";
+import { SpotlightCard } from "@/components/fx/SpotlightCard";
+import { MagneticButton } from "@/components/fx/MagneticButton";
+import { Marquee } from "@/components/fx/Marquee";
+import { TypedTerminal } from "@/components/fx/TypedTerminal";
+import { CountUp } from "@/components/fx/CountUp";
 
 const trackIcons = { BookOpen, Code2, Cloud, ShieldCheck } as const;
 
@@ -16,10 +23,10 @@ export default function HomePage() {
   const featuredEvent = eventsData.find((e) => e.featured) ?? eventsData[0];
   const upcomingEvents = eventsData.filter((e) => e.slug !== featuredEvent.slug);
   const stats = [
-    { value: "33+", label: "Courses & lessons" },
-    { value: "4", label: "Learning tracks" },
-    { value: "12+", label: "Events per semester" },
-    { value: "40+", label: "Student builders" },
+    { value: 33, suffix: "+", label: "Courses & lessons" },
+    { value: 4, suffix: "", label: "Learning tracks" },
+    { value: 12, suffix: "+", label: "Events per semester" },
+    { value: 40, suffix: "+", label: "Student builders" },
   ];
 
   return (
@@ -39,21 +46,25 @@ export default function HomePage() {
               <Sparkles size={14} /> MCC MNU · Microsoft Campus Club
             </span>
             <h1 id="hero-title" className="hp-hero-title">
-              Learn. Build.
+              <ScrambleText as="span" text="Learn. Build." />{" "}
               <br />
-              <span className="hp-hero-gradient">Connect.</span>
+              <ScrambleText as="span" className="hp-hero-gradient" text="Connect." />
             </h1>
             <p className="hp-hero-lede">
               Technology learning, student projects, events and opportunities — everything the
               MCC MNU community needs, in one vibrant place.
             </p>
             <div className="hp-hero-actions">
-              <Button variant="primary" asChild size="lg">
-                <Link href="/courses">Explore learning <ArrowRight size={18} /></Link>
-              </Button>
-              <Button variant="outline" asChild size="lg">
-                <Link href="/join">Join MCC <ArrowUpRight size={18} /></Link>
-              </Button>
+              <MagneticButton>
+                <Button variant="primary" asChild size="lg">
+                  <Link href="/courses">Explore learning <ArrowRight size={18} /></Link>
+                </Button>
+              </MagneticButton>
+              <MagneticButton>
+                <Button variant="outline" asChild size="lg">
+                  <Link href="/join">Join MCC <ArrowUpRight size={18} /></Link>
+                </Button>
+              </MagneticButton>
             </div>
             <div className="hp-hero-chips">
               <span className="hp-chip"><BookOpen size={14} /> 33+ lessons</span>
@@ -63,6 +74,7 @@ export default function HomePage() {
           </div>
 
           <div className="hp-hero-visual" aria-hidden="true">
+            <div className="hp-window-float">
             <div className="hp-window hp-window-main">
               <div className="hp-window-bar">
                 <i /><i /><i />
@@ -100,6 +112,7 @@ export default function HomePage() {
                 </div>
               </div>
             </div>
+            </div>
 
             <div className="hp-float hp-float-event">
               <span className="hp-float-label">NEXT EVENT</span>
@@ -118,12 +131,17 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ===== MARQUEE ===== */}
+      <Marquee
+        items={["TypeScript", "Python", "React", "Azure", "Git", "Tailwind CSS", "Node.js", "Power BI", "Machine Learning", "Docker"]}
+      />
+
       {/* ===== STATS BAND ===== */}
       <section className="hp-stats" aria-label="MCC in numbers">
         <div className="container hp-stats-grid">
           {stats.map((stat) => (
             <div key={stat.label} className="hp-stat">
-              <strong>{stat.value}</strong>
+              <strong><CountUp value={stat.value} suffix={stat.suffix} /></strong>
               <span>{stat.label}</span>
             </div>
           ))}
@@ -133,15 +151,15 @@ export default function HomePage() {
       {/* ===== LEARNING TABS ===== */}
       <section className="hp-learning" aria-labelledby="learning-title">
         <div className="container">
-          <div className="hp-section-head">
+          <Reveal className="hp-section-head">
             <div>
               <span className="hp-section-kicker">LEARN</span>
-              <h2 id="learning-title" className="hp-section-title">Go from curious to capable.</h2>
+              <ScrambleText as="h2" id="learning-title" className="hp-section-title" text="Go from curious to capable." />
               <p className="hp-section-lede">
                 Focused lessons, guided tracks and hands-on events — switch between them below.
               </p>
             </div>
-          </div>
+          </Reveal>
           <LearningTabs />
         </div>
       </section>
@@ -149,18 +167,18 @@ export default function HomePage() {
       {/* ===== TRACKS ===== */}
       <section className="hp-tracks" aria-labelledby="tracks-title">
         <div className="container">
-          <div className="hp-section-head">
+          <Reveal className="hp-section-head">
             <div>
               <span className="hp-section-kicker">TRACKS</span>
-              <h2 id="tracks-title" className="hp-section-title">Choose a direction.</h2>
+              <ScrambleText as="h2" id="tracks-title" className="hp-section-title" text="Choose a direction." />
             </div>
             <Link href="/tracks" className="hp-section-link">All tracks <ArrowRight size={15} /></Link>
-          </div>
-          <div className="hp-track-grid" role="list">
+          </Reveal>
+          <Reveal className="hp-track-grid" role="list">
             {tracksData.map((track, i) => {
               const Icon = trackIcons[track.icon as keyof typeof trackIcons] ?? BookOpen;
               return (
-                <Link key={track.slug} href={`/tracks/${track.slug}`} className="hp-track-card" role="listitem" style={{ "--track-color": track.color } as React.CSSProperties}>
+                <SpotlightCard key={track.slug} as="a" href={`/tracks/${track.slug}`} className="hp-track-card" role="listitem" style={{ "--track-color": track.color } as React.CSSProperties}>
                   <div className="hp-track-top">
                     <span className="hp-track-icon"><Icon size={24} /></span>
                     <span className="hp-track-number">0{i + 1}</span>
@@ -173,23 +191,23 @@ export default function HomePage() {
                     <span>{track.duration}</span>
                     <span className="hp-track-arrow"><ArrowRight size={16} /></span>
                   </div>
-                </Link>
+                </SpotlightCard>
               );
             })}
-          </div>
+          </Reveal>
         </div>
       </section>
 
       {/* ===== FEATURED PROJECT (dark band) ===== */}
       <section className="hp-projects" aria-labelledby="projects-title">
         <div className="container">
-          <div className="hp-section-head hp-section-head-dark">
+          <Reveal className="hp-section-head hp-section-head-dark">
             <div>
               <span className="hp-section-kicker">BUILD</span>
-              <h2 id="projects-title" className="hp-section-title">Build something real.</h2>
+              <ScrambleText as="h2" id="projects-title" className="hp-section-title" text="Build something real." />
             </div>
             <Link href="/projects" className="hp-section-link hp-section-link-light">View projects <ArrowRight size={15} /></Link>
-          </div>
+          </Reveal>
 
           <div className="hp-project-feature">
             <div className="hp-project-visual" aria-hidden="true" style={{ "--track-color": featuredProject.color } as React.CSSProperties}>
@@ -201,11 +219,12 @@ export default function HomePage() {
                 <div className="hp-project-screen">
                   <span className="hp-project-cat">{featuredProject.category}</span>
                   <strong>{featuredProject.title}</strong>
-                  <div className="hp-project-code">
-                    <span>detect</span>(frame, model=<em>"yolov8"</em>)
-                    <br />
-                    <span>annotate</span>(results, <em>conf=0.<b>75</b></em>)
-                  </div>
+                  <TypedTerminal
+                    showBar={false}
+                    className="hp-project-term"
+                    label="visionlab.py"
+                    lines={['detect(frame, model="yolov8")', "annotate(results, conf=0.75)"]}
+                  />
                   <div className="hp-project-tags">
                     {featuredProject.technologies.map((t) => <span key={t}>{t}</span>)}
                   </div>
@@ -222,16 +241,16 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="hp-project-grid" role="list">
+          <Reveal className="hp-project-grid" role="list">
             {projectsData.filter((p) => p.slug !== featuredProject.slug).map((project) => (
-              <Link key={project.slug} href={`/projects/${project.slug}`} className="hp-project-card" role="listitem">
+              <SpotlightCard key={project.slug} as="a" href={`/projects/${project.slug}`} className="hp-project-card" role="listitem">
                 <span className="hp-project-card-cat">{project.category}</span>
                 <h3>{project.title}</h3>
                 <p>{project.description}</p>
                 <div className="hp-project-card-tech">
                   {project.technologies.slice(0, 3).map((t) => <span key={t}>{t}</span>)}
                 </div>
-              </Link>
+              </SpotlightCard>
             ))}
             <Link href="/projects" className="hp-project-card hp-project-card-all" role="listitem">
               <Rocket size={22} />
@@ -239,28 +258,28 @@ export default function HomePage() {
               <p>View the complete showcase of student work.</p>
               <ArrowUpRight size={18} className="hp-project-card-arrow" />
             </Link>
-          </div>
+          </Reveal>
         </div>
       </section>
 
       {/* ===== EVENTS ===== */}
       <section className="hp-events" aria-labelledby="events-title">
         <div className="container">
-          <div className="hp-section-head">
+          <Reveal className="hp-section-head">
             <div>
               <span className="hp-section-kicker">CONNECT</span>
-              <h2 id="events-title" className="hp-section-title">Meet. Make. Share.</h2>
+              <ScrambleText as="h2" id="events-title" className="hp-section-title" text="Meet. Make. Share." />
             </div>
             <Link href="/events" className="hp-section-link">All events <ArrowRight size={15} /></Link>
-          </div>
+          </Reveal>
 
           <div className="hp-events-layout">
-            <Link href={`/events/${featuredEvent.slug}`} className="hp-event-featured">
+            <SpotlightCard as="div" className="hp-event-featured" role="listitem">
               <div className="hp-event-date-tile" aria-hidden="true">
                 <strong>{formatDate(featuredEvent.date).day}</strong>
                 <span>{formatDate(featuredEvent.date).month}</span>
               </div>
-              <div className="hp-event-featured-copy">
+              <Link href={`/events/${featuredEvent.slug}`} className="hp-event-featured-copy">
                 <Badge variant="cyan">FEATURED · {featuredEvent.category.toUpperCase()}</Badge>
                 <h3>{featuredEvent.title}</h3>
                 <p>{featuredEvent.description}</p>
@@ -268,8 +287,8 @@ export default function HomePage() {
                   <CalendarDays size={15} /> {featuredEvent.location} · {featuredEvent.time}
                 </div>
                 <span className="hp-cta-link">View event <ArrowRight size={16} /></span>
-              </div>
-            </Link>
+              </Link>
+            </SpotlightCard>
 
             <div className="hp-event-list" role="list">
               {upcomingEvents.map((event) => {
@@ -305,16 +324,16 @@ export default function HomePage() {
       {/* ===== OPPORTUNITIES ===== */}
       <section className="hp-opps" aria-labelledby="opps-title">
         <div className="container">
-          <div className="hp-section-head">
+          <Reveal className="hp-section-head">
             <div>
               <span className="hp-section-kicker">OPPORTUNITIES</span>
-              <h2 id="opps-title" className="hp-section-title">What&apos;s next?</h2>
+              <ScrambleText as="h2" id="opps-title" className="hp-section-title" text="What's next?" />
             </div>
             <Link href="/opportunities" className="hp-section-link">Explore opportunities <ArrowRight size={15} /></Link>
-          </div>
-          <div className="hp-opp-grid" role="list">
+          </Reveal>
+          <Reveal className="hp-opp-grid" role="list">
             {opportunitiesData.map((opp) => (
-              <Link key={opp.slug} href="/opportunities" className="hp-opp-card" role="listitem" style={{ "--track-color": opp.color } as React.CSSProperties}>
+              <SpotlightCard key={opp.slug} as="a" href="/opportunities" className="hp-opp-card" role="listitem" style={{ "--track-color": opp.color } as React.CSSProperties}>
                 <span className="hp-opp-type">{opp.type}</span>
                 <h3>{opp.title}</h3>
                 <p>{opp.description}</p>
@@ -323,9 +342,9 @@ export default function HomePage() {
                   <span>Deadline {formatDate(opp.deadline).day} {formatDate(opp.deadline).month}</span>
                   <ArrowUpRight size={15} className="hp-opp-arrow" />
                 </div>
-              </Link>
+              </SpotlightCard>
             ))}
-          </div>
+          </Reveal>
         </div>
       </section>
 
@@ -333,26 +352,26 @@ export default function HomePage() {
       <section className="hp-pillars" aria-labelledby="pillars-title">
         <div className="container">
           <h2 id="pillars-title" className="visually-hidden">The MCC experience</h2>
-          <div className="hp-pillar-grid">
-            <div className="hp-pillar">
+          <Reveal className="hp-pillar-grid">
+            <SpotlightCard className="hp-pillar">
               <span className="hp-pillar-icon hp-pillar-icon-blue"><BookOpen size={22} /></span>
               <h3>Learn</h3>
               <p>Courses, tracks and resources that take you from first principles to working knowledge.</p>
               <Link href="/courses">Start learning <ArrowRight size={14} /></Link>
-            </div>
-            <div className="hp-pillar">
+            </SpotlightCard>
+            <SpotlightCard className="hp-pillar">
               <span className="hp-pillar-icon hp-pillar-icon-cyan"><Lightbulb size={22} /></span>
               <h3>Build</h3>
               <p>Ship real projects with a team, from computer vision to full-stack campus products.</p>
               <Link href="/projects">See projects <ArrowRight size={14} /></Link>
-            </div>
-            <div className="hp-pillar">
+            </SpotlightCard>
+            <SpotlightCard className="hp-pillar">
               <span className="hp-pillar-icon hp-pillar-icon-purple"><Users size={22} /></span>
               <h3>Connect</h3>
               <p>Events, workshops and a community of students who care about technology.</p>
               <Link href="/events">Meet the community <ArrowRight size={14} /></Link>
-            </div>
-          </div>
+            </SpotlightCard>
+          </Reveal>
         </div>
       </section>
     </>
