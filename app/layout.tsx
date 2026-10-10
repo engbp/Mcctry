@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://mcc-mnu.vercel.app",
+    url: "https://mcctry.vercel.app",
     siteName: "MCC MNU",
     title: "MCC MNU — Microsoft Campus Club at Mansoura National University",
     description: "A student community for learning, building, and connecting through technology.",

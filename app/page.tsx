@@ -1,379 +1,150 @@
 import Link from "next/link";
 import {
-  ArrowRight, ArrowUpRight, BookOpen, Code2, Cloud, ShieldCheck,
-  Users, Rocket, Lightbulb, CalendarDays, Trophy, Sparkles, Play,
+  ArrowRight, ArrowUpRight, CalendarDays, Clock3, MapPin, BookOpen,
+  Code2, Cloud, ShieldCheck, Users, Sparkles, Trophy, Newspaper,
 } from "lucide-react";
-import { Button } from "@/components/ui/Button";
-import { Badge } from "@/components/ui/Badge";
-import { tracksData, coursesData, eventsData, projectsData, opportunitiesData, formatDate } from "@/lib/data";
-import { LearningTabs } from "@/components/home/LearningTabs";
-import { Reveal } from "@/components/fx/Reveal";
-import { ScrambleText } from "@/components/fx/ScrambleText";
-import { SpotlightCard } from "@/components/fx/SpotlightCard";
-import { MagneticButton } from "@/components/fx/MagneticButton";
-import { Marquee } from "@/components/fx/Marquee";
-import { TypedTerminal } from "@/components/fx/TypedTerminal";
-import { CountUp } from "@/components/fx/CountUp";
+import { tracksData, eventsData, projectsData, formatDate } from "@/lib/data";
 
 const trackIcons = { BookOpen, Code2, Cloud, ShieldCheck } as const;
 
+const principles = [
+  { number: "01", title: "Learn across tracks", text: "Choose the technical path that fits your interests. Joining a track gives you access to its sessions and materials right away." },
+  { number: "02", title: "Contribute as a team member", text: "Club-wide team membership is separate from learning-track enrollment and is granted through official recruitment." },
+  { number: "03", title: "Make the community happen", text: "Operational teams coordinate the work behind events, communications, and the student experience." },
+];
+
 export default function HomePage() {
-  const featuredCourse = coursesData.find((c) => c.featured) ?? coursesData[0];
-  const featuredProject = projectsData.find((p) => p.featured) ?? projectsData[0];
-  const featuredEvent = eventsData.find((e) => e.featured) ?? eventsData[0];
-  const upcomingEvents = eventsData.filter((e) => e.slug !== featuredEvent.slug);
-  const stats = [
-    { value: 33, suffix: "+", label: "Courses & lessons" },
-    { value: 4, suffix: "", label: "Learning tracks" },
-    { value: 12, suffix: "+", label: "Events per semester" },
-    { value: 40, suffix: "+", label: "Student builders" },
-  ];
+  const featuredEvent = eventsData.find((event) => event.featured) ?? eventsData[0];
+  const otherEvents = eventsData.filter((event) => event.slug !== featuredEvent?.slug).slice(0, 2);
+  const featuredProject = projectsData.find((project) => project.featured) ?? projectsData[0];
+  const eventDate = featuredEvent ? formatDate(featuredEvent.date) : null;
 
   return (
-    <>
-      {/* ===== HERO ===== */}
-      <section className="hp-hero" aria-labelledby="hero-title">
-        <div className="hp-hero-bg" aria-hidden="true">
-          <span className="hp-orb hp-orb-blue" />
-          <span className="hp-orb hp-orb-cyan" />
-          <span className="hp-orb hp-orb-purple" />
-          <span className="hp-grid-lines" />
-        </div>
-
-        <div className="container hp-hero-inner">
-          <div className="hp-hero-copy">
-            <span className="hp-eyebrow">
-              <Sparkles size={14} /> MCC MNU · Microsoft Campus Club
-            </span>
-            <h1 id="hero-title" className="hp-hero-title">
-              <ScrambleText as="span" text="Learn. Build." />{" "}
-              <br />
-              <ScrambleText as="span" className="hp-hero-gradient" text="Connect." />
-            </h1>
-            <p className="hp-hero-lede">
-              Technology learning, student projects, events and opportunities — everything the
-              MCC MNU community needs, in one vibrant place.
-            </p>
-            <div className="hp-hero-actions">
-              <MagneticButton>
-                <Button variant="primary" asChild size="lg">
-                  <Link href="/courses">Explore learning <ArrowRight size={18} /></Link>
-                </Button>
-              </MagneticButton>
-              <MagneticButton>
-                <Button variant="outline" asChild size="lg">
-                  <Link href="/join">Join MCC <ArrowUpRight size={18} /></Link>
-                </Button>
-              </MagneticButton>
+    <div className="mcc-home">
+      <section className="mcc-hero" aria-labelledby="mcc-hero-title">
+        <div className="mcc-hero-grid" aria-hidden="true" />
+        <div className="mcc-hero-inner">
+          <div className="mcc-hero-copy">
+            <span className="mcc-kicker"><span className="mcc-kicker-dot" /> MCC MNU / MICROSOFT CAMPUS CLUB</span>
+            <h1 id="mcc-hero-title">Make room for <span>what&apos;s next.</span></h1>
+            <p className="mcc-hero-lede">A student community at Mansoura National University to explore technology, build things together, and turn curiosity into momentum.</p>
+            <div className="mcc-hero-actions">
+              <Link className="mcc-button mcc-button-light" href="/tracks">Explore learning tracks <ArrowRight size={17} /></Link>
+              <Link className="mcc-button mcc-button-outline" href="/events">Discover events <ArrowUpRight size={17} /></Link>
             </div>
-            <div className="hp-hero-chips">
-              <span className="hp-chip"><BookOpen size={14} /> 33+ lessons</span>
-              <span className="hp-chip"><CalendarDays size={14} /> Weekly events</span>
-              <span className="hp-chip"><Users size={14} /> Student community</span>
-            </div>
+            <div className="mcc-hero-note"><span>01</span> Learn something new. <span>02</span> Build with people. <span>03</span> Share what you make.</div>
           </div>
 
-          <div className="hp-hero-visual" aria-hidden="true">
-            <div className="hp-window-float">
-            <div className="hp-window hp-window-main">
-              <div className="hp-window-bar">
-                <i /><i /><i />
-                <span>mcc · learning dashboard</span>
-              </div>
-              <div className="hp-window-body">
-                <div className="hp-course-row">
-                  <span className="hp-course-icon" style={{ background: "#e3f2fd", color: "#0078d4" }}><BookOpen size={16} /></span>
-                  <div>
-                    <strong>{featuredCourse.title}</strong>
-                    <small>{featuredCourse.level} · {featuredCourse.duration}</small>
-                  </div>
-                  <span className="hp-progress"><i style={{ width: "72%" }} /></span>
-                </div>
-                <div className="hp-course-row">
-                  <span className="hp-course-icon" style={{ background: "#e0f7fa", color: "#00b7c3" }}><Code2 size={16} /></span>
-                  <div>
-                    <strong>Modern Web Builder</strong>
-                    <small>Intermediate · 3h 15m</small>
-                  </div>
-                  <span className="hp-progress"><i style={{ width: "45%" }} /></span>
-                </div>
-                <div className="hp-course-row">
-                  <span className="hp-course-icon" style={{ background: "#f3e8ff", color: "#8c52ff" }}><Cloud size={16} /></span>
-                  <div>
-                    <strong>Cloud Concepts, Clearly</strong>
-                    <small>Beginner · 2h 05m</small>
-                  </div>
-                  <span className="hp-progress"><i style={{ width: "20%" }} /></span>
-                </div>
-                <div className="hp-window-stats">
-                  <div><strong>7</strong><small>Day streak</small></div>
-                  <div><strong>12</strong><small>Lessons done</small></div>
-                  <div><strong>3</strong><small>Projects</small></div>
-                </div>
-              </div>
+          <div className="mcc-hero-poster" aria-label="MCC MNU community poster">
+            <div className="mcc-poster-top"><span>STUDENT COMMUNITY</span><span>MN / 26</span></div>
+            <div className="mcc-poster-art" aria-hidden="true">
+              <span className="mcc-poster-ring mcc-poster-ring-one" />
+              <span className="mcc-poster-ring mcc-poster-ring-two" />
+              <span className="mcc-poster-cross">+</span>
+              <span className="mcc-poster-word">MAKE<br />IT<br /><em>REAL.</em></span>
+              <span className="mcc-poster-stamp">IDEAS<br />IN MOTION</span>
             </div>
-            </div>
+            <div className="mcc-poster-bottom"><strong>LEARN / BUILD / CONNECT</strong><span>MAN SOURA · EGYPT</span></div>
+          </div>
+          <div className="mcc-hero-side-note" aria-hidden="true">CURIOUS MINDS, SHARED WORK.</div>
+        </div>
+        <div className="mcc-hero-bottomline"><span>MICROSOFT CAMPUS CLUB</span><span>MANSOURA NATIONAL UNIVERSITY</span><span>COMMUNITY FIRST — ALWAYS BUILDING</span></div>
+      </section>
 
-            <div className="hp-float hp-float-event">
-              <span className="hp-float-label">NEXT EVENT</span>
-              <strong>{featuredEvent.title.split(":")[0]}</strong>
-              <small>{formatDate(featuredEvent.date).day} {formatDate(featuredEvent.date).month} · {featuredEvent.time}</small>
-            </div>
-
-            <div className="hp-float hp-float-badge">
-              <span className="hp-float-ring"><Play size={18} fill="currentColor" /></span>
-              <div>
-                <strong>Live workshops</strong>
-                <small>Build nights & meetups</small>
-              </div>
-            </div>
+      <section className="mcc-intro section" aria-labelledby="mcc-intro-title">
+        <div className="container mcc-intro-grid">
+          <div>
+            <span className="mcc-section-label">01 / THE CLUB</span>
+            <h2 id="mcc-intro-title">A place to explore.<br /><em>A reason to build.</em></h2>
+          </div>
+          <div className="mcc-intro-copy">
+            <p>MCC MNU brings students together around technology, practical learning, projects, and events. You don&apos;t have to follow one path or already know everything — start with what interests you.</p>
+            <Link href="/about" className="mcc-text-link">Get to know MCC <ArrowRight size={16} /></Link>
           </div>
         </div>
       </section>
 
-      {/* ===== MARQUEE ===== */}
-      <Marquee
-        items={["TypeScript", "Python", "React", "Azure", "Git", "Tailwind CSS", "Node.js", "Power BI", "Machine Learning", "Docker"]}
-      />
-
-      {/* ===== STATS BAND ===== */}
-      <section className="hp-stats" aria-label="MCC in numbers">
-        <div className="container hp-stats-grid">
-          {stats.map((stat) => (
-            <div key={stat.label} className="hp-stat">
-              <strong><CountUp value={stat.value} suffix={stat.suffix} /></strong>
-              <span>{stat.label}</span>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ===== LEARNING TABS ===== */}
-      <section className="hp-learning" aria-labelledby="learning-title">
+      <section className="mcc-tracks section" aria-labelledby="mcc-tracks-title">
         <div className="container">
-          <Reveal className="hp-section-head">
-            <div>
-              <span className="hp-section-kicker">LEARN</span>
-              <ScrambleText as="h2" id="learning-title" className="hp-section-title" text="Go from curious to capable." />
-              <p className="hp-section-lede">
-                Focused lessons, guided tracks and hands-on events — switch between them below.
-              </p>
-            </div>
-          </Reveal>
-          <LearningTabs />
-        </div>
-      </section>
-
-      {/* ===== TRACKS ===== */}
-      <section className="hp-tracks" aria-labelledby="tracks-title">
-        <div className="container">
-          <Reveal className="hp-section-head">
-            <div>
-              <span className="hp-section-kicker">TRACKS</span>
-              <ScrambleText as="h2" id="tracks-title" className="hp-section-title" text="Choose a direction." />
-            </div>
-            <Link href="/tracks" className="hp-section-link">All tracks <ArrowRight size={15} /></Link>
-          </Reveal>
-          <Reveal className="hp-track-grid" role="list">
-            {tracksData.map((track, i) => {
+          <div className="mcc-section-heading">
+            <div><span className="mcc-section-label">02 / LEARNING TRACKS</span><h2 id="mcc-tracks-title">Find your direction.</h2></div>
+            <Link href="/tracks" className="mcc-text-link">All tracks <ArrowRight size={16} /></Link>
+          </div>
+          <div className="mcc-track-list">
+            {tracksData.map((track, index) => {
               const Icon = trackIcons[track.icon as keyof typeof trackIcons] ?? BookOpen;
               return (
-                <SpotlightCard key={track.slug} as="a" href={`/tracks/${track.slug}`} className="hp-track-card" role="listitem" style={{ "--track-color": track.color } as React.CSSProperties}>
-                  <div className="hp-track-top">
-                    <span className="hp-track-icon"><Icon size={24} /></span>
-                    <span className="hp-track-number">0{i + 1}</span>
-                  </div>
-                  <h3>{track.title}</h3>
-                  <p>{track.description}</p>
-                  <div className="hp-track-meta">
-                    <span>{track.coursesCount} courses</span>
-                    <span aria-hidden="true">·</span>
-                    <span>{track.duration}</span>
-                    <span className="hp-track-arrow"><ArrowRight size={16} /></span>
-                  </div>
-                </SpotlightCard>
+                <Link key={track.slug} href={`/tracks/${track.slug}`} className="mcc-track-row" style={{ "--track-color": track.color } as React.CSSProperties}>
+                  <span className="mcc-track-index">0{index + 1}</span>
+                  <span className="mcc-track-icon"><Icon size={22} /></span>
+                  <span className="mcc-track-main"><strong>{track.title}</strong><small>{track.description}</small></span>
+                  <span className="mcc-track-meta">{track.coursesCount} courses <span>·</span> {track.duration}</span>
+                  <span className="mcc-track-arrow"><ArrowUpRight size={20} /></span>
+                </Link>
               );
             })}
-          </Reveal>
-        </div>
-      </section>
-
-      {/* ===== FEATURED PROJECT (dark band) ===== */}
-      <section className="hp-projects" aria-labelledby="projects-title">
-        <div className="container">
-          <Reveal className="hp-section-head hp-section-head-dark">
-            <div>
-              <span className="hp-section-kicker">BUILD</span>
-              <ScrambleText as="h2" id="projects-title" className="hp-section-title" text="Build something real." />
-            </div>
-            <Link href="/projects" className="hp-section-link hp-section-link-light">View projects <ArrowRight size={15} /></Link>
-          </Reveal>
-
-          <div className="hp-project-feature">
-            <div className="hp-project-visual" aria-hidden="true" style={{ "--track-color": featuredProject.color } as React.CSSProperties}>
-              <div className="hp-project-window">
-                <div className="hp-window-bar">
-                  <i /><i /><i />
-                  <span>{featuredProject.slug}.mcc</span>
-                </div>
-                <div className="hp-project-screen">
-                  <span className="hp-project-cat">{featuredProject.category}</span>
-                  <strong>{featuredProject.title}</strong>
-                  <TypedTerminal
-                    showBar={false}
-                    className="hp-project-term"
-                    label="visionlab.py"
-                    lines={['detect(frame, model="yolov8")', "annotate(results, conf=0.75)"]}
-                  />
-                  <div className="hp-project-tags">
-                    {featuredProject.technologies.map((t) => <span key={t}>{t}</span>)}
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="hp-project-copy">
-              <Badge variant="featured">FEATURED PROJECT</Badge>
-              <h3 className="hp-project-title">{featuredProject.title}</h3>
-              <p>{featuredProject.description}</p>
-              <Link href={`/projects/${featuredProject.slug}`} className="hp-cta-link hp-cta-link-light">
-                View project <ArrowRight size={16} />
-              </Link>
-            </div>
           </div>
-
-          <Reveal className="hp-project-grid" role="list">
-            {projectsData.filter((p) => p.slug !== featuredProject.slug).map((project) => (
-              <SpotlightCard key={project.slug} as="a" href={`/projects/${project.slug}`} className="hp-project-card" role="listitem">
-                <span className="hp-project-card-cat">{project.category}</span>
-                <h3>{project.title}</h3>
-                <p>{project.description}</p>
-                <div className="hp-project-card-tech">
-                  {project.technologies.slice(0, 3).map((t) => <span key={t}>{t}</span>)}
-                </div>
-              </SpotlightCard>
-            ))}
-            <Link href="/projects" className="hp-project-card hp-project-card-all" role="listitem">
-              <Rocket size={22} />
-              <h3>All projects</h3>
-              <p>View the complete showcase of student work.</p>
-              <ArrowUpRight size={18} className="hp-project-card-arrow" />
-            </Link>
-          </Reveal>
+          <p className="mcc-demo-note"><Sparkles size={14} /> Course counts and durations are sample catalogue data in this prototype.</p>
         </div>
       </section>
 
-      {/* ===== EVENTS ===== */}
-      <section className="hp-events" aria-labelledby="events-title">
-        <div className="container">
-          <Reveal className="hp-section-head">
-            <div>
-              <span className="hp-section-kicker">CONNECT</span>
-              <ScrambleText as="h2" id="events-title" className="hp-section-title" text="Meet. Make. Share." />
-            </div>
-            <Link href="/events" className="hp-section-link">All events <ArrowRight size={15} /></Link>
-          </Reveal>
-
-          <div className="hp-events-layout">
-            <SpotlightCard as="div" className="hp-event-featured" role="listitem">
-              <div className="hp-event-date-tile" aria-hidden="true">
-                <strong>{formatDate(featuredEvent.date).day}</strong>
-                <span>{formatDate(featuredEvent.date).month}</span>
-              </div>
-              <Link href={`/events/${featuredEvent.slug}`} className="hp-event-featured-copy">
-                <Badge variant="cyan">FEATURED · {featuredEvent.category.toUpperCase()}</Badge>
-                <h3>{featuredEvent.title}</h3>
-                <p>{featuredEvent.description}</p>
-                <div className="hp-event-meta">
-                  <CalendarDays size={15} /> {featuredEvent.location} · {featuredEvent.time}
-                </div>
-                <span className="hp-cta-link">View event <ArrowRight size={16} /></span>
-              </Link>
-            </SpotlightCard>
-
-            <div className="hp-event-list" role="list">
-              {upcomingEvents.map((event) => {
-                const d = formatDate(event.date);
-                return (
-                  <Link key={event.slug} href={`/events/${event.slug}`} className="hp-event-row" role="listitem">
-                    <span className="hp-event-row-date">
-                      <strong>{d.day}</strong>
-                      <small>{d.month}</small>
-                    </span>
-                    <div className="hp-event-row-copy">
-                      <span className="hp-event-row-cat">{event.category}</span>
-                      <strong>{event.title}</strong>
-                      <small>{event.location} · {event.time}</small>
-                    </div>
-                    <ArrowRight size={16} className="hp-event-row-arrow" />
-                  </Link>
-                );
-              })}
-              <Link href="/events" className="hp-event-row hp-event-row-all" role="listitem">
-                <span className="hp-event-row-date hp-event-row-date-all"><CalendarDays size={18} /></span>
-                <div className="hp-event-row-copy">
-                  <strong>Browse all events</strong>
-                  <small>Workshops, meetups and build nights</small>
-                </div>
-                <ArrowRight size={16} className="hp-event-row-arrow" />
-              </Link>
-            </div>
+      <section className="mcc-community section" aria-labelledby="mcc-community-title">
+        <div className="container mcc-community-grid">
+          <div className="mcc-community-head">
+            <span className="mcc-section-label">03 / MORE THAN LEARNING</span>
+            <h2 id="mcc-community-title">The community is what you make of it.</h2>
+            <p>Tracks are only one part of MCC. Public events, student projects, stories, and the people organizing it all belong in the same place.</p>
+            <Link href="/about" className="mcc-text-link">How MCC works <ArrowRight size={16} /></Link>
+          </div>
+          <div className="mcc-principles">
+            {principles.map((item) => (
+              <article className="mcc-principle" key={item.number}>
+                <span>{item.number}</span><div><h3>{item.title}</h3><p>{item.text}</p></div><ArrowUpRight size={18} />
+              </article>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* ===== OPPORTUNITIES ===== */}
-      <section className="hp-opps" aria-labelledby="opps-title">
-        <div className="container">
-          <Reveal className="hp-section-head">
-            <div>
-              <span className="hp-section-kicker">OPPORTUNITIES</span>
-              <ScrambleText as="h2" id="opps-title" className="hp-section-title" text="What's next?" />
+      {featuredEvent && eventDate && (
+        <section className="mcc-events section" aria-labelledby="mcc-events-title">
+          <div className="container">
+            <div className="mcc-section-heading">
+              <div><span className="mcc-section-label">04 / WHAT&apos;S HAPPENING</span><h2 id="mcc-events-title">Meet us in the room.</h2></div>
+              <Link href="/events" className="mcc-text-link">All events <ArrowRight size={16} /></Link>
             </div>
-            <Link href="/opportunities" className="hp-section-link">Explore opportunities <ArrowRight size={15} /></Link>
-          </Reveal>
-          <Reveal className="hp-opp-grid" role="list">
-            {opportunitiesData.map((opp) => (
-              <SpotlightCard key={opp.slug} as="a" href="/opportunities" className="hp-opp-card" role="listitem" style={{ "--track-color": opp.color } as React.CSSProperties}>
-                <span className="hp-opp-type">{opp.type}</span>
-                <h3>{opp.title}</h3>
-                <p>{opp.description}</p>
-                <div className="hp-opp-meta">
-                  <Trophy size={15} />
-                  <span>Deadline {formatDate(opp.deadline).day} {formatDate(opp.deadline).month}</span>
-                  <ArrowUpRight size={15} className="hp-opp-arrow" />
-                </div>
-              </SpotlightCard>
-            ))}
-          </Reveal>
+            <div className="mcc-event-feature">
+              <div className="mcc-event-date"><span>{eventDate.month}</span><strong>{eventDate.day}</strong><small>{eventDate.year}</small></div>
+              <div className="mcc-event-copy"><span className="mcc-event-tag">{featuredEvent.category} / {featuredEvent.demo ? "SAMPLE EVENT" : "UPCOMING"}</span><h3>{featuredEvent.title}</h3><p>{featuredEvent.description}</p><div className="mcc-event-meta"><span><Clock3 size={15} /> {featuredEvent.time}</span><span><MapPin size={15} /> {featuredEvent.location}</span></div><Link href={`/events/${featuredEvent.slug}`} className="mcc-button mcc-button-dark">Event details <ArrowRight size={16} /></Link></div>
+              <div className="mcc-event-art" aria-hidden="true"><span className="mcc-event-art-label">SAVE<br />YOUR<br /><em>SPOT</em></span><span className="mcc-event-art-circle" /><span className="mcc-event-art-mark">MCC / MNU</span></div>
+            </div>
+            {otherEvents.length > 0 && <div className="mcc-event-mini-grid">{otherEvents.map((event) => { const date = formatDate(event.date); return <Link key={event.slug} href={`/events/${event.slug}`} className="mcc-event-mini"><span>{date.day} {date.month} · {event.category}</span><strong>{event.title}</strong><small>{event.time} / {event.location}</small><ArrowUpRight size={17} /></Link>; })}</div>}
+            <p className="mcc-demo-note"><CalendarDays size={14} /> Event listings are demo content until connected to live club scheduling.</p>
+          </div>
+        </section>
+      )}
+
+      <section className="mcc-showcase section" aria-labelledby="mcc-showcase-title">
+        <div className="container mcc-showcase-grid">
+          <div className="mcc-showcase-art" aria-hidden="true"><span className="mcc-showcase-label">IDEAS<br />BECOME<br /><em>THINGS.</em></span><span className="mcc-showcase-orbit" /><span className="mcc-showcase-number">BUILD / 001</span></div>
+          <div className="mcc-showcase-copy"><span className="mcc-section-label">05 / STUDENT WORK</span><h2 id="mcc-showcase-title">{featuredProject?.title ?? "Made by students, shared with everyone."}</h2><p>{featuredProject?.description ?? "Explore prototypes, experiments, and projects from the MCC community."}</p><span className="mcc-content-status">PROJECT SHOWCASE · SAMPLE CONTENT</span><Link href="/projects" className="mcc-text-link">Explore student projects <ArrowRight size={16} /></Link></div>
         </div>
       </section>
 
-      {/* ===== PILLARS ===== */}
-      <section className="hp-pillars" aria-labelledby="pillars-title">
+      <section className="mcc-publication section" aria-labelledby="mcc-publication-title">
         <div className="container">
-          <h2 id="pillars-title" className="visually-hidden">The MCC experience</h2>
-          <Reveal className="hp-pillar-grid">
-            <SpotlightCard className="hp-pillar">
-              <span className="hp-pillar-icon hp-pillar-icon-blue"><BookOpen size={22} /></span>
-              <h3>Learn</h3>
-              <p>Courses, tracks and resources that take you from first principles to working knowledge.</p>
-              <Link href="/courses">Start learning <ArrowRight size={14} /></Link>
-            </SpotlightCard>
-            <SpotlightCard className="hp-pillar">
-              <span className="hp-pillar-icon hp-pillar-icon-cyan"><Lightbulb size={22} /></span>
-              <h3>Build</h3>
-              <p>Ship real projects with a team, from computer vision to full-stack campus products.</p>
-              <Link href="/projects">See projects <ArrowRight size={14} /></Link>
-            </SpotlightCard>
-            <SpotlightCard className="hp-pillar">
-              <span className="hp-pillar-icon hp-pillar-icon-purple"><Users size={22} /></span>
-              <h3>Connect</h3>
-              <p>Events, workshops and a community of students who care about technology.</p>
-              <Link href="/events">Meet the community <ArrowRight size={14} /></Link>
-            </SpotlightCard>
-          </Reveal>
+          <div className="mcc-section-heading"><div><span className="mcc-section-label">06 / COMMUNITY STORIES</span><h2 id="mcc-publication-title">The work beyond the workshop.</h2></div><Link href="/news" className="mcc-text-link">News & stories <ArrowRight size={16} /></Link></div>
+          <div className="mcc-publication-grid">
+            <Link href="/teams" className="mcc-publication-card mcc-publication-card-blue"><span><Users size={18} /> PEOPLE & TEAMS</span><strong>Meet the people who make MCC happen.</strong><small>Explore operational teams and how the club is organized.</small><ArrowUpRight size={20} /></Link>
+            <Link href="/achievements" className="mcc-publication-card mcc-publication-card-cyan"><span><Trophy size={18} /> ACHIEVEMENTS</span><strong>Celebrate the effort, not just the outcome.</strong><small>Projects, milestones, and community highlights.</small><ArrowUpRight size={20} /></Link>
+            <Link href="/news" className="mcc-publication-card mcc-publication-card-paper"><span><Newspaper size={18} /> NEWS & UPDATES</span><strong>Stay in the loop.</strong><small>Announcements, recruitment windows, and club stories.</small><ArrowUpRight size={20} /></Link>
+          </div>
         </div>
       </section>
-    </>
+
+      <section className="mcc-join-band" aria-labelledby="mcc-join-title">
+        <div className="container mcc-join-inner"><div><span className="mcc-section-label">YOUR NEXT CHAPTER</span><h2 id="mcc-join-title">Curiosity is a good place to start.</h2><p>Explore the public club space now. Official team recruitment opens in announced application cycles.</p></div><div className="mcc-join-actions"><Link href="/join" className="mcc-button mcc-button-light">Recruitment information <ArrowRight size={16} /></Link><a href="https://www.facebook.com/share/14sQQMH2mxJ/" target="_blank" rel="noreferrer" className="mcc-button mcc-button-outline">Follow MCC MNU <ArrowUpRight size={16} /></a></div></div>
+      </section>
+    </div>
   );
 }
