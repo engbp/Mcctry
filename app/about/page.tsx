@@ -20,25 +20,25 @@ const values = [
 ];
 
 const team = [
-  { role: "Student Leads", description: "Elected student representatives who steer MCC direction, organize events, and advocate for member needs.", icon: "Users" as IconName, color: "#0078d4" },
-  { role: "Faculty Advisors", description: "University faculty who provide guidance, resources, and institutional support for MCC initiatives.", icon: "BookOpen" as IconName, color: "#00b7c3" },
-  { role: "Microsoft Mentors", description: "Industry professionals from Microsoft who offer technical guidance, career insights, and program support.", icon: "Code2" as IconName, color: "#8c52ff" },
-  { role: "Alumni Network", description: "Graduated MCC members who return as mentors, speakers, and connectors to industry opportunities.", icon: "Heart" as IconName, color: "#ffb900" },
+  { role: "Administrators", description: "Manage club-wide membership, recruitment decisions, team structure, and platform-wide settings.", icon: "Users" as IconName, color: "#0078d4" },
+  { role: "Track Leaders", description: "Manage sessions, assignments, attendance, and learning activities within their assigned tracks.", icon: "BookOpen" as IconName, color: "#00b7c3" },
+  { role: "Operational-Team Leaders", description: "Coordinate their assigned team, manage day-to-day work, and recommend candidates without independently granting membership.", icon: "Code2" as IconName, color: "#8c52ff" },
+  { role: "Team Members", description: "Contribute through one operational team while remaining free to join multiple learning tracks.", icon: "Heart" as IconName, color: "#ffb900" },
 ];
 
 const stats = [
-  { value: "150+", label: "Active members" },
-  { value: "47", label: "Projects completed" },
-  { value: "28", label: "Events hosted" },
-  { value: "2,400+", label: "Learning hours" },
+  { value: "Learn", label: "Explore technology" },
+  { value: "Build", label: "Make projects" },
+  { value: "Connect", label: "Meet the community" },
+  { value: "Share", label: "Show what you learn" },
 ];
 
 const timeline = [
-  { year: "2022", title: "Foundation", text: "MCC MNU established at Mansoura National University" },
-  { year: "2023", title: "First Tracks", text: "AI & Data and Software Development tracks launched" },
-  { year: "2024", title: "Growth", text: "Cloud and Cybersecurity tracks added; first hackathon" },
-  { year: "2025", title: "Platform", text: "Learning platform, project showcase, and community hub" },
-  { year: "2026", title: "Today", text: "4 tracks, 30+ courses, regular events, active projects" },
+  { year: "01", title: "Explore", text: "Discover technology topics and public community events." },
+  { year: "02", title: "Learn", text: "Join learning tracks and access sessions and materials." },
+  { year: "03", title: "Build", text: "Apply what you learn through projects and practical work." },
+  { year: "04", title: "Connect", text: "Meet students and take part in the wider community." },
+  { year: "05", title: "Contribute", text: "Apply during official recruitment cycles to join an operational team." },
 ];
 
 export default function AboutPage() {
@@ -52,8 +52,8 @@ export default function AboutPage() {
         color="#0078d4"
         meta={
           <>
-            <span className="band-meta-pill"><Users size={14} /> 150+ members</span>
-            <span className="band-meta-pill"><Sparkles size={14} /> Since 2022</span>
+            <span className="band-meta-pill"><Users size={14} /> Student community</span>
+            <span className="band-meta-pill"><Sparkles size={14} /> Learn · Build · Connect</span>
           </>
         }
         icon={<Users size={56} />}
@@ -106,13 +106,10 @@ export default function AboutPage() {
           <div className="cm-about-structure">
             <div className="cm-about-copy">
               <p>
-                MCC MNU operates as a student-led organization with support from faculty advisors
-                and Microsoft. This structure ensures student voice drives decisions while
-                maintaining institutional stability.
+                MCC MNU brings students together through learning tracks, events, projects, and club-wide team membership. Track enrollment and operational-team membership are separate so students can learn across multiple areas.
               </p>
               <p>
-                Leadership roles rotate annually, giving more students the opportunity to develop
-                organizational and leadership skills alongside their technical growth.
+                Administrators manage team promotions and appoint operational-team leaders. Leaders coordinate within their assigned scope, while members can nominate replacements when a leadership position becomes vacant.
               </p>
             </div>
             <Reveal className="cm-team-grid" role="list">
@@ -136,17 +133,16 @@ export default function AboutPage() {
 <Reveal className="lk-section-head">
             <div>
               <span className="hp-section-kicker">OUR STORY</span>
-              <h2 id="history-title" className="hp-section-title">From idea to community.</h2>
+              <h2 id="history-title" className="hp-section-title">Learn. Build. Connect.</h2>
             </div>
           </Reveal>
 
           <Reveal className="cm-story">
             <div className="cm-story-copy">
-              <h3>How it started</h3>
-              <p>MCC MNU began with a simple observation: students wanted a space to learn technology together, not alone. A small group approached Microsoft&apos;s Campus Club program with a vision for a community that would be visually distinctive, technically rigorous, and genuinely welcoming.</p>
-              <p>The first events were modest — a few laptops in a classroom, some pizza, and a lot of curiosity. But the energy was real. Students showed up, stayed late, and brought friends.</p>
-              <h3>Where we&apos;re going</h3>
-              <p>We&apos;re expanding our curriculum, deepening industry partnerships, and building more ways for students to showcase their work. The next chapter is being written by the current members — and it&apos;s open to you.</p>
+              <h3>How to participate</h3>
+              <p>Start by exploring the public tracks, events, and student-project showcase. Track enrollment gives students access to that track&apos;s sessions and learning materials, and students can participate in more than one track at a time.</p>
+              <h3>How to contribute</h3>
+              <p>Club-wide team membership is handled through formal recruitment cycles. Administrators make final selection and promotion decisions, then assign each team member to one operational team. Graduates may remain active team members with administrator approval.</p>
             </div>
             <ol className="cm-timeline" aria-label="MCC MNU timeline">
               {timeline.map((item) => (
