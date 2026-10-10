@@ -46,6 +46,9 @@ const searchIndex = [
   { label: "Student Projects", href: "/projects", type: "Page" },
   { label: "Opportunities", href: "/opportunities", type: "Page" },
   { label: "Resources", href: "/resources", type: "Page" },
+  { label: "People & Teams", href: "/teams", type: "Page" },
+  { label: "Achievements", href: "/achievements", type: "Page" },
+  { label: "News & Updates", href: "/news", type: "Page" },
 ];
 
 export function Header() {
