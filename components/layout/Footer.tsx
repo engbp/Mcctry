@@ -19,6 +19,7 @@ const footerLinks = {
     { label: "News & Updates", href: "/news" },
     { label: "About MCC", href: "/about" },
     { label: "Recruitment", href: "/join" },
+    { label: "Admin Workspace (Demo)", href: "/demo/admin" },
   ],
 };
 
