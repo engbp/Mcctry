@@ -12,10 +12,10 @@ const iconComponents: Record<IconName, React.ComponentType<{ size?: number }>> =
 
 const values = [
   { number: "01", icon: "Users" as IconName, title: "Community First", description: "The best learning happens together. MCC MNU connects students across disciplines to share knowledge, collaborate on projects, and build lasting relationships." },
-  { number: "02", icon: "BookOpen" as IconName, title: "Practical Learning", description: "Courses and workshops focus on applicable skills. Short, focused lessons let you learn at your own pace and immediately apply what you've learned." },
+  { number: "02", icon: "BookOpen" as IconName, title: "Practical Learning", description: "Tracks organize sessions and learning materials into practical paths. Students can join multiple tracks and access each track after enrollment." },
   { number: "03", icon: "Code2" as IconName, title: "Build Real Things", description: "Theory meets practice in our project showcases. Students build portfolio-worthy projects that solve real problems." },
   { number: "04", icon: "Lightbulb" as IconName, title: "Innovation Mindset", description: "We encourage experimentation and creative problem-solving. Hackathons, build nights, and open challenges push boundaries." },
-  { number: "05", icon: "Target" as IconName, title: "Industry Connections", description: "Through Microsoft and partner networks, we provide access to mentors, cloud credits, certifications, and career opportunities." },
+  { number: "05", icon: "Target" as IconName, title: "Industry Connections", description: "Explore official announcements and opportunities as they are published. Any partner programs, credits, certifications, or mentorship offers should be listed only when confirmed." },
   { number: "06", icon: "Heart" as IconName, title: "Inclusive Culture", description: "Everyone belongs here. Regardless of background, experience level, or major — if you're curious about technology, you're welcome." },
 ];
 
