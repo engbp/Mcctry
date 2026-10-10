@@ -84,7 +84,7 @@ export default function JoinPage() {
         <BandHero
           crumbs={[{ label: "Join" }, { label: "Submitted" }]}
           kicker="CONNECT · COMPLETE"
-          title="Application submitted!"
+          title="Preview complete"
           lede="This interactive form is a prototype preview. No real application has been sent or stored."
           color="#10b981"
           icon={<CheckCircle size={56} />}
