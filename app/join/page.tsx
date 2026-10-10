@@ -34,7 +34,7 @@ const faqs = [
   { q: "Is there a membership fee?", a: "No. MCC MNU is free for all Mansoura National University students. Some external events or certifications may have costs, but MCC activities are free." },
   { q: "How much time commitment is expected?", a: "As much or as little as you want. Attend events when you can, take courses at your own pace, contribute to projects when interested." },
   { q: "Can I join if I'm not in a tech major?", a: "Absolutely. Some of our best members come from business, design, engineering, medicine, and arts backgrounds. Diverse perspectives make better projects." },
-  { q: "What happens after I apply?", a: "In production, applications are reviewed weekly. You'll receive an email with next steps, including orientation sessions and access to the community platforms." },
+  { q: "What happens after I apply?", a: "Applications are reviewed during each announced recruitment cycle. Exact dates and next steps are published through official MCC MNU channels." },
 ];
 
 export default function JoinPage() {
@@ -85,15 +85,15 @@ export default function JoinPage() {
           crumbs={[{ label: "Join" }, { label: "Submitted" }]}
           kicker="CONNECT · COMPLETE"
           title="Application submitted!"
-          lede="Thanks for your interest in MCC MNU — we've received your application and will be in touch soon."
+          lede="This interactive form is a prototype preview. No real application has been sent or stored."
           color="#10b981"
           icon={<CheckCircle size={56} />}
         />
         <section className="section" aria-labelledby="success-title">
           <div className="container jn-success">
             <span className="jn-success-icon"><CheckCircle size={44} /></span>
-            <h2 id="success-title">Welcome to MCC MNU!</h2>
-            <p>Your application has been received. In a production environment, this would trigger a review process and you&apos;d hear back within a few days.</p>
+            <h2 id="success-title">Preview complete</h2>
+            <p>This demo does not submit or store applications. In the live platform, students can apply during official recruitment cycles and administrators make the final selection decisions.</p>
             <div className="jn-success-actions">
               <Button variant="primary" asChild size="lg">
                 <Link href="/">Back to home <ArrowRight size={17} /></Link>
@@ -114,9 +114,9 @@ export default function JoinPage() {
         crumbs={[{ label: "Join" }]}
         kicker="CONNECT · RECRUITMENT"
         title="Join MCC MNU."
-        lede="Open to all Mansoura National University students. No technical background required — just curiosity and a willingness to learn. This is a presentation-only flow; nothing is stored."
+        lede="Team recruitment runs in formal cycles with announced opening and closing dates. This interactive form is a presentation-only preview; nothing is stored or submitted."
         color="#00b7c3"
-        meta={<span className="band-meta-pill"><UserPlus size={14} /> Applications open</span>}
+        meta={<span className="band-meta-pill"><UserPlus size={14} /> Formal recruitment cycles</span>}
         icon={<UserPlus size={56} />}
       />
 
@@ -125,13 +125,12 @@ export default function JoinPage() {
           <div className="jn-benefits">
             <Reveal className="lk-section-head">
               <div>
-                <span className="hp-section-kicker">APPLY TO MCC</span>
-                <h2 id="join-form-title" className="hp-section-title">Start your journey with us.</h2>
+                <span className="hp-section-kicker">RECRUITMENT CYCLE PREVIEW</span>
+                <h2 id="join-form-title" className="hp-section-title">Get ready for the next cycle.</h2>
               </div>
             </Reveal>
             <p className="jn-benefits-lede">
-              MCC MNU is open to all Mansoura National University students. Members get access to
-              everything the club offers from day one.
+              Team recruitment is managed in defined application cycles. Track enrollment is separate: verified students can join multiple tracks and access their sessions and materials immediately.
             </p>
 
             <h3 className="jn-benefits-title"><Sparkles size={17} /> What you get</h3>
