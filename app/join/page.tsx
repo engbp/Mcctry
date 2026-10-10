@@ -21,19 +21,19 @@ const interestOptions = [
 ];
 
 const benefits = [
-  "Access to all learning tracks and courses",
-  "Invitations to workshops, build nights, and hackathons",
-  "Project showcase opportunities",
-  "Microsoft Learn credits and certifications",
-  "Mentorship from industry professionals",
-  "Community of like-minded builders",
+  "Access to sessions and materials in tracks you join",
+  "Updates about public events and workshops",
+  "Opportunities to share student projects",
+  "A community for learning across technology topics",
+  "A clear recruitment process for club-wide team membership",
+  "A way to discover official announcements and opportunities",
 ];
 
 const faqs = [
   { q: "Do I need prior coding experience?", a: "No! MCC welcomes students at all levels. Our beginner tracks start from zero, and the community is happy to help you get started." },
-  { q: "Is there a membership fee?", a: "No. MCC MNU is free for all Mansoura National University students. Some external events or certifications may have costs, but MCC activities are free." },
+  { q: "Is there a membership fee?", a: "Any eligibility, fee, or event-specific requirements will be stated in the relevant official announcement. This prototype does not collect payments." },
   { q: "How much time commitment is expected?", a: "As much or as little as you want. Attend events when you can, take courses at your own pace, contribute to projects when interested." },
-  { q: "Can I join if I'm not in a tech major?", a: "Absolutely. Some of our best members come from business, design, engineering, medicine, and arts backgrounds. Diverse perspectives make better projects." },
+  { q: "Can I join if I'm not in a tech major?", a: "Learning-track participation is separate from club-wide team membership. The club can publish the eligibility requirements for each recruitment cycle and activity." },
   { q: "What happens after I apply?", a: "Applications are reviewed during each announced recruitment cycle. Exact dates and next steps are published through official MCC MNU channels." },
 ];
 
