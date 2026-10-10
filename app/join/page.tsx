@@ -5,6 +5,7 @@ import { useState } from "react";
 import { ArrowRight, ArrowUpRight, CheckCircle, ChevronDown, Sparkles, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { BandHero } from "@/components/layout/BandHero";
+import { Reveal } from "@/components/fx/Reveal";
 
 const interestOptions = [
   "AI & Machine Learning",
@@ -122,12 +123,12 @@ export default function JoinPage() {
       <section className="section" aria-labelledby="join-form-title">
         <div className="container jn-grid">
           <div className="jn-benefits">
-            <div className="lk-section-head">
+            <Reveal className="lk-section-head">
               <div>
                 <span className="hp-section-kicker">APPLY TO MCC</span>
                 <h2 id="join-form-title" className="hp-section-title">Start your journey with us.</h2>
               </div>
-            </div>
+            </Reveal>
             <p className="jn-benefits-lede">
               MCC MNU is open to all Mansoura National University students. Members get access to
               everything the club offers from day one.
@@ -144,7 +145,7 @@ export default function JoinPage() {
             </ul>
           </div>
 
-          <div className="jn-form-card">
+          <Reveal className="jn-form-card">
             <form onSubmit={handleSubmit} noValidate>
               <div className="jn-field">
                 <label htmlFor="name">Full name</label>
@@ -239,19 +240,19 @@ export default function JoinPage() {
                 <strong>Demo mode:</strong> This form has no submission backend. In production, applications would be reviewed by the MCC leadership team.
               </p>
             </form>
-          </div>
+          </Reveal>
         </div>
       </section>
 
       <section className="section lk-steps-section" aria-labelledby="faq-title">
         <div className="container" style={{ maxWidth: "860px" }}>
-          <div className="lk-section-head">
+          <Reveal className="lk-section-head">
             <div>
               <span className="hp-section-kicker">FAQ</span>
               <h2 id="faq-title" className="hp-section-title">Common questions.</h2>
             </div>
-          </div>
-          <div className="jn-faq">
+          </Reveal>
+          <Reveal className="jn-faq">
             {faqs.map((faq) => (
               <details key={faq.q} className="jn-faq-item">
                 <summary>
@@ -261,7 +262,7 @@ export default function JoinPage() {
                 <p>{faq.a}</p>
               </details>
             ))}
-          </div>
+          </Reveal>
         </div>
       </section>
     </>

@@ -121,6 +121,9 @@ export function Header() {
       <div className="nav-wrap">
         <Link className="brand" href="/" aria-label="MCC MNU home">
           <img className="brand-image" src="/mcc-mnu-logo.svg" alt="Microsoft Campus Club - MNU" width="228" height="54" />
+          <span className="brand-mark" aria-hidden="true">
+            <i /><i /><i /><i />
+          </span>
         </Link>
 
         <nav className="desktop-nav" aria-label="Primary navigation">

@@ -5,6 +5,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { ArrowRight, ArrowLeft, Play, Pause, Volume2, VolumeX, SkipBack, SkipForward, CheckCircle, ChevronRight, Sparkles, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
+import { Reveal } from "@/components/fx/Reveal";
 import { lessonsData } from "@/lib/data";
 
 interface LessonClientProps {
@@ -171,7 +172,7 @@ export function LessonClient({
               </div>
             </div>
 
-            <div className="lesson-info">
+            <Reveal className="lesson-info">
               <div className="lesson-info-meta">
                 <Badge variant="blue">Lesson {lessonNumber} of {totalLessons}</Badge>
                 <Badge variant="demo">{course.title}</Badge>
@@ -209,9 +210,9 @@ export function LessonClient({
                   </Link>
                 )}
               </div>
-            </div>
+            </Reveal>
 
-            <div className="lesson-feedback">
+            <Reveal className="lesson-feedback">
               <h2><MessageSquare size={19} /> Feedback on this lesson</h2>
               {submitted ? (
                 <p className="lesson-feedback-thanks">
@@ -251,7 +252,7 @@ export function LessonClient({
                   </Button>
                 </form>
               )}
-            </div>
+            </Reveal>
           </div>
 
           <aside className="lesson-sidebar" aria-labelledby="course-contents-title">

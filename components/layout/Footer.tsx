@@ -1,5 +1,8 @@
 import Link from "next/link";
 import { ArrowUpRight, Github, Twitter, Linkedin, Youtube, Mail, GraduationCap } from "lucide-react";
+import { ScrambleText } from "@/components/fx/ScrambleText";
+import { MagneticButton } from "@/components/fx/MagneticButton";
+import { Reveal } from "@/components/fx/Reveal";
 
 const footerLinks = {
   learn: [
@@ -32,24 +35,28 @@ export function Footer() {
     <footer className="site-footer" role="contentinfo">
       <div className="footer-cta">
         <div className="footer-cta-inner">
-          <div className="footer-cta-copy">
+          <Reveal className="footer-cta-copy">
             <span className="footer-cta-kicker">MCC MNU · MICROSOFT CAMPUS CLUB</span>
-            <h2 className="footer-cta-title">Ready to learn, build and connect?</h2>
+            <ScrambleText as="h2" className="footer-cta-title" text="Ready to learn, build and connect?" />
             <p className="footer-cta-lede">Join a student community that turns ideas into working projects.</p>
-          </div>
+          </Reveal>
           <div className="footer-cta-actions">
-            <Link href="/join" className="footer-cta-btn footer-cta-btn-solid">
-              Join MCC <ArrowUpRight size={17} />
-            </Link>
-            <Link href="/courses" className="footer-cta-btn footer-cta-btn-ghost">
-              Explore courses <ArrowUpRight size={17} />
-            </Link>
+            <MagneticButton>
+              <Link href="/join" className="footer-cta-btn footer-cta-btn-solid">
+                Join MCC <ArrowUpRight size={17} />
+              </Link>
+            </MagneticButton>
+            <MagneticButton>
+              <Link href="/courses" className="footer-cta-btn footer-cta-btn-ghost">
+                Explore courses <ArrowUpRight size={17} />
+              </Link>
+            </MagneticButton>
           </div>
         </div>
       </div>
 
       <div className="footer-main">
-        <div className="container footer-grid">
+        <Reveal className="container footer-grid">
           <div className="footer-brand-section">
             <Link className="footer-brand" href="/">
               <span className="brand-logo" aria-hidden="true"><GraduationCap size={20} /></span>
@@ -85,7 +92,7 @@ export function Footer() {
               <Link key={link.label} href={link.href}>{link.label}</Link>
             ))}
           </nav>
-        </div>
+        </Reveal>
 
         <div className="container footer-bottom">
           <span>© MCC MNU · Presentation prototype</span>
