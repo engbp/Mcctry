@@ -1,0 +1,17 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="MCC MNU — Microsoft Campus Club at Mansoura National University">
+  <rect width="1200" height="630" fill="#06172b"/>
+  <g opacity="0.18" stroke="#6fc1ee" stroke-width="1">
+    <path d="M0 90H1200M0 180H1200M0 270H1200M0 360H1200M0 450H1200M0 540H1200"/>
+    <path d="M90 0V630M180 0V630M270 0V630M360 0V630M450 0V630M540 0V630M630 0V630M720 0V630M810 0V630M900 0V630M990 0V630M1080 0V630"/>
+  </g>
+  <g opacity="0.5" stroke="#27d7dc" stroke-width="1.5">
+    <circle cx="1010" cy="315" r="150"/>
+    <circle cx="1010" cy="315" r="230"/>
+  </g>
+  <rect x="80" y="150" width="14" height="14" fill="#27d7dc"/>
+  <text x="112" y="163" fill="#ffffff" font-family="'IBM Plex Mono',monospace" font-size="24" font-weight="600" letter-spacing="3">MCC MNU / MICROSOFT CAMPUS CLUB</text>
+  <text x="78" y="300" fill="#ffffff" font-family="'Space Grotesk',sans-serif" font-size="96" font-weight="700" letter-spacing="-2">Learn. Build.</text>
+  <text x="78" y="400" fill="#27d7dc" font-family="'Space Grotesk',sans-serif" font-size="96" font-weight="700" letter-spacing="-2">Connect.</text>
+  <text x="80" y="470" fill="#9fb3c8" font-family="'Space Grotesk',sans-serif" font-size="28">A student community at Mansoura National University.</text>
+  <text x="80" y="560" fill="#6fc1ee" font-family="'IBM Plex Mono',monospace" font-size="20" font-weight="500" letter-spacing="2">MAN SOURA · EGYPT</text>
+</svg>

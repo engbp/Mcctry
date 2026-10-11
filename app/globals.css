@@ -8075,7 +8075,7 @@ a.cm-res-card:hover h3 {
   }
 
   .footer-grid {
-    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
   }
 
   .video-layout {
@@ -8148,7 +8148,8 @@ a.cm-res-card:hover h3 {
   }
 
   .footer-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: 2fr 1fr 1fr;
+    row-gap: 34px;
   }
 
   .editorial-grid {
@@ -9254,12 +9255,18 @@ html {
    STAGE 4 — home page effects
    ============================================================ */
 
+/* Content is visible by default so no-JS users and crawlers always see it.
+   The entrance animation is applied only when the `js` class is present. */
 .reveal {
+  opacity: 1;
+  transform: none;
+}
+html.js .reveal {
   opacity: 0;
   transform: translateY(26px);
   transition: opacity .65s ease, transform .65s cubic-bezier(.16, 1, .3, 1);
 }
-.reveal.is-visible {
+html.js .reveal.is-visible {
   opacity: 1;
   transform: none;
 }
@@ -9567,6 +9574,10 @@ html {
 .mcc-publication-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
 .mcc-publication-card { min-height:270px; position:relative; display:flex; flex-direction:column; align-items:flex-start; padding:25px; color:#fff; transition:transform .2s; }
 .mcc-publication-card:hover { transform:translateY(-4px); }
+.mcc-publication-card { text-decoration:none; }
+.mcc-publication-card>.spot-layer { z-index:0; }
+.mcc-publication-card>span, .mcc-publication-card>strong, .mcc-publication-card>small, .mcc-publication-card>svg { position:relative; z-index:1; }
+.mcc-publication-card>svg { position:absolute; right:25px; top:25px; }
 .mcc-publication-card-blue { background:#082d50; }
 .mcc-publication-card-cyan { background:#0879c8; }
 .mcc-publication-card-paper { background:#fff; color:#08182b; border:1px solid #dce2e7; }

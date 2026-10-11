@@ -19,12 +19,14 @@ const ibmPlexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://mcctry.vercel.app"),
   title: "MCC MNU — Microsoft Campus Club at Mansoura National University",
   description: "MCC MNU — a student community for learning, building, and connecting through technology.",
   keywords: ["MCC", "Microsoft Campus Club", "Mansoura National University", "student community", "technology learning", "AI", "web development", "cloud", "cybersecurity"],
   authors: [{ name: "MCC MNU" }],
   creator: "MCC MNU",
   publisher: "MCC MNU",
+  icons: { icon: "/mcc-mnu-logo.svg" },
   robots: "index, follow",
   openGraph: {
     type: "website",
@@ -35,7 +37,7 @@ export const metadata: Metadata = {
     description: "A student community for learning, building, and connecting through technology.",
     images: [
       {
-        url: "/og-image.jpg",
+        url: "/mcc-og.svg",
         width: 1200,
         height: 630,
         alt: "MCC MNU",
@@ -46,7 +48,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "MCC MNU",
     description: "Microsoft Campus Club at Mansoura National University",
-    images: ["/og-image.jpg"],
+    images: ["/mcc-og.svg"],
   },
   verification: {
     other: {
@@ -66,6 +68,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: "document.documentElement.classList.add('js');",
+          }}
+        />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />

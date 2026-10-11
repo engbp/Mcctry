@@ -4,6 +4,9 @@ import {
   Code2, Cloud, ShieldCheck, Users, Sparkles, Trophy, Newspaper,
 } from "lucide-react";
 import { tracksData, eventsData, projectsData, formatDate } from "@/lib/data";
+import { Reveal } from "@/components/fx/Reveal";
+import { SpotlightCard } from "@/components/fx/SpotlightCard";
+import { ScrambleText } from "@/components/fx/ScrambleText";
 
 const trackIcons = { BookOpen, Code2, Cloud, ShieldCheck } as const;
 
@@ -25,7 +28,7 @@ export default function HomePage() {
         <div className="mcc-hero-grid" aria-hidden="true" />
         <div className="mcc-hero-inner">
           <div className="mcc-hero-copy">
-            <span className="mcc-kicker"><span className="mcc-kicker-dot" /> MCC MNU / MICROSOFT CAMPUS CLUB</span>
+            <span className="mcc-kicker"><span className="mcc-kicker-dot" /> <ScrambleText text="MCC MNU / MICROSOFT CAMPUS CLUB" /></span>
             <h1 id="mcc-hero-title">Make room for <span>what&apos;s next.</span></h1>
             <p className="mcc-hero-lede">A student community at Mansoura National University to explore technology, build things together, and turn curiosity into momentum.</p>
             <div className="mcc-hero-actions">
@@ -52,7 +55,7 @@ export default function HomePage() {
       </section>
 
       <section className="mcc-intro section" aria-labelledby="mcc-intro-title">
-        <div className="container mcc-intro-grid">
+        <Reveal className="container mcc-intro-grid">
           <div>
             <span className="mcc-section-label">01 / THE CLUB</span>
             <h2 id="mcc-intro-title">A place to explore.<br /><em>A reason to build.</em></h2>
@@ -61,7 +64,7 @@ export default function HomePage() {
             <p>MCC MNU brings students together around technology, practical learning, projects, and events. You don&apos;t have to follow one path or already know everything — start with what interests you.</p>
             <Link href="/about" className="mcc-text-link">Get to know MCC <ArrowRight size={16} /></Link>
           </div>
-        </div>
+        </Reveal>
       </section>
 
       <section className="mcc-tracks section" aria-labelledby="mcc-tracks-title">
@@ -135,9 +138,9 @@ export default function HomePage() {
         <div className="container">
           <div className="mcc-section-heading"><div><span className="mcc-section-label">06 / COMMUNITY STORIES</span><h2 id="mcc-publication-title">The work beyond the workshop.</h2></div><Link href="/news" className="mcc-text-link">News & stories <ArrowRight size={16} /></Link></div>
           <div className="mcc-publication-grid">
-            <Link href="/teams" className="mcc-publication-card mcc-publication-card-blue"><span><Users size={18} /> PEOPLE & TEAMS</span><strong>Meet the people who make MCC happen.</strong><small>Explore operational teams and how the club is organized.</small><ArrowUpRight size={20} /></Link>
-            <Link href="/achievements" className="mcc-publication-card mcc-publication-card-cyan"><span><Trophy size={18} /> ACHIEVEMENTS</span><strong>Celebrate the effort, not just the outcome.</strong><small>Projects, milestones, and community highlights.</small><ArrowUpRight size={20} /></Link>
-            <Link href="/news" className="mcc-publication-card mcc-publication-card-paper"><span><Newspaper size={18} /> NEWS & UPDATES</span><strong>Stay in the loop.</strong><small>Announcements, recruitment windows, and club stories.</small><ArrowUpRight size={20} /></Link>
+            <SpotlightCard as="a" href="/teams" tilt={false} className="mcc-publication-card mcc-publication-card-blue"><span><Users size={18} /> PEOPLE & TEAMS</span><strong>Meet the people who make MCC happen.</strong><small>Explore operational teams and how the club is organized.</small><ArrowUpRight size={20} /></SpotlightCard>
+            <SpotlightCard as="a" href="/achievements" tilt={false} className="mcc-publication-card mcc-publication-card-cyan"><span><Trophy size={18} /> ACHIEVEMENTS</span><strong>Celebrate the effort, not just the outcome.</strong><small>Projects, milestones, and community highlights.</small><ArrowUpRight size={20} /></SpotlightCard>
+            <SpotlightCard as="a" href="/news" tilt={false} className="mcc-publication-card mcc-publication-card-paper"><span><Newspaper size={18} /> NEWS &amp; UPDATES</span><strong>Stay in the loop.</strong><small>Announcements, recruitment windows, and club stories.</small><ArrowUpRight size={20} /></SpotlightCard>
           </div>
         </div>
       </section>
