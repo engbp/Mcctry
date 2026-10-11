@@ -7,7 +7,7 @@ export default function AchievementsPage() {
       <section className="mcc-public-hero mcc-public-hero-dark">
         <div className="container">
           <span className="mcc-section-label">COMMUNITY / ACHIEVEMENTS</span>
-          <h1>Celebrate the<br /><em>work behind it.</em></h1>
+          <h1>Celebrate the<br /> <em>work behind it.</em></h1>
           <p>Projects, milestones, competition results, and community contributions deserve a place to be seen — with context and verified details.</p>
           <div className="mcc-public-hero-actions"><Link href="/projects" className="mcc-button mcc-button-light">Student projects <ArrowRight size={16} /></Link><Link href="/about" className="mcc-button mcc-button-outline">About MCC <ArrowUpRight size={16} /></Link></div>
         </div>

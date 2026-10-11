@@ -7,7 +7,7 @@ export default function NewsPage() {
       <section className="mcc-public-hero mcc-public-hero-cyan">
         <div className="container">
           <span className="mcc-section-label">COMMUNITY / NEWS & UPDATES</span>
-          <h1>Keep up with<br /><em>what&apos;s moving.</em></h1>
+          <h1>Keep up with<br /> <em>what&apos;s moving.</em></h1>
           <p>Official announcements, recruitment windows, event updates, and stories from the MCC MNU community — gathered in one place.</p>
           <div className="mcc-public-hero-actions"><a href="https://www.facebook.com/share/14sQQMH2mxJ/" target="_blank" rel="noreferrer" className="mcc-button mcc-button-light">Official Facebook <ArrowUpRight size={16} /></a><a href="https://www.instagram.com/mcc_mansnu?xtok=ejFyYmJlMDhtZHBy" target="_blank" rel="noreferrer" className="mcc-button mcc-button-outline">Instagram <ArrowUpRight size={16} /></a></div>
         </div>

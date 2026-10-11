@@ -7,7 +7,7 @@ export default function TeamsPage() {
       <section className="mcc-public-hero">
         <div className="container">
           <span className="mcc-section-label">COMMUNITY / PEOPLE & TEAMS</span>
-          <h1>Good work is<br /><em>never solo.</em></h1>
+          <h1>Good work is<br /> <em>never solo.</em></h1>
           <p>MCC MNU brings together students who learn across tracks and contribute through club-wide team membership. Learning tracks and operational teams serve different purposes.</p>
           <div className="mcc-public-hero-actions"><Link href="/join" className="mcc-button mcc-button-light">Recruitment information <ArrowRight size={16} /></Link><Link href="/tracks" className="mcc-button mcc-button-outline">Explore tracks <ArrowUpRight size={16} /></Link></div>
         </div>
