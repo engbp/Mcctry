@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useActionState } from "react";
 import { ArrowRight, ArrowUpRight, CheckCircle, ChevronDown, Sparkles, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { BandHero } from "@/components/layout/BandHero";
 import { Reveal } from "@/components/fx/Reveal";
+import { submitJoinApplication, type JoinFormServerState } from "./actions";
 
 const interestOptions = [
   "AI & Machine Learning",
@@ -46,8 +48,16 @@ export default function JoinPage() {
     motivation: "",
     heardFrom: "",
   });
-  const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const [serverState, formAction, isPending] = useActionState<JoinFormServerState, FormData>(
+    submitJoinApplication,
+    { status: "idle" }
+  );
+
+  // Merge server-rejected field errors back into the visible form.
+  const visibleErrors = { ...errors, ...(serverState.errors ?? {}) };
+  const submitted = serverState.status === "success";
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
@@ -61,21 +71,6 @@ export default function JoinPage() {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const newErrors: Record<string, string> = {};
-    if (!formData.name.trim()) newErrors.name = "Name is required";
-    if (!formData.email.trim()) newErrors.email = "Email is required";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = "Invalid email format";
-    if (formData.interests.length === 0 && !formData.customInterest.trim()) newErrors.interests = "Select at least one interest or add your own";
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
-    setSubmitted(true);
   };
 
   if (submitted) {
@@ -145,7 +140,19 @@ export default function JoinPage() {
           </div>
 
           <Reveal className="jn-form-card">
-            <form onSubmit={handleSubmit} noValidate>
+            <form action={formAction} noValidate>
+              {/* Honeypot: hidden from real users, tempting to bots. */}
+              <div className="jn-hp" aria-hidden="true">
+                <label htmlFor="website">Website</label>
+                <input
+                  id="website"
+                  name="website"
+                  type="text"
+                  tabIndex={-1}
+                  autoComplete="off"
+                />
+              </div>
+              {/* end honeypot */}
               <div className="jn-field">
                 <label htmlFor="name">Full name</label>
                 <input
@@ -155,11 +162,11 @@ export default function JoinPage() {
                   value={formData.name}
                   onChange={handleChange}
                   placeholder="Your name"
-                  className={errors.name ? "is-invalid" : ""}
-                  aria-invalid={errors.name ? "true" : "false"}
-                  aria-describedby={errors.name ? "name-error" : undefined}
+                  className={visibleErrors.name ? "is-invalid" : ""}
+                  aria-invalid={visibleErrors.name ? "true" : "false"}
+                  aria-describedby={visibleErrors.name ? "name-error" : undefined}
                 />
-                {errors.name && <p id="name-error" className="jn-error">{errors.name}</p>}
+                {visibleErrors.name && <p id="name-error" className="jn-error">{visibleErrors.name}</p>}
               </div>
 
               <div className="jn-field">
@@ -171,11 +178,11 @@ export default function JoinPage() {
                   value={formData.email}
                   onChange={handleChange}
                   placeholder="you@example.com"
-                  className={errors.email ? "is-invalid" : ""}
-                  aria-invalid={errors.email ? "true" : "false"}
-                  aria-describedby={errors.email ? "email-error" : undefined}
+                  className={visibleErrors.email ? "is-invalid" : ""}
+                  aria-invalid={visibleErrors.email ? "true" : "false"}
+                  aria-describedby={visibleErrors.email ? "email-error" : undefined}
                 />
-                {errors.email && <p id="email-error" className="jn-error">{errors.email}</p>}
+                {visibleErrors.email && <p id="email-error" className="jn-error">{visibleErrors.email}</p>}
               </div>
 
               <div className="jn-field">
@@ -213,10 +220,10 @@ export default function JoinPage() {
                   value={formData.customInterest}
                   onChange={handleChange}
                   placeholder="Or add your own interest…"
-                  className={errors.interests ? "is-invalid" : ""}
+                  className={visibleErrors.interests ? "is-invalid" : ""}
                   style={{ marginTop: "12px" }}
                 />
-                {errors.interests && <p className="jn-error">{errors.interests}</p>}
+                {visibleErrors.interests && <p className="jn-error">{visibleErrors.interests}</p>}
               </fieldset>
 
               <div className="jn-field">
@@ -231,12 +238,16 @@ export default function JoinPage() {
                 />
               </div>
 
-              <Button variant="primary" type="submit" size="lg" style={{ width: "100%" }}>
-                Submit application <ArrowRight size={17} />
+              <Button variant="primary" type="submit" size="lg" style={{ width: "100%" }} disabled={isPending}>
+                {isPending ? "Submitting…" : <>Submit application <ArrowRight size={17} /></>}
               </Button>
 
+              {serverState.status === "error" && serverState.message && (
+                <p className="jn-error" role="alert">{serverState.message}</p>
+              )}
+
               <p className="jn-demo-note">
-                <strong>Demo mode:</strong> This form has no submission backend. In production, applications would be reviewed by the MCC leadership team.
+                <strong>Demo mode:</strong> Submissions are validated and stored in the club database when it is configured. In production, applications are reviewed by the MCC leadership team.
               </p>
             </form>
           </Reveal>

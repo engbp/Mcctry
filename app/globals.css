@@ -9761,3 +9761,5 @@ html.js .reveal.is-visible {
   .mcc-admin-module { min-height:0; }
   .mcc-admin-module p { min-height:0; }
 }
+
+.jn-hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
