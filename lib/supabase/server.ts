@@ -5,8 +5,9 @@ import { getSupabaseUrl, getSupabaseAnonKey } from "./env";
 
 /**
  * Server-side Supabase client bound to the request cookie store.
- * Uses the anon key, so RLS still applies. Authenticated identity comes from
- * the session cookie, never from client-supplied headers.
+ * Uses the publishable key (legacy name: "anon key"), so RLS still applies.
+ * Authenticated identity comes from the session cookie, never from
+ * client-supplied headers.
  */
 export async function createSupabaseServerClient() {
   const cookieStore = await cookies();

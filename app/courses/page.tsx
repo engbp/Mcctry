@@ -2,9 +2,18 @@ import Link from "next/link";
 import { ArrowRight, BookOpen, Layers } from "lucide-react";
 import { BandHero } from "@/components/layout/BandHero";
 import { CourseCatalog } from "@/components/learning/CourseCatalog";
-import { coursesData, tracksData } from "@/lib/data";
+import { loadCourses, loadTracks } from "@/lib/content-views";
 
-export default function CoursesPage() {
+export const revalidate = 300;
+
+export default async function CoursesPage() {
+  const [coursesResult, tracksResult] = await Promise.all([
+    loadCourses(),
+    loadTracks(),
+  ]);
+  const courses = coursesResult.items;
+  const tracks = tracksResult.items;
+
   return (
     <>
       <BandHero
@@ -14,8 +23,8 @@ export default function CoursesPage() {
         lede="Focused courses and short lessons designed to help you learn at your own pace — all organised into structured learning tracks."
         meta={
           <>
-            <span className="band-meta-pill"><BookOpen size={14} /> {coursesData.length} courses</span>
-            <span className="band-meta-pill"><Layers size={14} /> {tracksData.length} tracks</span>
+            <span className="band-meta-pill"><BookOpen size={14} /> {courses.length} courses</span>
+            <span className="band-meta-pill"><Layers size={14} /> {tracks.length} tracks</span>
           </>
         }
         icon={<BookOpen size={56} />}
@@ -29,7 +38,7 @@ export default function CoursesPage() {
               <h2 id="catalogue-title" className="hp-section-title">Find your next course.</h2>
             </div>
           </div>
-          <CourseCatalog />
+          <CourseCatalog courses={courses} tracks={tracks} />
         </div>
       </section>
 

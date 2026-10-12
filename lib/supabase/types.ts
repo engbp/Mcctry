@@ -1,4 +1,5 @@
-// Hand-maintained database types for the Stage B schema (0001_init.sql).
+// Hand-maintained database types for the Stage B schema
+// (supabase/migrations/20261011235451_init.sql).
 // Kept in sync manually; regenerate from a live instance later if desired.
 
 export type AppRole = "admin" | "leader" | "member";
@@ -43,6 +44,7 @@ export interface Track {
   description: string | null;
   color: string | null;
   icon: string | null;
+  duration: string | null;
   featured: boolean;
   published: boolean;
   position: number;
@@ -59,6 +61,7 @@ export interface Course {
   level: string | null;
   color: string | null;
   thumbnail: string | null;
+  duration: string | null;
   featured: boolean;
   published: boolean;
   position: number;
@@ -86,9 +89,38 @@ export interface ContentItem {
   title: string;
   description: string | null;
   body: string | null;
+  category: string | null;
   meta: Record<string, unknown>;
   featured: boolean;
   published: boolean;
+  event_date: string | null;
+  event_time: string | null;
+  location: string | null;
+  opportunity_date: string | null;
+  deadline: string | null;
+  link: string | null;
+  long_description: string | null;
+  technologies: string[] | null;
+  github_url: string | null;
+  demo_url: string | null;
+  thumbnail: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Resource {
+  id: string;
+  slug: string;
+  title: string;
+  description: string | null;
+  link: string | null;
+  external: boolean;
+  category: string | null;
+  icon: string | null;
+  course_id: string | null;
+  lesson_id: string | null;
+  published: boolean;
+  position: number;
   created_at: string;
   updated_at: string;
 }
@@ -127,6 +159,7 @@ export interface Database {
       lessons: { Row: Lesson; Insert: Partial<Lesson> & { course_id: string; slug: string; title: string }; Update: Partial<Lesson> };
       content_items: { Row: ContentItem; Insert: Partial<ContentItem> & { kind: ContentKind; slug: string; title: string }; Update: Partial<ContentItem> };
       applications: { Row: Application; Insert: ApplicationInsert; Update: Partial<Application> };
+      resources: { Row: Resource; Insert: Partial<Resource> & { slug: string; title: string }; Update: Partial<Resource> };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;

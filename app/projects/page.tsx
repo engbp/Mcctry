@@ -2,13 +2,16 @@ import Link from "next/link";
 import { ArrowRight, Code2, Github, ExternalLink, Rocket } from "lucide-react";
 import { BandHero } from "@/components/layout/BandHero";
 import { Badge } from "@/components/ui/Badge";
-import { projectsData } from "@/lib/data";
+import { loadProjects } from "@/lib/content-views";
 import { SpotlightCard } from "@/components/fx/SpotlightCard";
 import { Reveal } from "@/components/fx/Reveal";
 
-export default function ProjectsPage() {
-  const featuredProject = projectsData.find((p) => p.featured) ?? projectsData[0];
-  const otherProjects = projectsData.filter((p) => p.slug !== featuredProject.slug);
+export const revalidate = 300;
+
+export default async function ProjectsPage() {
+  const { items: projects } = await loadProjects();
+  const featuredProject = projects.find((p) => p.featured) ?? projects[0] ?? null;
+  const otherProjects = featuredProject ? projects.filter((p) => p.slug !== featuredProject.slug) : [];
 
   return (
     <>
@@ -20,13 +23,27 @@ export default function ProjectsPage() {
         color="#5c2d91"
         meta={
           <>
-            <span className="band-meta-pill"><Rocket size={14} /> {projectsData.length} projects</span>
+            <span className="band-meta-pill"><Rocket size={14} /> {projects.length} projects</span>
             <span className="band-meta-pill"><Code2 size={14} /> Student-built</span>
           </>
         }
         icon={<Code2 size={56} />}
       />
 
+      {projects.length === 0 || !featuredProject ? (
+        <section className="section" aria-labelledby="featured-project-title">
+          <div className="container">
+            <div className="mcc-empty-public">
+              <span className="mcc-empty-icon"><Code2 size={22} /></span>
+              <span className="mcc-section-label">NO PROJECTS PUBLISHED YET</span>
+              <h2>The next build belongs here.</h2>
+              <p>Student projects and prototypes will appear here once administrators publish them.</p>
+              <Link href="/join" className="mcc-text-link">Join MCC to submit a project <ArrowRight size={16} /></Link>
+            </div>
+          </div>
+        </section>
+      ) : (
+        <>
       <section className="section" aria-labelledby="featured-project-title">
         <div className="container">
           <Reveal className="lk-section-head">
@@ -85,7 +102,7 @@ export default function ProjectsPage() {
                 <div className="cm-project-body">
                   <div className="cm-project-tags">
                     <Badge variant="cyan">{project.category}</Badge>
-                    <Badge variant="demo">Demo</Badge>
+                    {project.demo && <Badge variant="demo">Demo</Badge>}
                   </div>
                   <h3>{project.title}</h3>
                   <p>{project.description}</p>
@@ -100,6 +117,8 @@ export default function ProjectsPage() {
           </Reveal>
         </div>
       </section>
+        </>
+      )}
 
       <section className="lk-cta-band" aria-labelledby="submit-title">
         <div className="container lk-cta-inner">

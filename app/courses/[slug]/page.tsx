@@ -5,9 +5,11 @@ import { ArrowRight, ArrowLeft, BookOpen, Clock, Play, CheckCircle, ChevronRight
 import { BandHero } from "@/components/layout/BandHero";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { coursesData, getCoursesByTrack, lessonsData } from "@/lib/data";
+import { loadCourses, loadLessonsForCourse } from "@/lib/content-views";
 import { Reveal } from "@/components/fx/Reveal";
 import { SpotlightCard } from "@/components/fx/SpotlightCard";
+
+export const revalidate = 300;
 
 interface CoursePageProps {
   params: Promise<{ slug: string }>;
@@ -15,7 +17,8 @@ interface CoursePageProps {
 
 export async function generateMetadata({ params }: CoursePageProps): Promise<Metadata> {
   const { slug } = await params;
-  const course = coursesData.find((c) => c.slug === slug);
+  const { items: courses } = await loadCourses();
+  const course = courses.find((c) => c.slug === slug);
   if (!course) return { title: "Course Not Found" };
   return {
     title: `${course.title} — MCC MNU`,
@@ -27,15 +30,20 @@ const skills = ["AI Fundamentals", "Structured Prompting", "Model Evaluation", "
 
 export default async function CoursePage({ params }: CoursePageProps) {
   const { slug } = await params;
-  const course = coursesData.find((c) => c.slug === slug);
+  const { items: courses, source } = await loadCourses();
+  const course = courses.find((c) => c.slug === slug);
   if (!course) notFound();
 
-  const trackCourses = getCoursesByTrack(course.trackSlug);
+  const { items: lessons } = await loadLessonsForCourse(
+    source === "db" ? course.id : null
+  );
+
+  const trackCourses = courses.filter((c) => c.trackSlug === course.trackSlug);
   const courseIndex = trackCourses.findIndex((c) => c.slug === slug);
   const prevCourse = courseIndex > 0 ? trackCourses[courseIndex - 1] : null;
   const nextCourse = courseIndex < trackCourses.length - 1 ? trackCourses[courseIndex + 1] : null;
 
-  const totalLessons = lessonsData.length;
+  const totalLessons = lessons.length;
   const totalDuration = course.duration;
 
   return (
@@ -50,12 +58,12 @@ export default async function CoursePage({ params }: CoursePageProps) {
           <>
             <span className="band-meta-pill"><BookOpen size={14} /> {totalLessons} lessons</span>
             <span className="band-meta-pill"><Clock size={14} /> {totalDuration}</span>
-            <span className="band-meta-pill"><Gauge size={14} /> {course.level}</span>
+            <span className="band-meta-pill"><Gauge size={14} /> {course.level ?? "All levels"}</span>
           </>
         }
         actions={
           <Button variant="inverse" asChild size="lg">
-            <Link href={`/courses/${slug}/lessons/${lessonsData[0]?.slug ?? "introduction"}`}>
+            <Link href={`/courses/${slug}/lessons/${lessons[0]?.slug ?? "introduction"}`}>
               <Play size={17} fill="currentColor" /> Start course
             </Link>
           </Button>
@@ -74,7 +82,9 @@ export default async function CoursePage({ params }: CoursePageProps) {
             </Reveal>
             <div className="lk-prose">
               <p>{course.description}</p>
-              <p>This demo course is structured like a lightweight learning path: short lessons, useful resources, and a clear next step after every lesson. Perfect for fitting learning into a busy student schedule.</p>
+              {source === "static" && (
+                <p>This demo course is structured like a lightweight learning path: short lessons, useful resources, and a clear next step after every lesson. Perfect for fitting learning into a busy student schedule.</p>
+              )}
             </div>
 
             <Reveal className="lk-section-head" style={{ marginTop: "48px" }}>
@@ -84,7 +94,7 @@ export default async function CoursePage({ params }: CoursePageProps) {
               </div>
             </Reveal>
             <Reveal className="lk-lesson-list" role="list">
-              {lessonsData.map((lesson, i) => (
+              {lessons.map((lesson, i) => (
                 <SpotlightCard key={lesson.slug} as="a" href={`/courses/${slug}/lessons/${lesson.slug}`} className="lk-lesson-row" role="listitem">
                   <span className="lk-lesson-play" aria-hidden="true"><Play size={15} fill="currentColor" /></span>
                   <span className="lk-lesson-index">{String(i + 1).padStart(2, "0")}</span>
@@ -104,9 +114,9 @@ export default async function CoursePage({ params }: CoursePageProps) {
           <aside className="course-sidebar" aria-labelledby="sidebar-title">
             <div className="lk-side-card">
               <h3 id="sidebar-title">Start learning</h3>
-              <p className="lk-side-sub">{totalLessons} lessons · {totalDuration} · {course.level}</p>
+              <p className="lk-side-sub">{totalLessons} lessons · {totalDuration} · {course.level ?? "All levels"}</p>
               <Button variant="primary" asChild size="lg" style={{ width: "100%" }}>
-                <Link href={`/courses/${slug}/lessons/${lessonsData[0]?.slug ?? "introduction"}`}>
+                <Link href={`/courses/${slug}/lessons/${lessons[0]?.slug ?? "introduction"}`}>
                   Start course <ArrowRight size={17} />
                 </Link>
               </Button>

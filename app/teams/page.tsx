@@ -1,7 +1,11 @@
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, Users, ShieldCheck, BookOpen, UserRoundCheck } from "lucide-react";
+import { loadTeams } from "@/lib/content-views";
 
-export default function TeamsPage() {
+export const revalidate = 300;
+
+export default async function TeamsPage() {
+  const { items: teams } = await loadTeams();
   return (
     <div className="mcc-public-page">
       <section className="mcc-public-hero">
@@ -27,7 +31,23 @@ export default function TeamsPage() {
           <p><Users size={18} /><span><strong>Team members</strong><small>Participate in one operational team while continuing to join multiple learning tracks as students.</small></span></p>
         </div>
       </div></section>
-      <section className="section"><div className="container mcc-empty-public"><span className="mcc-empty-icon"><Users size={22} /></span><span className="mcc-section-label">TEAM PROFILES</span><h2>Meet the people behind the work.</h2><p>Public operational-team profiles and member spotlights will appear here after MCC administrators publish verified information. No names or team rosters are invented for this prototype.</p><a className="mcc-text-link" href="https://www.linkedin.com/company/mccmnuegypt/" target="_blank" rel="noreferrer">Follow official MCC updates <ArrowUpRight size={16} /></a></div></section>
+      {teams.length > 0 ? (
+        <section className="section"><div className="container">
+          <div className="mcc-section-heading"><div><span className="mcc-section-label">TEAM PROFILES</span><h2>Meet the people behind the work.</h2></div></div>
+          <div className="mcc-structure-grid" role="list">
+            {teams.map((team) => (
+              <article className="mcc-structure-card" key={team.slug} role="listitem">
+                <span><Users size={23} /></span>
+                <small>OPERATIONAL TEAM</small>
+                <h3>{team.name}</h3>
+                <p>{team.description}</p>
+              </article>
+            ))}
+          </div>
+        </div></section>
+      ) : (
+        <section className="section"><div className="container mcc-empty-public"><span className="mcc-empty-icon"><Users size={22} /></span><span className="mcc-section-label">TEAM PROFILES</span><h2>Meet the people behind the work.</h2><p>Public operational-team profiles and member spotlights will appear here after MCC administrators publish verified information. No names or team rosters are invented for this prototype.</p><a className="mcc-text-link" href="https://www.linkedin.com/company/mccmnuegypt/" target="_blank" rel="noreferrer">Follow official MCC updates <ArrowUpRight size={16} /></a></div></section>
+      )}
     </div>
   );
 }

@@ -79,16 +79,16 @@ export default function JoinPage() {
         <BandHero
           crumbs={[{ label: "Join" }, { label: "Submitted" }]}
           kicker="CONNECT · COMPLETE"
-          title="Preview complete"
-          lede="This interactive form is a prototype preview. No real application has been sent or stored."
+          title="Application received"
+          lede="Thanks for applying. Your application was submitted and stored securely in the club database for review by the MCC leadership team."
           color="#10b981"
           icon={<CheckCircle size={56} />}
         />
         <section className="section" aria-labelledby="success-title">
           <div className="container jn-success">
             <span className="jn-success-icon"><CheckCircle size={44} /></span>
-            <h2 id="success-title">Preview complete</h2>
-            <p>This demo does not submit or store applications. In the live platform, students can apply during official recruitment cycles and administrators make the final selection decisions.</p>
+            <h2 id="success-title">Application received</h2>
+            <p>Applications are reviewed by the MCC leadership team during official recruitment cycles. Watch the official MCC MNU channels for next steps and announcements.</p>
             <div className="jn-success-actions">
               <Button variant="primary" asChild size="lg">
                 <Link href="/">Back to home <ArrowRight size={17} /></Link>
@@ -109,7 +109,7 @@ export default function JoinPage() {
         crumbs={[{ label: "Join" }]}
         kicker="CONNECT · RECRUITMENT"
         title="Join MCC MNU."
-        lede="Team recruitment runs in formal cycles with announced opening and closing dates. This interactive form is a presentation-only preview; nothing is stored or submitted."
+        lede="Team recruitment runs in formal cycles with announced opening and closing dates. Submit your application below and the MCC leadership team will review it during the next cycle."
         color="#00b7c3"
         meta={<span className="band-meta-pill"><UserPlus size={14} /> Formal recruitment cycles</span>}
         icon={<UserPlus size={56} />}
@@ -247,7 +247,7 @@ export default function JoinPage() {
               )}
 
               <p className="jn-demo-note">
-                <strong>Demo mode:</strong> Submissions are validated and stored in the club database when it is configured. In production, applications are reviewed by the MCC leadership team.
+                <strong>What happens next:</strong> Your application is stored securely and reviewed by the MCC leadership team during official recruitment cycles. Keep an eye on official MCC MNU channels for announcements.
               </p>
             </form>
           </Reveal>

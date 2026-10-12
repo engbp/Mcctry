@@ -5,9 +5,12 @@ import { ArrowRight, CalendarDays, MapPin, Clock, Users, Share2, CheckCircle, Ti
 import { BandHero } from "@/components/layout/BandHero";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { eventsData, formatDate } from "@/lib/data";
+import { formatDate } from "@/lib/data";
+import { loadEvents } from "@/lib/content-views";
 import { Reveal } from "@/components/fx/Reveal";
 import { SpotlightCard } from "@/components/fx/SpotlightCard";
+
+export const revalidate = 300;
 
 interface EventPageProps {
   params: Promise<{ slug: string }>;
@@ -15,7 +18,8 @@ interface EventPageProps {
 
 export async function generateMetadata({ params }: EventPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const event = eventsData.find((e) => e.slug === slug);
+  const { items: events } = await loadEvents();
+  const event = events.find((e) => e.slug === slug);
   if (!event) return { title: "Event Not Found" };
   return { title: `${event.title} — MCC MNU`, description: event.description };
 }
@@ -29,12 +33,13 @@ const agenda = [
 
 export default async function EventPage({ params }: EventPageProps) {
   const { slug } = await params;
-  const event = eventsData.find((e) => e.slug === slug);
+  const { items: events } = await loadEvents();
+  const event = events.find((e) => e.slug === slug);
   if (!event) notFound();
 
-  const eventIndex = eventsData.findIndex((e) => e.slug === slug);
-  const prevEvent = eventIndex > 0 ? eventsData[eventIndex - 1] : null;
-  const nextEvent = eventIndex < eventsData.length - 1 ? eventsData[eventIndex + 1] : null;
+  const eventIndex = events.findIndex((e) => e.slug === slug);
+  const prevEvent = eventIndex > 0 ? events[eventIndex - 1] : null;
+  const nextEvent = eventIndex < events.length - 1 ? events[eventIndex + 1] : null;
   const d = formatDate(event.date);
 
   const detailCards = [
@@ -86,7 +91,9 @@ export default async function EventPage({ params }: EventPageProps) {
             <div className="cm-about-box">
               <h3>About this event</h3>
               <p>{event.description}</p>
-              <p>This is a demo event for presentation purposes. Actual event details, speakers, agenda and registration will be confirmed closer to the date.</p>
+              {event.demo && (
+                <p>This is a demo event for presentation purposes. Actual event details, speakers, agenda and registration will be confirmed closer to the date.</p>
+              )}
             </div>
 
             <Reveal className="lk-section-head" style={{ marginTop: "48px" }}>

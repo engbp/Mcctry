@@ -6,16 +6,17 @@ import { ArrowRight, ArrowLeft, Play, Pause, Volume2, VolumeX, SkipBack, SkipFor
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Reveal } from "@/components/fx/Reveal";
-import { lessonsData } from "@/lib/data";
+import type { LessonView } from "@/lib/content-views";
 
 interface LessonClientProps {
   course: { slug: string; track: string; title: string };
-  lesson: { slug: string; title: string; duration: string; type: string };
+  lesson: LessonView;
+  lessons: LessonView[];
   lessonIndex: number;
   lessonNumber: number;
   totalLessons: number;
-  prevLesson: { slug: string; title: string; duration: string; type: string } | null;
-  nextLesson: { slug: string; title: string; duration: string; type: string } | null;
+  prevLesson: LessonView | null;
+  nextLesson: LessonView | null;
   slug: string;
 }
 
@@ -33,7 +34,7 @@ function formatTime(total: number): string {
 const speeds = [0.75, 1, 1.25, 1.5, 2];
 
 export function LessonClient({
-  course, lesson, lessonIndex, lessonNumber, totalLessons, prevLesson, nextLesson, slug,
+  course, lesson, lessons, lessonIndex, lessonNumber, totalLessons, prevLesson, nextLesson, slug,
 }: LessonClientProps) {
   const duration = parseDuration(lesson.duration);
   const [playing, setPlaying] = useState(false);
@@ -261,7 +262,7 @@ export function LessonClient({
               <Badge variant="blue">{totalLessons}</Badge>
             </div>
             <nav className="lesson-side-nav" aria-label="Lesson navigation">
-              {lessonsData.map((l, i) => {
+              {lessons.map((l, i) => {
                 const isCurrent = i === lessonIndex;
                 const isCompleted = i < lessonIndex;
                 return (

@@ -2,14 +2,18 @@ import Link from "next/link";
 import { ArrowRight, CalendarDays, MapPin, Clock, Users, Sparkles } from "lucide-react";
 import { BandHero } from "@/components/layout/BandHero";
 import { Badge } from "@/components/ui/Badge";
-import { eventsData, formatDate } from "@/lib/data";
+import { formatDate } from "@/lib/data";
+import { loadEvents } from "@/lib/content-views";
 import { SpotlightCard } from "@/components/fx/SpotlightCard";
 import { Reveal } from "@/components/fx/Reveal";
 
-export default function EventsPage() {
-  const featuredEvent = eventsData.find((e) => e.featured) ?? eventsData[0];
-  const otherEvents = eventsData.filter((e) => e.slug !== featuredEvent.slug);
-  const fd = formatDate(featuredEvent.date);
+export const revalidate = 300;
+
+export default async function EventsPage() {
+  const { items: events } = await loadEvents();
+  const featuredEvent = events.find((e) => e.featured) ?? events[0] ?? null;
+  const otherEvents = featuredEvent ? events.filter((e) => e.slug !== featuredEvent.slug) : [];
+  const fd = featuredEvent ? formatDate(featuredEvent.date) : null;
 
   return (
     <>
@@ -21,13 +25,27 @@ export default function EventsPage() {
         color="#00b7c3"
         meta={
           <>
-            <span className="band-meta-pill"><CalendarDays size={14} /> {eventsData.length} upcoming events</span>
+            <span className="band-meta-pill"><CalendarDays size={14} /> {events.length} upcoming events</span>
             <span className="band-meta-pill"><Users size={14} /> Open to all students</span>
           </>
         }
         icon={<CalendarDays size={56} />}
       />
 
+      {events.length === 0 || !featuredEvent || !fd ? (
+        <section className="section" aria-labelledby="featured-event-title">
+          <div className="container">
+            <div className="mcc-empty-public">
+              <span className="mcc-empty-icon"><CalendarDays size={22} /></span>
+              <span className="mcc-section-label">NO EVENTS PUBLISHED YET</span>
+              <h2>The next event belongs here.</h2>
+              <p>Upcoming MCC sessions, build nights and workshops will appear here once administrators publish them.</p>
+              <Link href="/join" className="mcc-text-link">Join MCC MNU <ArrowRight size={16} /></Link>
+            </div>
+          </div>
+        </section>
+      ) : (
+        <>
       <section className="section" aria-labelledby="featured-event-title">
         <div className="container">
           <Reveal className="lk-section-head">
@@ -46,7 +64,7 @@ export default function EventsPage() {
             <div className="cm-fe-copy">
               <div className="cm-fe-tags">
                 <Badge variant="cyan">{featuredEvent.category}</Badge>
-                <Badge variant="demo">DEMO EVENT</Badge>
+                {featuredEvent.demo && <Badge variant="demo">DEMO EVENT</Badge>}
               </div>
               <h3>{featuredEvent.title}</h3>
               <p>{featuredEvent.description}</p>
@@ -95,6 +113,8 @@ export default function EventsPage() {
           </Reveal>
         </div>
       </section>
+        </>
+      )}
 
       <section className="lk-cta-band" aria-labelledby="past-title">
         <div className="container lk-cta-inner">

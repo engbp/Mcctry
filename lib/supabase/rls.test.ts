@@ -4,6 +4,9 @@
 //
 // They are NOT run locally by default. Enable by exporting:
 //   SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, SUPABASE_ANON_KEY
+// Values use Supabase's current key formats: the secret key is `sb_secret_...`
+// (for SUPABASE_SERVICE_ROLE_KEY) and the publishable key is `sb_publishable_...`
+// (for SUPABASE_ANON_KEY). Legacy `eyJ...` JWTs also still work.
 //
 // Destructive operations are avoided: the suite only inserts/reads synthetic
 // rows it creates, and cleans up after itself. Never point this at production.
@@ -125,5 +128,118 @@ describe.skipIf(!configured)("RLS + integration (requires live Supabase)", () =>
     const { data } = await admin.from("profiles").select("role").eq("id", uid).single();
     expect(data?.role).toBe("admin");
     await admin.auth.admin.deleteUser(uid);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Role-security regression suite.
+// Proves the Issue A fix end-to-end against a live instance:
+//   - a non-admin cannot self-promote via a direct API update
+//   - a non-admin cannot self-promote via the admin_set_profile_role() function
+//   - a non-admin can still update their own display_name
+//   - an admin CAN change another user's role via admin_set_profile_role()
+// These run only when SUPABASE_URL / SERVICE_ROLE / ANON are configured and
+// the migration (including admin_set_profile_role) has been applied.
+// ---------------------------------------------------------------------------
+describe.skipIf(!configured)("Profile role security regression", () => {
+  let admin: SupabaseClient;
+  const createdUserIds: string[] = [];
+
+  const TEST_PASSWORD = "Sup3rSecret-test-password";
+
+  async function createUserWithRole(email: string, role: "member" | "admin") {
+    const { data: authUser, error } = await admin.auth.admin.createUser({
+      email,
+      password: TEST_PASSWORD,
+      email_confirm: true,
+    });
+    expect(error).toBeNull();
+    const uid = authUser!.user!.id;
+    createdUserIds.push(uid);
+    const { error: upsertErr } = await admin
+      .from("profiles")
+      .upsert({ id: uid, role, display_name: `Test ${role}` });
+    expect(upsertErr).toBeNull();
+    const { data: session, error: signInErr } = await admin.auth.signInWithPassword({
+      email,
+      password: TEST_PASSWORD,
+    });
+    expect(signInErr).toBeNull();
+    const client = createClient(url!, anonKey!, {
+      global: { headers: { Authorization: `Bearer ${session.session!.access_token}` } },
+      auth: { persistSession: false },
+    });
+    return { uid, client };
+  }
+
+  beforeAll(() => {
+    admin = createClient(url!, serviceKey!, { auth: { persistSession: false } });
+  });
+
+  afterAll(async () => {
+    for (const uid of createdUserIds) {
+      try {
+        await admin.auth.admin.deleteUser(uid);
+      } catch {
+        // best-effort cleanup; ignore if already gone
+      }
+    }
+  });
+
+  it("non-admin cannot self-promote via a direct role update", async () => {
+    const ts = Date.now();
+    const { uid, client } = await createUserWithRole(`member-direct-${ts}@example.com`, "member");
+    const { error } = await client
+      .from("profiles")
+      .update({ role: "admin" })
+      .eq("id", uid);
+    expect(error).toBeTruthy();
+    // Confirm role is still member.
+    const { data } = await admin.from("profiles").select("role").eq("id", uid).single();
+    expect(data?.role).toBe("member");
+  });
+
+  it("non-admin cannot self-promote via admin_set_profile_role()", async () => {
+    const ts = Date.now();
+    const { uid, client } = await createUserWithRole(`member-fn-${ts}@example.com`, "member");
+    const { error } = await client.rpc("admin_set_profile_role", {
+      target_user_id: uid,
+      new_role: "admin",
+    });
+    expect(error).toBeTruthy();
+    const { data } = await admin.from("profiles").select("role").eq("id", uid).single();
+    expect(data?.role).toBe("member");
+  });
+
+  it("non-admin can still update their own display_name", async () => {
+    const ts = Date.now();
+    const { uid, client } = await createUserWithRole(`member-name-${ts}@example.com`, "member");
+    const { error } = await client
+      .from("profiles")
+      .update({ display_name: "Updated Name" })
+      .eq("id", uid);
+    expect(error).toBeNull();
+    const { data } = await admin
+      .from("profiles")
+      .select("display_name")
+      .eq("id", uid)
+      .single();
+    expect(data?.display_name).toBe("Updated Name");
+  });
+
+  it("admin can change another user's role via admin_set_profile_role()", async () => {
+    const ts = Date.now();
+    // Admin caller.
+    const { client: adminClient } = await createUserWithRole(`admin-caller-${ts}@example.com`, "admin");
+    // Target member.
+    const { uid: targetUid } = await createUserWithRole(`member-target-${ts}@example.com`, "member");
+
+    const { error } = await adminClient.rpc("admin_set_profile_role", {
+      target_user_id: targetUid,
+      new_role: "leader",
+    });
+    expect(error).toBeNull();
+    const { data } = await admin.from("profiles").select("role").eq("id", targetUid).single();
+    expect(data?.role).toBe("leader");
   });
 });

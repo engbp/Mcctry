@@ -1,6 +1,11 @@
 // Central, validated access to Stage B environment variables.
 // No value is ever hard-coded here. Nothing is exposed to the browser unless
 // it is explicitly prefixed NEXT_PUBLIC_ by the operator.
+//
+// Supabase's current API key formats (both accepted, passed through verbatim):
+//   - Publishable key: `sb_publishable_...` — public, browser-safe (NEXT_PUBLIC_*).
+//   - Secret key:      `sb_secret_...`      — server-only, never NEXT_PUBLIC_*.
+// The legacy "anon key" / "service_role key" JWTs (`eyJ...`) also still work.
 
 const MISSING = "Supabase environment variable is not set";
 
@@ -10,6 +15,10 @@ export function getSupabaseUrl(): string {
   return url;
 }
 
+/**
+ * Publishable key (legacy name: "anon key"). `sb_publishable_...`. Public and
+ * browser-safe; RLS is the enforcement boundary when this key is used.
+ */
 export function getSupabaseAnonKey(): string {
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!key) throw new Error(`${MISSING}: NEXT_PUBLIC_SUPABASE_ANON_KEY`);
@@ -17,9 +26,10 @@ export function getSupabaseAnonKey(): string {
 }
 
 /**
- * Service-role key. Server-only. Must never be passed to a client component or
- * prefixed with NEXT_PUBLIC_. Returns null instead of throwing so optional
- * admin paths can degrade without crashing the public site.
+ * Secret key (legacy name: "service_role key"). `sb_secret_...`. Server-only.
+ * Must never be passed to a client component or prefixed with NEXT_PUBLIC_.
+ * Returns null instead of throwing so optional admin paths can degrade without
+ * crashing the public site.
  */
 export function getServiceRoleKey(): string | null {
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;

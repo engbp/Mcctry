@@ -1,12 +1,13 @@
 // Public, read-only content queries.
-// These run with the anon key, so RLS (`published = true`) is the enforcement
-// boundary. Each function returns a discriminated result instead of throwing so
-// a network/credential failure degrades to a friendly empty state rather than
-// crashing the page.
+// These run with the anon/publishable key through the cookieless public
+// client, so RLS (`published = true`) is the enforcement boundary and pages
+// stay statically prerenderable. Each function returns a discriminated result
+// instead of throwing so a network/credential failure degrades to a friendly
+// empty state rather than crashing the page.
 
-import { createSupabaseServerClient } from "./server";
+import { createSupabasePublicClient } from "./public";
 import { isSupabaseConfigured } from "./env";
-import type { ContentItem, ContentKind, Course, Lesson, Team, Track } from "./types";
+import type { ContentItem, ContentKind, Course, Lesson, Resource, Team, Track } from "./types";
 
 export type QueryResult<T> =
   | { ok: true; data: T }
@@ -24,7 +25,7 @@ function ok<T>(data: T): QueryResult<T> {
 
 export async function getPublishedTracks(): Promise<QueryResult<Track[]>> {
   if (!isSupabaseConfigured()) return fail(NETWORK_ERROR);
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabasePublicClient();
   const { data, error } = await supabase
     .from("tracks")
     .select("*")
@@ -38,7 +39,7 @@ export async function getPublishedCourses(
   trackId?: string
 ): Promise<QueryResult<Course[]>> {
   if (!isSupabaseConfigured()) return fail(NETWORK_ERROR);
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabasePublicClient();
   let query = supabase
     .from("courses")
     .select("*")
@@ -51,16 +52,17 @@ export async function getPublishedCourses(
 }
 
 export async function getPublishedLessons(
-  courseId: string
+  courseId?: string
 ): Promise<QueryResult<Lesson[]>> {
   if (!isSupabaseConfigured()) return fail(NETWORK_ERROR);
-  const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase
+  const supabase = createSupabasePublicClient();
+  let query = supabase
     .from("lessons")
     .select("*")
-    .eq("course_id", courseId)
     .eq("published", true)
     .order("position", { ascending: true });
+  if (courseId) query = query.eq("course_id", courseId);
+  const { data, error } = await query;
   if (error) return fail(error.message);
   return ok(data ?? []);
 }
@@ -69,7 +71,7 @@ export async function getPublishedContent(
   kind: ContentKind
 ): Promise<QueryResult<ContentItem[]>> {
   if (!isSupabaseConfigured()) return fail(NETWORK_ERROR);
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabasePublicClient();
   const { data, error } = await supabase
     .from("content_items")
     .select("*")
@@ -82,12 +84,24 @@ export async function getPublishedContent(
 
 export async function getPublishedTeams(): Promise<QueryResult<Team[]>> {
   if (!isSupabaseConfigured()) return fail(NETWORK_ERROR);
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabasePublicClient();
   const { data, error } = await supabase
     .from("teams")
     .select("*")
     .eq("published", true)
     .order("name", { ascending: true });
+  if (error) return fail(error.message);
+  return ok(data ?? []);
+}
+
+export async function getPublishedResources(): Promise<QueryResult<Resource[]>> {
+  if (!isSupabaseConfigured()) return fail(NETWORK_ERROR);
+  const supabase = createSupabasePublicClient();
+  const { data, error } = await supabase
+    .from("resources")
+    .select("*")
+    .eq("published", true)
+    .order("position", { ascending: true });
   if (error) return fail(error.message);
   return ok(data ?? []);
 }

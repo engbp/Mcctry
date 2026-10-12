@@ -1,9 +1,12 @@
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, CalendarDays, Award, Target, Clock, Trophy, Lightbulb, Users, Rocket } from "lucide-react";
 import { BandHero } from "@/components/layout/BandHero";
-import { opportunitiesData, formatDate } from "@/lib/data";
+import { formatDate } from "@/lib/data";
+import { loadOpportunities } from "@/lib/content-views";
 import { SpotlightCard } from "@/components/fx/SpotlightCard";
 import { Reveal } from "@/components/fx/Reveal";
+
+export const revalidate = 300;
 
 const types = [
   { icon: Award, title: "Hackathons", text: "Intensive build events where teams create projects in 24–48 hours. Great for learning, networking, and prizes." },
@@ -18,16 +21,21 @@ const tips = [
   { icon: Target, title: "Ask for feedback", text: "Before submitting, get your application reviewed by peers or mentors. Fresh eyes catch gaps you might miss." },
 ];
 
-export default function OpportunitiesPage() {
+export default async function OpportunitiesPage() {
+  const { items: opportunities } = await loadOpportunities();
+  const lede = opportunities.some((opp) => opp.demo)
+    ? "Challenges, competitions, hackathons and community programs — curated for MCC MNU students. Demo content is clearly marked."
+    : "Challenges, competitions, hackathons and community programs — curated for MCC MNU students.";
+
   return (
     <>
       <BandHero
         crumbs={[{ label: "Opportunities" }]}
         kicker="BUILD · DIRECTORY"
         title="Find your next opportunity."
-        lede="Challenges, competitions, hackathons and community programs — curated for MCC MNU students. Demo content is clearly marked."
+        lede={lede}
         color="#0078d4"
-        meta={<span className="band-meta-pill"><Trophy size={14} /> {opportunitiesData.length} open opportunities</span>}
+        meta={<span className="band-meta-pill"><Trophy size={14} /> {opportunities.length} open opportunities</span>}
         icon={<Trophy size={56} />}
       />
 
@@ -40,20 +48,32 @@ export default function OpportunitiesPage() {
             </div>
           </Reveal>
 
-          <Reveal className="hp-opp-grid" role="list">
-            {opportunitiesData.map((opp) => (
-              <SpotlightCard key={opp.slug} as="a" href="/opportunities" className="hp-opp-card" role="listitem" style={{ "--track-color": opp.color } as React.CSSProperties}>
-                <span className="hp-opp-type">{opp.type}</span>
-                <h3>{opp.title}</h3>
-                <p>{opp.description}</p>
-                <div className="hp-opp-meta">
-                  <CalendarDays size={15} />
-                  <span>Deadline {formatDate(opp.deadline).day} {formatDate(opp.deadline).month}</span>
-                  <ArrowUpRight size={15} style={{ marginLeft: "auto" }} />
-                </div>
-              </SpotlightCard>
-            ))}
-          </Reveal>
+          {opportunities.length === 0 ? (
+            <div className="mcc-empty-public">
+              <span className="mcc-empty-icon"><Trophy size={22} /></span>
+              <span className="mcc-section-label">NO OPPORTUNITIES PUBLISHED YET</span>
+              <h2>The next open call belongs here.</h2>
+              <p>Hackathons, competitions and community programs will be listed here once administrators publish them.</p>
+              <Link href="/join" className="mcc-text-link">Join MCC MNU <ArrowRight size={16} /></Link>
+            </div>
+          ) : (
+            <Reveal className="hp-opp-grid" role="list">
+              {opportunities.map((opp) => (
+                <SpotlightCard key={opp.slug} as="a" href="/opportunities" className="hp-opp-card" role="listitem" style={{ "--track-color": opp.color } as React.CSSProperties}>
+                  <span className="hp-opp-type">{opp.type}</span>
+                  <h3>{opp.title}</h3>
+                  <p>{opp.description}</p>
+                  <div className="hp-opp-meta">
+                    <CalendarDays size={15} />
+                    {opp.deadline && (
+                      <span>Deadline {formatDate(opp.deadline).day} {formatDate(opp.deadline).month}</span>
+                    )}
+                    <ArrowUpRight size={15} style={{ marginLeft: "auto" }} />
+                  </div>
+                </SpotlightCard>
+              ))}
+            </Reveal>
+          )}
         </div>
       </section>
 

@@ -3,7 +3,8 @@ import type { Database } from "./types";
 import { getSupabaseUrl, getServiceRoleKey } from "./env";
 
 /**
- * Privileged server-only client. Bypasses RLS — use ONLY for admin/automation
+ * Privileged server-only client. Uses the secret key (legacy name:
+ * "service_role key"), which bypasses RLS — use ONLY for admin/automation
  * paths that are themselves gated by an explicit is_admin() check.
  * Never export this to a client component. Never prefix its key NEXT_PUBLIC_.
  */
