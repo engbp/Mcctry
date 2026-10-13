@@ -3,55 +3,48 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, Search, ChevronDown, ArrowUpRight } from "lucide-react";
+import { Menu, X, Search, ChevronDown, ArrowUpRight, LogIn, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { tracksData, coursesData, eventsData } from "@/lib/data";
 
 const navigation = [
   {
     label: "Learn",
     href: "/courses",
     children: [
-      { label: "All Courses", href: "/courses", description: "Browse the complete course catalogue" },
+      { label: "All Courses", href: "/courses", description: "Browse the published course catalogue" },
       { label: "Learning Tracks", href: "/tracks", description: "Guided paths from beginner to advanced" },
       { label: "Resources", href: "/resources", description: "Tools, references, and learning materials" },
     ],
   },
   {
-    label: "Build",
-    href: "/projects",
-    children: [
-      { label: "Student Projects", href: "/projects", description: "See what MCC members are building" },
-      { label: "Events & Workshops", href: "/events", description: "Hands-on sessions and build nights" },
-      { label: "Opportunities", href: "/opportunities", description: "Hackathons, competitions, programs" },
-    ],
-  },
-  {
-    label: "Connect",
+    label: "Club",
     href: "/about",
     children: [
       { label: "About MCC", href: "/about", description: "Our mission, values, and community" },
-      { label: "Join MCC", href: "/join", description: "Become a member today" },
-      { label: "Student Dashboard", href: "/demo/dashboard", description: "Track your learning progress" },
+      { label: "Join MCC", href: "/join", description: "Submit a recruitment application" },
     ],
   },
 ];
 
 const searchIndex = [
-  ...coursesData.map((c) => ({ label: c.title, href: `/courses/${c.slug}`, type: "Course" })),
-  ...tracksData.map((t) => ({ label: t.title, href: `/tracks/${t.slug}`, type: "Track" })),
-  ...eventsData.map((e) => ({ label: e.title, href: `/events/${e.slug}`, type: "Event" })),
+  { label: "All Courses", href: "/courses", type: "Page" },
+  { label: "Learning Tracks", href: "/tracks", type: "Page" },
+  { label: "Resources", href: "/resources", type: "Page" },
   { label: "About MCC", href: "/about", type: "Page" },
   { label: "Join MCC", href: "/join", type: "Page" },
-  { label: "Student Projects", href: "/projects", type: "Page" },
-  { label: "Opportunities", href: "/opportunities", type: "Page" },
-  { label: "Resources", href: "/resources", type: "Page" },
-  { label: "People & Teams", href: "/teams", type: "Page" },
-  { label: "Achievements", href: "/achievements", type: "Page" },
-  { label: "News & Updates", href: "/news", type: "Page" },
+  { label: "Getting Started", href: "/tracks/getting-started", type: "Track" },
+  { label: "Introduction to AI", href: "/courses/introduction-to-ai", type: "Course" },
+  { label: "Student Dashboard", href: "/dashboard", type: "Page" },
+  { label: "Sign in", href: "/login", type: "Page" },
+  { label: "Create account", href: "/signup", type: "Page" },
 ];
 
-export function Header() {
+interface HeaderProps {
+  isSignedIn?: boolean;
+  isAdmin?: boolean;
+}
+
+export function Header({ isSignedIn = false, isAdmin = false }: HeaderProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [mobileSection, setMobileSection] = useState<string | null>(null);
@@ -180,9 +173,24 @@ export function Header() {
             <span className="search-btn-label">Search</span>
             <kbd className="search-kbd">Ctrl K</kbd>
           </button>
-          <Button variant="primary" asChild className="nav-join">
-            <Link href="/join">Join MCC <ArrowUpRight size={15} /></Link>
-          </Button>
+          {isSignedIn ? (
+            <>
+              <Button variant="primary" asChild className="nav-join">
+                <Link href={isAdmin ? "/admin" : "/dashboard"}>
+                  {isAdmin ? "Admin" : "Dashboard"} {isAdmin ? <LayoutDashboard size={15} /> : <ArrowUpRight size={15} />}
+                </Link>
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button variant="ghost" asChild className="nav-signin">
+                <Link href="/login"><LogIn size={15} /> Sign in</Link>
+              </Button>
+              <Button variant="primary" asChild className="nav-join">
+                <Link href="/join">Join MCC <ArrowUpRight size={15} /></Link>
+              </Button>
+            </>
+          )}
           <button
             ref={menuBtnRef}
             className="menu-btn"
@@ -206,8 +214,8 @@ export function Header() {
                 type="search"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search courses, tracks, events…"
-                aria-label="Search courses, tracks, events"
+                placeholder="Search courses, tracks, pages…"
+                aria-label="Search courses, tracks, pages"
               />
               <button className="search-close" aria-label="Close search" onClick={() => setSearchOpen(false)}>
                 <X size={18} />
@@ -268,9 +276,22 @@ export function Header() {
               </div>
             );
           })}
-          <Button variant="primary" className="mobile-join" asChild>
-            <Link href="/join" onClick={() => setMobileOpen(false)}>Join MCC <ArrowUpRight size={15} /></Link>
-          </Button>
+          {isSignedIn ? (
+            <Button variant="primary" className="mobile-join" asChild>
+              <Link href={isAdmin ? "/admin" : "/dashboard"} onClick={() => setMobileOpen(false)}>
+                {isAdmin ? "Admin workspace" : "Dashboard"}
+              </Link>
+            </Button>
+          ) : (
+            <>
+              <Button variant="ghost" className="mobile-join" asChild>
+                <Link href="/login" onClick={() => setMobileOpen(false)}>Sign in</Link>
+              </Button>
+              <Button variant="primary" className="mobile-join" asChild>
+                <Link href="/join" onClick={() => setMobileOpen(false)}>Join MCC <ArrowUpRight size={15} /></Link>
+              </Button>
+            </>
+          )}
         </div>
       )}
     </header>

@@ -1,0 +1,65 @@
+import { requireAdmin } from "@/lib/auth";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { ActionForm } from "@/components/admin/ActionForm";
+import { updateApplicationStatusAction } from "../actions";
+
+export const dynamic = "force-dynamic";
+
+const STATUSES = ["pending", "reviewing", "accepted", "rejected", "withdrawn"] as const;
+
+export default async function AdminApplicationsPage() {
+  await requireAdmin("/admin/applications");
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from("applications")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(200);
+
+  return (
+    <>
+      <header className="mcc-admin-page-head">
+        <div>
+          <span className="mcc-section-label">RECRUITMENT</span>
+          <h1>Applications</h1>
+          <p>Join-form submissions. Visible only to administrators (RLS-enforced).</p>
+        </div>
+      </header>
+
+      {error && <div className="notice" role="alert">{error.message}</div>}
+
+      {!data || data.length === 0 ? (
+        <p className="mcc-admin-empty">No applications submitted yet.</p>
+      ) : (
+        <div className="mcc-admin-card-list">
+          {data.map((app) => (
+            <article key={app.id} className="mcc-admin-app-card">
+              <div className="mcc-admin-app-head">
+                <div>
+                  <h3>{app.name}</h3>
+                  <a href={`mailto:${app.email}`}>{app.email}</a>
+                </div>
+                <span className={`mcc-admin-badge mcc-admin-badge-${app.status}`}>{app.status}</span>
+              </div>
+              {app.interests?.length > 0 && (
+                <p className="mcc-admin-app-interests">{app.interests.join(" · ")}</p>
+              )}
+              {app.motivation && <p className="mcc-admin-app-motivation">{app.motivation}</p>}
+              <div className="mcc-admin-app-foot">
+                <small>Submitted {new Date(app.created_at).toLocaleString()}</small>
+                <ActionForm action={updateApplicationStatusAction} submitLabel="Update status" className="mcc-admin-inline-form">
+                  <input type="hidden" name="id" value={app.id} />
+                  <select name="status" defaultValue={app.status} aria-label="New status">
+                    {STATUSES.map((s) => (
+                      <option key={s} value={s}>{s}</option>
+                    ))}
+                  </select>
+                </ActionForm>
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
+    </>
+  );
+}

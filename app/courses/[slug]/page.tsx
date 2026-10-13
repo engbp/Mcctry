@@ -26,17 +26,13 @@ export async function generateMetadata({ params }: CoursePageProps): Promise<Met
   };
 }
 
-const skills = ["AI Fundamentals", "Structured Prompting", "Model Evaluation", "Responsible AI Use"];
-
 export default async function CoursePage({ params }: CoursePageProps) {
   const { slug } = await params;
-  const { items: courses, source } = await loadCourses();
+  const { items: courses } = await loadCourses();
   const course = courses.find((c) => c.slug === slug);
   if (!course) notFound();
 
-  const { items: lessons } = await loadLessonsForCourse(
-    source === "db" ? course.id : null
-  );
+  const { items: lessons } = await loadLessonsForCourse(course.id);
 
   const trackCourses = courses.filter((c) => c.trackSlug === course.trackSlug);
   const courseIndex = trackCourses.findIndex((c) => c.slug === slug);
@@ -82,33 +78,38 @@ export default async function CoursePage({ params }: CoursePageProps) {
             </Reveal>
             <div className="lk-prose">
               <p>{course.description}</p>
-              {source === "static" && (
-                <p>This demo course is structured like a lightweight learning path: short lessons, useful resources, and a clear next step after every lesson. Perfect for fitting learning into a busy student schedule.</p>
-              )}
             </div>
 
             <Reveal className="lk-section-head" style={{ marginTop: "48px" }}>
               <div>
                 <span className="hp-section-kicker">COURSE CONTENTS</span>
-                <h2 className="hp-section-title">{totalLessons} lessons, {totalDuration} total.</h2>
+                <h2 className="hp-section-title">
+                  {totalLessons > 0 ? `${totalLessons} lessons, ${totalDuration} total.` : "No lessons published yet."}
+                </h2>
               </div>
             </Reveal>
-            <Reveal className="lk-lesson-list" role="list">
-              {lessons.map((lesson, i) => (
-                <SpotlightCard key={lesson.slug} as="a" href={`/courses/${slug}/lessons/${lesson.slug}`} className="lk-lesson-row" role="listitem">
-                  <span className="lk-lesson-play" aria-hidden="true"><Play size={15} fill="currentColor" /></span>
-                  <span className="lk-lesson-index">{String(i + 1).padStart(2, "0")}</span>
-                  <div className="lk-lesson-info">
-                    <h3>{lesson.title}</h3>
-                    <div className="lk-lesson-meta">
-                      <span><Clock size={13} /> {lesson.duration}</span>
-                      <span>{lesson.type}</span>
+            {totalLessons === 0 ? (
+              <div className="notice notice-info">
+                Lessons for this course have not been published yet. Check back soon.
+              </div>
+            ) : (
+              <Reveal className="lk-lesson-list" role="list">
+                {lessons.map((lesson, i) => (
+                  <SpotlightCard key={lesson.slug} as="a" href={`/courses/${slug}/lessons/${lesson.slug}`} className="lk-lesson-row" role="listitem">
+                    <span className="lk-lesson-play" aria-hidden="true"><Play size={15} fill="currentColor" /></span>
+                    <span className="lk-lesson-index">{String(i + 1).padStart(2, "0")}</span>
+                    <div className="lk-lesson-info">
+                      <h3>{lesson.title}</h3>
+                      <div className="lk-lesson-meta">
+                        <span><Clock size={13} /> {lesson.duration}</span>
+                        <span>{lesson.type}</span>
+                      </div>
                     </div>
-                  </div>
-                  <ChevronRight className="lk-lesson-chevron" size={18} />
-                </SpotlightCard>
-              ))}
-            </Reveal>
+                    <ChevronRight className="lk-lesson-chevron" size={18} />
+                  </SpotlightCard>
+                ))}
+              </Reveal>
+            )}
           </div>
 
           <aside className="course-sidebar" aria-labelledby="sidebar-title">
@@ -135,20 +136,26 @@ export default async function CoursePage({ params }: CoursePageProps) {
             </div>
 
             <div className="lk-side-card">
-              <h3>Skills you&apos;ll gain</h3>
+              <h3>How learning works here</h3>
               <ul className="lk-skills">
-                {skills.map((skill) => (
-                  <li key={skill}>
-                    <CheckCircle size={16} aria-hidden="true" />
-                    <span>{skill}</span>
-                  </li>
-                ))}
+                <li>
+                  <CheckCircle size={16} aria-hidden="true" />
+                  <span>Watch real video lessons</span>
+                </li>
+                <li>
+                  <CheckCircle size={16} aria-hidden="true" />
+                  <span>Mark lessons complete</span>
+                </li>
+                <li>
+                  <CheckCircle size={16} aria-hidden="true" />
+                  <span>Progress saved to your account</span>
+                </li>
               </ul>
             </div>
 
             <div className="lk-side-card lk-side-card-notice">
-              <strong>Demo mode</strong>
-              <p>Progress is local and no account is connected. This is a presentation prototype.</p>
+              <strong>Student account</strong>
+              <p>Create a free account to save lesson completion and continue where you left off from the dashboard.</p>
             </div>
           </aside>
         </div>

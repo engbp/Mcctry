@@ -18,7 +18,7 @@ export type ApplicationStatus =
   | "rejected"
   | "withdrawn";
 
-export interface Team {
+export type Team = {
   id: string;
   slug: string;
   name: string;
@@ -26,18 +26,18 @@ export interface Team {
   published: boolean;
   created_at: string;
   updated_at: string;
-}
+};
 
-export interface Profile {
+export type Profile = {
   id: string;
   role: AppRole;
   display_name: string | null;
   team_id: string | null;
   created_at: string;
   updated_at: string;
-}
+};
 
-export interface Track {
+export type Track = {
   id: string;
   slug: string;
   title: string;
@@ -50,9 +50,9 @@ export interface Track {
   position: number;
   created_at: string;
   updated_at: string;
-}
+};
 
-export interface Course {
+export type Course = {
   id: string;
   track_id: string;
   slug: string;
@@ -67,22 +67,33 @@ export interface Course {
   position: number;
   created_at: string;
   updated_at: string;
-}
+};
 
-export interface Lesson {
+export type Lesson = {
   id: string;
   course_id: string;
   slug: string;
   title: string;
   duration: string | null;
   type: string | null;
+  video_url: string | null;
   published: boolean;
   position: number;
   created_at: string;
   updated_at: string;
-}
+};
 
-export interface ContentItem {
+export type LessonProgress = {
+  id: string;
+  user_id: string;
+  lesson_id: string;
+  course_id: string;
+  completed_at: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type ContentItem = {
   id: string;
   kind: ContentKind;
   slug: string;
@@ -106,9 +117,9 @@ export interface ContentItem {
   thumbnail: string | null;
   created_at: string;
   updated_at: string;
-}
+};
 
-export interface Resource {
+export type Resource = {
   id: string;
   slug: string;
   title: string;
@@ -123,9 +134,9 @@ export interface Resource {
   position: number;
   created_at: string;
   updated_at: string;
-}
+};
 
-export interface Application {
+export type Application = {
   id: string;
   name: string;
   email: string;
@@ -136,30 +147,139 @@ export interface Application {
   submitted_ip: string | null;
   created_at: string;
   updated_at: string;
-}
+};
 
 // Shape passed to an INSERT on `applications`. `id`, `status`, timestamps and
 // `submitted_ip` are set server-side / by defaults, never by the client.
-export interface ApplicationInsert {
+export type ApplicationInsert = {
   name: string;
   email: string;
   interests: string[];
   motivation?: string | null;
   heard_from?: string | null;
-}
+};
 
-/** Minimal row shape for the `Database` interface consumed by supabase-js. */
-export interface Database {
+/** Minimal row shape for the `Database` interface consumed by supabase-js.
+ * Must be a type alias (not an interface) so row shapes get implicit index
+ * signatures and satisfy `Record<string, unknown>` in GenericTable. */
+export type Database = {
   public: {
     Tables: {
-      teams: { Row: Team; Insert: Partial<Team> & { slug: string; name: string }; Update: Partial<Team> };
-      profiles: { Row: Profile; Insert: Partial<Profile> & { id: string }; Update: Partial<Profile> };
-      tracks: { Row: Track; Insert: Partial<Track> & { slug: string; title: string }; Update: Partial<Track> };
-      courses: { Row: Course; Insert: Partial<Course> & { track_id: string; slug: string; title: string }; Update: Partial<Course> };
-      lessons: { Row: Lesson; Insert: Partial<Lesson> & { course_id: string; slug: string; title: string }; Update: Partial<Lesson> };
-      content_items: { Row: ContentItem; Insert: Partial<ContentItem> & { kind: ContentKind; slug: string; title: string }; Update: Partial<ContentItem> };
-      applications: { Row: Application; Insert: ApplicationInsert; Update: Partial<Application> };
-      resources: { Row: Resource; Insert: Partial<Resource> & { slug: string; title: string }; Update: Partial<Resource> };
+      teams: {
+        Row: Team;
+        Insert: Partial<Team> & { slug: string; name: string };
+        Update: Partial<Team>;
+        Relationships: [];
+      };
+      profiles: {
+        Row: Profile;
+        Insert: Partial<Profile> & { id: string };
+        Update: Partial<Profile>;
+        Relationships: [
+          {
+            foreignKeyName: "profiles_team_id_fkey";
+            columns: ["team_id"];
+            isOneToOne: false;
+            referencedRelation: "teams";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      tracks: {
+        Row: Track;
+        Insert: Partial<Track> & { slug: string; title: string };
+        Update: Partial<Track>;
+        Relationships: [];
+      };
+      courses: {
+        Row: Course;
+        Insert: Partial<Course> & { track_id: string; slug: string; title: string };
+        Update: Partial<Course>;
+        Relationships: [
+          {
+            foreignKeyName: "courses_track_id_fkey";
+            columns: ["track_id"];
+            isOneToOne: false;
+            referencedRelation: "tracks";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      lessons: {
+        Row: Lesson;
+        Insert: Partial<Lesson> & { course_id: string; slug: string; title: string };
+        Update: Partial<Lesson>;
+        Relationships: [
+          {
+            foreignKeyName: "lessons_course_id_fkey";
+            columns: ["course_id"];
+            isOneToOne: false;
+            referencedRelation: "courses";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      lesson_progress: {
+        Row: LessonProgress;
+        Insert: Partial<LessonProgress> & { user_id: string; lesson_id: string; course_id: string };
+        Update: Partial<LessonProgress>;
+        Relationships: [
+          {
+            foreignKeyName: "lesson_progress_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "lesson_progress_lesson_id_fkey";
+            columns: ["lesson_id"];
+            isOneToOne: false;
+            referencedRelation: "lessons";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "lesson_progress_course_id_fkey";
+            columns: ["course_id"];
+            isOneToOne: false;
+            referencedRelation: "courses";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      content_items: {
+        Row: ContentItem;
+        Insert: Partial<ContentItem> & { kind: ContentKind; slug: string; title: string };
+        Update: Partial<ContentItem>;
+        Relationships: [];
+      };
+      applications: {
+        Row: Application;
+        Insert: ApplicationInsert;
+        Update: Partial<Application>;
+        Relationships: [];
+      };
+      resources: {
+        Row: Resource;
+        Insert: Partial<Resource> & { slug: string; title: string };
+        Update: Partial<Resource>;
+        Relationships: [
+          {
+            foreignKeyName: "resources_course_id_fkey";
+            columns: ["course_id"];
+            isOneToOne: false;
+            referencedRelation: "courses";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "resources_lesson_id_fkey";
+            columns: ["lesson_id"];
+            isOneToOne: false;
+            referencedRelation: "lessons";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;

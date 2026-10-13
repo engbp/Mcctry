@@ -1,7 +1,7 @@
 import Link from "next/link";
 import {
-  ArrowRight, ArrowUpRight, CalendarDays, Clock3, MapPin, BookOpen,
-  Code2, Cloud, ShieldCheck, Users, Sparkles, Trophy, Newspaper,
+  ArrowRight, ArrowUpRight, Clock3, MapPin, BookOpen,
+  Code2, Cloud, ShieldCheck, Users, Trophy, Newspaper,
 } from "lucide-react";
 import { formatDate } from "@/lib/data";
 import { loadEvents, loadProjects, loadTracks } from "@/lib/content-views";
@@ -99,9 +99,6 @@ export default async function HomePage() {
               );
             })}
           </div>
-          {tracksResult.source === "static" && (
-            <p className="mcc-demo-note"><Sparkles size={14} /> Course counts and durations are sample catalogue data in this prototype.</p>
-          )}
         </div>
       </section>
 
@@ -136,9 +133,6 @@ export default async function HomePage() {
               <div className="mcc-event-art" aria-hidden="true"><span className="mcc-event-art-label">SAVE<br />YOUR<br /><em>SPOT</em></span><span className="mcc-event-art-circle" /><span className="mcc-event-art-mark">MCC / MNU</span></div>
             </div>
             {otherEvents.length > 0 && <div className="mcc-event-mini-grid">{otherEvents.map((event) => { const date = formatDate(event.date); return <Link key={event.slug} href={`/events/${event.slug}`} className="mcc-event-mini"><span>{date.day} {date.month} · {event.category}</span><strong>{event.title}</strong><small>{event.time} / {event.location}</small><ArrowUpRight size={17} /></Link>; })}</div>}
-            {eventsResult.source === "static" && (
-              <p className="mcc-demo-note"><CalendarDays size={14} /> Event listings are demo content until connected to live club scheduling.</p>
-            )}
           </div>
         </section>
       )}
@@ -146,7 +140,7 @@ export default async function HomePage() {
       <section className="mcc-showcase section" aria-labelledby="mcc-showcase-title">
         <div className="container mcc-showcase-grid">
           <div className="mcc-showcase-art" aria-hidden="true"><span className="mcc-showcase-label">IDEAS<br />BECOME<br /><em>THINGS.</em></span><span className="mcc-showcase-orbit" /><span className="mcc-showcase-number">BUILD / 001</span></div>
-          <div className="mcc-showcase-copy"><span className="mcc-section-label">05 / STUDENT WORK</span><h2 id="mcc-showcase-title">{featuredProject?.title ?? "Made by students, shared with everyone."}</h2><p>{featuredProject?.description ?? "Explore prototypes, experiments, and projects from the MCC community."}</p><span className="mcc-content-status">PROJECT SHOWCASE{projectsResult.source === "static" && featuredProject ? " · SAMPLE CONTENT" : ""}</span><Link href="/projects" className="mcc-text-link">Explore student projects <ArrowRight size={16} /></Link></div>
+          <div className="mcc-showcase-copy"><span className="mcc-section-label">05 / STUDENT WORK</span><h2 id="mcc-showcase-title">{featuredProject?.title ?? "Made by students, shared with everyone."}</h2><p>{featuredProject?.description ?? "Explore prototypes, experiments, and projects from the MCC community."}</p><span className="mcc-content-status">PROJECT SHOWCASE</span><Link href="/projects" className="mcc-text-link">Explore student projects <ArrowRight size={16} /></Link></div>
         </div>
       </section>
 

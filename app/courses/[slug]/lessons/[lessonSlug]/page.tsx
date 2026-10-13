@@ -1,9 +1,12 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { loadCourses, loadLessonsForCourse } from "@/lib/content-views";
+import { getCurrentUser } from "@/lib/auth";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { LessonClient } from "./LessonClient";
 
-export const revalidate = 300;
+// Progress and auth state are per-visitor; never cache the rendered page.
+export const dynamic = "force-dynamic";
 
 interface LessonPageProps {
   params: Promise<{ slug: string; lessonSlug: string }>;
@@ -41,6 +44,20 @@ export default async function LessonPage({ params }: LessonPageProps) {
   const prevLesson = lessonIndex > 0 ? lessons[lessonIndex - 1] : null;
   const nextLesson = lessonIndex < lessons.length - 1 ? lessons[lessonIndex + 1] : null;
 
+  const user = await getCurrentUser();
+  let completedLessonIds: string[] = [];
+  let initialCompleted = false;
+  if (user && course.id) {
+    const supabase = await createSupabaseServerClient();
+    const { data } = await supabase
+      .from("lesson_progress")
+      .select("lesson_id")
+      .eq("user_id", user.id)
+      .eq("course_id", course.id);
+    completedLessonIds = (data ?? []).map((row) => row.lesson_id);
+    initialCompleted = lesson.id ? completedLessonIds.includes(lesson.id) : false;
+  }
+
   return (
     <LessonClient
       course={course}
@@ -52,6 +69,9 @@ export default async function LessonPage({ params }: LessonPageProps) {
       prevLesson={prevLesson}
       nextLesson={nextLesson}
       slug={slug}
+      isSignedIn={Boolean(user)}
+      initialCompleted={initialCompleted}
+      completedLessonIds={completedLessonIds}
     />
   );
 }

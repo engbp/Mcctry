@@ -120,8 +120,8 @@ export default function JoinPage() {
           <div className="jn-benefits">
             <Reveal className="lk-section-head">
               <div>
-                <span className="hp-section-kicker">RECRUITMENT CYCLE PREVIEW</span>
-                <h2 id="join-form-title" className="hp-section-title">Get ready for the next cycle.</h2>
+                <span className="hp-section-kicker">TEAM RECRUITMENT</span>
+                <h2 id="join-form-title" className="hp-section-title">Apply for the next cycle.</h2>
               </div>
             </Reveal>
             <p className="jn-benefits-lede">

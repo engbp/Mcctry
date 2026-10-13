@@ -1,25 +1,15 @@
-// View models, database→view adapters, and the static fallback policy for
-// public pages.
+// View models, database→view adapters, and the empty-state policy for public
+// pages.
 //
 // Policy: every loader queries Supabase through `lib/supabase/content.ts`
 // (anon key, RLS `published = true`). When a query succeeds and returns rows,
 // those rows are mapped to the view shapes below and served as
 // `source: "db"`. When the database is empty, the query fails, or Supabase is
-// not configured, the existing static catalogue in `lib/data.ts` is served as
-// `source: "static"` — so working content is never replaced by an empty
-// response and no raw database error can reach a visitor. For news,
-// achievements and teams the static fallback is intentionally empty (the
-// pages already show honest "not published yet" states).
+// not configured, the loaders return an empty list with `source: "unavailable"`
+// so pages show an honest empty/unavailable state — never fabricated sample
+// content and never a raw database error. `lib/data.ts` remains only as the
+// date/format helpers and for unit tests of the old prototype shapes.
 
-import {
-  coursesData,
-  eventsData,
-  lessonsData,
-  opportunitiesData,
-  projectsData,
-  resourcesData,
-  tracksData,
-} from "@/lib/data";
 import {
   getPublishedContent,
   getPublishedCourses,
@@ -38,7 +28,7 @@ import type {
   Track,
 } from "@/lib/supabase/types";
 
-export type ContentSource = "db" | "static";
+export type ContentSource = "db" | "unavailable";
 
 export interface Sourced<T> {
   items: T;
@@ -73,10 +63,13 @@ export interface CourseView {
 }
 
 export interface LessonView {
+  id: string | null;
+  courseId: string | null;
   slug: string;
   title: string;
   duration: string;
   type: string;
+  videoUrl: string | null;
 }
 
 export interface EventView {
@@ -143,37 +136,6 @@ export interface StoryView {
   category: string | null;
 }
 
-const STATIC_TRACKS: TrackView[] = tracksData.map((track) => ({
-  ...track,
-  featured: track.featured ?? false,
-}));
-
-const STATIC_COURSES: CourseView[] = coursesData.map((course) => ({
-  id: null,
-  ...course,
-  featured: course.featured ?? false,
-}));
-
-const STATIC_LESSONS: LessonView[] = lessonsData;
-
-const STATIC_EVENTS: EventView[] = eventsData.map((event) => ({
-  ...event,
-  featured: event.featured ?? false,
-}));
-
-const STATIC_PROJECTS: ProjectView[] = projectsData.map((project) => ({
-  ...project,
-  featured: project.featured ?? false,
-}));
-
-const STATIC_OPPORTUNITIES: OpportunityView[] = opportunitiesData.map(
-  (opportunity) => ({ ...opportunity })
-);
-
-const STATIC_RESOURCES: ResourceView[] = resourcesData.map((resource) => ({
-  ...resource,
-}));
-
 // Presentation-only palette for rows that carry no colour; cycles through the
 // site's existing accent colours so cards keep their design without inventing
 // content.
@@ -201,17 +163,21 @@ function countBy<T>(rows: T[], key: (row: T) => string): Map<string, number> {
   return counts;
 }
 
+/**
+ * Maps successful DB rows to views. On query failure or zero rows returns an
+ * empty list with source "unavailable" — pages must show an honest empty
+ * state, never fabricated sample content.
+ */
 function fromRows<R, V>(
   res: QueryResult<R[]>,
-  fallbackItems: V[],
   mapRows: (rows: R[]) => V[]
 ): Sourced<V[]> {
   if (!res.ok || res.data.length === 0) {
-    return { items: fallbackItems, source: "static" };
+    return { items: [], source: "unavailable" };
   }
   const items = mapRows(res.data);
   if (items.length === 0) {
-    return { items: fallbackItems, source: "static" };
+    return { items: [], source: "unavailable" };
   }
   return { items, source: "db" };
 }
@@ -255,10 +221,13 @@ function courseView(
 
 function lessonView(lesson: Lesson): LessonView {
   return {
+    id: lesson.id,
+    courseId: lesson.course_id,
     slug: lesson.slug,
     title: lesson.title,
     duration: lesson.duration ?? "—",
     type: lesson.type ?? "Lesson",
+    videoUrl: lesson.video_url,
   };
 }
 
@@ -349,7 +318,7 @@ export async function loadTracks(): Promise<Sourced<TrackView[]>> {
     getPublishedTracks(),
     getPublishedCourses(),
   ]);
-  return fromRows(tracksRes, STATIC_TRACKS, (rows) => {
+  return fromRows(tracksRes, (rows) => {
     const counts = countBy(coursesRes.ok ? coursesRes.data : [], (c) => c.track_id);
     return rows.map((track, index) => trackView(track, counts.get(track.id) ?? 0, index));
   });
@@ -361,7 +330,7 @@ export async function loadCourses(): Promise<Sourced<CourseView[]>> {
     getPublishedTracks(),
     getPublishedLessons(),
   ]);
-  return fromRows(coursesRes, STATIC_COURSES, (rows) => {
+  return fromRows(coursesRes, (rows) => {
     const trackById = new Map((tracksRes.ok ? tracksRes.data : []).map((t) => [t.id, t]));
     const lessonsByCourse = countBy(
       lessonsRes.ok ? lessonsRes.data : [],
@@ -380,22 +349,21 @@ export async function loadCourses(): Promise<Sourced<CourseView[]>> {
 }
 
 /**
- * Lessons for one course. `courseId: null` means the course came from the
- * static catalogue, so the static lesson list is served (the prototype's
- * original behaviour). DB lessons fall back to the static list when the query
- * fails or the course has no published lessons yet.
+ * Lessons for one course. `courseId: null` (or a failed/empty query) returns
+ * an empty list with `source: "unavailable"` — never fabricated sample
+ * lessons.
  */
 export async function loadLessonsForCourse(
   courseId: string | null
 ): Promise<Sourced<LessonView[]>> {
-  if (!courseId) return { items: STATIC_LESSONS, source: "static" };
+  if (!courseId) return { items: [], source: "unavailable" };
   const res = await getPublishedLessons(courseId);
-  return fromRows(res, STATIC_LESSONS, (rows) => rows.map(lessonView));
+  return fromRows(res, (rows) => rows.map(lessonView));
 }
 
 export async function loadEvents(): Promise<Sourced<EventView[]>> {
   const res = await getPublishedContent("event");
-  return fromRows(res, STATIC_EVENTS, (rows) =>
+  return fromRows(res, (rows) =>
     rows
       .map((item, index) => eventView(item, index))
       .filter((event): event is EventView => event !== null)
@@ -404,28 +372,24 @@ export async function loadEvents(): Promise<Sourced<EventView[]>> {
 
 export async function loadProjects(): Promise<Sourced<ProjectView[]>> {
   const res = await getPublishedContent("project");
-  return fromRows(res, STATIC_PROJECTS, (rows) =>
-    rows.map((item, index) => projectView(item, index))
-  );
+  return fromRows(res, (rows) => rows.map((item, index) => projectView(item, index)));
 }
 
 export async function loadOpportunities(): Promise<Sourced<OpportunityView[]>> {
   const res = await getPublishedContent("opportunity");
-  return fromRows(res, STATIC_OPPORTUNITIES, (rows) =>
-    rows.map((item, index) => opportunityView(item, index))
-  );
+  return fromRows(res, (rows) => rows.map((item, index) => opportunityView(item, index)));
 }
 
 export async function loadResources(): Promise<Sourced<ResourceView[]>> {
   const res = await getPublishedResources();
-  return fromRows(res, STATIC_RESOURCES, (rows) => rows.map(resourceView));
+  return fromRows(res, (rows) => rows.map(resourceView));
 }
 
 /** Static fallback is intentionally empty here — the pages show their
  * "not published yet" block instead. */
 export async function loadTeams(): Promise<Sourced<TeamView[]>> {
   const res = await getPublishedTeams();
-  return fromRows(res, [], (rows) => rows.map(teamView));
+  return fromRows(res, (rows) => rows.map(teamView));
 }
 
 /** News and achievements: static fallback is intentionally empty (same
@@ -434,5 +398,5 @@ export async function loadStories(
   kind: "news" | "achievement"
 ): Promise<Sourced<StoryView[]>> {
   const res = await getPublishedContent(kind);
-  return fromRows(res, [], (rows) => rows.map(storyView));
+  return fromRows(res, (rows) => rows.map(storyView));
 }

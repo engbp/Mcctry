@@ -8,18 +8,17 @@ const footerLinks = {
   discover: [
     { label: "Learning Tracks", href: "/tracks" },
     { label: "Courses & Resources", href: "/courses" },
-    { label: "Events & Workshops", href: "/events" },
+    { label: "Resources", href: "/resources" },
   ],
   community: [
-    { label: "People & Teams", href: "/teams" },
-    { label: "Student Projects", href: "/projects" },
-    { label: "Achievements", href: "/achievements" },
-  ],
-  updates: [
-    { label: "News & Updates", href: "/news" },
     { label: "About MCC", href: "/about" },
     { label: "Recruitment", href: "/join" },
-    { label: "Admin Workspace (Demo)", href: "/demo/admin" },
+    { label: "Events", href: "/events" },
+  ],
+  account: [
+    { label: "Sign in", href: "/login" },
+    { label: "Create account", href: "/signup" },
+    { label: "Student Dashboard", href: "/dashboard" },
   ],
 };
 
@@ -69,8 +68,8 @@ export function Footer() {
           ))}
         </Reveal>
         <div className="container footer-bottom">
-          <span>© MCC MNU · Community platform preview</span>
-          <span>Sample content is labeled. Live accounts and publishing need backend integration.</span>
+          <span>© MCC MNU · Microsoft Campus Club at Mansoura National University</span>
+          <span>Student accounts, courses, and publishing run on live club data.</span>
         </div>
       </div>
     </footer>

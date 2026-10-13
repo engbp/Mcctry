@@ -28,7 +28,6 @@ import {
   loadTeams,
   loadStories,
 } from "@/lib/content-views";
-import { tracksData, coursesData, eventsData, lessonsData } from "@/lib/data";
 import type {
   ContentItem,
   Course,
@@ -87,6 +86,7 @@ function dbLesson(over: Partial<Lesson> = {}): Lesson {
     title: "DB Lesson",
     duration: null,
     type: null,
+    video_url: null,
     published: true,
     position: 0,
     created_at: "2026-01-01T00:00:00Z",
@@ -185,25 +185,24 @@ describe("loadTracks", () => {
     expect(result.items[0].gradient).toContain("#0078d4");
   });
 
-  it("falls back to the static catalogue when the DB is empty", async () => {
+  it("returns an honest empty unavailable state when the DB is empty", async () => {
     vi.mocked(getPublishedTracks).mockResolvedValue(ok([]));
     vi.mocked(getPublishedCourses).mockResolvedValue(ok([]));
 
     const result = await loadTracks();
 
-    expect(result.source).toBe("static");
-    expect(result.items.map((t) => t.slug)).toEqual(tracksData.map((t) => t.slug));
-    expect(result.items[0].coursesCount).toBe(tracksData[0].coursesCount);
+    expect(result.source).toBe("unavailable");
+    expect(result.items).toEqual([]);
   });
 
-  it("falls back to the static catalogue when the query fails", async () => {
+  it("returns unavailable when the query fails", async () => {
     vi.mocked(getPublishedTracks).mockResolvedValue(fail);
     vi.mocked(getPublishedCourses).mockResolvedValue(ok([]));
 
     const result = await loadTracks();
 
-    expect(result.source).toBe("static");
-    expect(result.items).toHaveLength(tracksData.length);
+    expect(result.source).toBe("unavailable");
+    expect(result.items).toEqual([]);
   });
 
   it("still serves DB tracks when the course-count query fails", async () => {
@@ -247,42 +246,34 @@ describe("loadCourses", () => {
 
     const result = await loadCourses();
 
-    expect(result.source).toBe("static");
-    expect(result.items).toHaveLength(coursesData.length);
+    expect(result.source).toBe("unavailable");
+    expect(result.items).toEqual([]);
   });
 
-  it("falls back to the static catalogue when the DB is empty", async () => {
+  it("returns unavailable when the DB is empty", async () => {
     vi.mocked(getPublishedCourses).mockResolvedValue(ok([]));
     vi.mocked(getPublishedTracks).mockResolvedValue(ok([]));
     vi.mocked(getPublishedLessons).mockResolvedValue(ok([]));
 
     const result = await loadCourses();
 
-    expect(result.source).toBe("static");
-    expect(result.items.map((c) => c.slug)).toEqual(coursesData.map((c) => c.slug));
-    expect(result.items.map((c) => c.featured)).toEqual([
-      true,
-      false,
-      false,
-      false,
-      false,
-      false,
-    ]);
+    expect(result.source).toBe("unavailable");
+    expect(result.items).toEqual([]);
   });
 });
 
 describe("loadLessonsForCourse", () => {
-  it("serves the static lessons for a static course without querying", async () => {
+  it("returns unavailable without querying when courseId is null", async () => {
     const result = await loadLessonsForCourse(null);
 
-    expect(result.source).toBe("static");
-    expect(result.items).toHaveLength(lessonsData.length);
+    expect(result.source).toBe("unavailable");
+    expect(result.items).toEqual([]);
     expect(getPublishedLessons).not.toHaveBeenCalled();
   });
 
-  it("serves DB lessons scoped to the course", async () => {
+  it("serves DB lessons scoped to the course, including video_url", async () => {
     vi.mocked(getPublishedLessons).mockResolvedValue(
-      ok([dbLesson({ duration: "05:00", type: "video" })])
+      ok([dbLesson({ duration: "05:00", type: "video", video_url: "https://www.youtube.com/watch?v=abc123" })])
     );
 
     const result = await loadLessonsForCourse("c1");
@@ -290,20 +281,23 @@ describe("loadLessonsForCourse", () => {
     expect(getPublishedLessons).toHaveBeenCalledWith("c1");
     expect(result.source).toBe("db");
     expect(result.items[0]).toEqual({
+      id: "l1",
+      courseId: "c1",
       slug: "db-lesson",
       title: "DB Lesson",
       duration: "05:00",
       type: "video",
+      videoUrl: "https://www.youtube.com/watch?v=abc123",
     });
   });
 
-  it("falls back to the static lessons when the course has no published lessons", async () => {
+  it("returns unavailable when the course has no published lessons", async () => {
     vi.mocked(getPublishedLessons).mockResolvedValue(ok([]));
 
     const result = await loadLessonsForCourse("c1");
 
-    expect(result.source).toBe("static");
-    expect(result.items).toHaveLength(lessonsData.length);
+    expect(result.source).toBe("unavailable");
+    expect(result.items).toEqual([]);
   });
 });
 
@@ -339,16 +333,15 @@ describe("loadEvents", () => {
     });
   });
 
-  it("falls back to static events when every row is incomplete", async () => {
+  it("returns unavailable when every row is incomplete", async () => {
     vi.mocked(getPublishedContent).mockResolvedValue(
       ok([dbContentItem({ kind: "event" })])
     );
 
     const result = await loadEvents();
 
-    expect(result.source).toBe("static");
-    expect(result.items.map((e) => e.slug)).toEqual(eventsData.map((e) => e.slug));
-    expect(result.items[0].demo).toBe(true);
+    expect(result.source).toBe("unavailable");
+    expect(result.items).toEqual([]);
   });
 });
 
@@ -436,14 +429,13 @@ describe("loadResources", () => {
     expect(result.items[1].external).toBe(true);
   });
 
-  it("falls back to the static resources when the DB is empty", async () => {
+  it("returns unavailable when the DB is empty", async () => {
     vi.mocked(getPublishedResources).mockResolvedValue(ok([]));
 
     const result = await loadResources();
 
-    expect(result.source).toBe("static");
-    expect(result.items).toHaveLength(4);
-    expect(result.items[0].title).toBe("Microsoft Learn");
+    expect(result.source).toBe("unavailable");
+    expect(result.items).toEqual([]);
   });
 });
 
@@ -457,12 +449,12 @@ describe("loadTeams and loadStories", () => {
     expect(result.items).toEqual([{ slug: "db-team", name: "DB Team", description: "" }]);
   });
 
-  it("returns an intentionally empty static fallback for teams", async () => {
+  it("returns unavailable when teams are missing", async () => {
     vi.mocked(getPublishedTeams).mockResolvedValue(ok([]));
 
     const result = await loadTeams();
 
-    expect(result.source).toBe("static");
+    expect(result.source).toBe("unavailable");
     expect(result.items).toEqual([]);
   });
 
@@ -482,12 +474,12 @@ describe("loadTeams and loadStories", () => {
     expect(result.items[1].date).toBe("2026-03-04T05:06:07Z");
   });
 
-  it("returns an intentionally empty static fallback when stories are missing", async () => {
+  it("returns unavailable when stories are missing", async () => {
     vi.mocked(getPublishedContent).mockResolvedValue(fail);
 
     const result = await loadStories("achievement");
 
-    expect(result.source).toBe("static");
+    expect(result.source).toBe("unavailable");
     expect(result.items).toEqual([]);
   });
 });
