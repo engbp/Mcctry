@@ -1,86 +1,45 @@
 import Link from "next/link";
-import { requireAdmin } from "@/lib/auth";
+import { redirect } from "next/navigation";
+import { Activity, ArrowRight, BookOpen, ClipboardCheck, Layers3, MessageSquareText, QrCode, Users } from "lucide-react";
+import { getCurrentProfile } from "@/lib/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
+const quickLinks = [
+  { href: "/admin/applications", label: "Review recruitment", detail: "See applications, phone numbers and answers", Icon: ClipboardCheck },
+  { href: "/admin/questions", label: "Edit application form", detail: "Add, disable or remove recruiting questions", Icon: Activity },
+  { href: "/admin/people", label: "Manage people & roles", detail: "Promote admins and assign track leaders", Icon: Users },
+  { href: "/admin/sessions", label: "Create session QR", detail: "Collect anonymous feedback at offline sessions", Icon: QrCode },
+  { href: "/admin/feedback", label: "Read feedback", detail: "Review anonymous course and session responses", Icon: MessageSquareText },
+  { href: "/admin/leader", label: "Manage learning tracks", detail: "Edit tracks, courses and video lessons", Icon: Layers3 },
+];
+
 export default async function AdminOverviewPage() {
-  await requireAdmin("/admin");
+  const profile = await getCurrentProfile();
+  if (profile?.role === "leader") redirect("/admin/leader");
+  if (!profile || profile.role !== "admin") redirect("/dashboard?error=admin-required");
   const supabase = await createSupabaseServerClient();
-
-  const [tracks, courses, lessons, resources, applications, profiles] = await Promise.all([
-    supabase.from("tracks").select("id, title, published", { count: "exact" }),
-    supabase.from("courses").select("id, title, published", { count: "exact" }),
-    supabase.from("lessons").select("id, title, published", { count: "exact" }),
-    supabase.from("resources").select("id, title, published", { count: "exact" }),
-    supabase.from("applications").select("id, status, created_at", { count: "exact" }).order("created_at", { ascending: false }).limit(5),
+  const [{ count: tracks }, { count: courses }, { count: lessons }, { count: apps }, { count: users }, { data: latest }] = await Promise.all([
+    supabase.from("tracks").select("id", { count: "exact", head: true }),
+    supabase.from("courses").select("id", { count: "exact", head: true }),
+    supabase.from("lessons").select("id", { count: "exact", head: true }),
+    supabase.from("applications").select("id", { count: "exact", head: true }),
     supabase.from("profiles").select("id", { count: "exact", head: true }),
+    supabase.from("applications").select("id,name,status,created_at").order("created_at", { ascending: false }).limit(5),
   ]);
-
-  const pendingApps = (applications.data ?? []).filter((a) => a.status === "pending").length;
-  const totalApps = applications.count ?? 0;
-
   const stats = [
-    { label: "Tracks", value: tracks.count ?? 0, sub: `${(tracks.data ?? []).filter((t) => t.published).length} shown publicly`, href: "/admin/tracks" },
-    { label: "Courses", value: courses.count ?? 0, sub: `${(courses.data ?? []).filter((c) => c.published).length} published`, href: "/admin/courses" },
-    { label: "Lessons", value: lessons.count ?? 0, sub: `${(lessons.data ?? []).filter((l) => l.published).length} published`, href: "/admin/lessons" },
-    { label: "Resources", value: resources.count ?? 0, sub: `${(resources.data ?? []).filter((r) => r.published).length} published`, href: "/admin/resources" },
-    { label: "Applications", value: totalApps, sub: `${pendingApps} in the latest batch`, href: "/admin/applications" },
-    { label: "Student accounts", value: profiles.count ?? 0, sub: "Profiles in the database", href: undefined },
+    { label: "Tracks", value: tracks ?? 0 },
+    { label: "Courses", value: courses ?? 0 },
+    { label: "Video lessons", value: lessons ?? 0 },
+    { label: "Applications", value: apps ?? 0 },
+    { label: "Accounts", value: users ?? 0 },
   ];
-
-  return (
-    <>
-      <header className="mcc-admin-page-head">
-        <div>
-          <span className="mcc-section-label">CONTROL ROOM</span>
-          <h1>Overview</h1>
-          <p>Live counts from the club database. Every number below is a real query.</p>
-        </div>
-      </header>
-
-      <div className="mcc-admin-stat-grid">
-        {stats.map((stat) => {
-          const inner = (
-            <>
-              <span className="mcc-admin-stat-label">{stat.label}</span>
-              <strong className="mcc-admin-stat-value">{stat.value}</strong>
-              <small>{stat.sub}</small>
-            </>
-          );
-          return stat.href ? (
-            <Link key={stat.label} href={stat.href} className="mcc-admin-stat">
-              {inner}
-            </Link>
-          ) : (
-            <div key={stat.label} className="mcc-admin-stat">{inner}</div>
-          );
-        })}
-      </div>
-
-      <section className="mcc-admin-section" aria-labelledby="recent-apps">
-        <div className="mcc-admin-section-bar">
-          <h2 id="recent-apps">Recent applications</h2>
-          <Link href="/admin/applications">Manage all →</Link>
-        </div>
-        {(applications.data ?? []).length === 0 ? (
-          <p className="mcc-admin-empty">No applications yet. Submitted join forms appear here.</p>
-        ) : (
-          <table className="mcc-admin-table">
-            <thead>
-              <tr><th>Submitted</th><th>Status</th></tr>
-            </thead>
-            <tbody>
-              {(applications.data ?? []).map((app) => (
-                <tr key={app.id}>
-                  <td>{new Date(app.created_at).toLocaleString()}</td>
-                  <td><span className={`mcc-admin-badge mcc-admin-badge-${app.status}`}>{app.status}</span></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </section>
-    </>
-  );
+  return <div className="mcc-ops-page mcc-admin-home">
+    <header className="mcc-ops-page-head"><div className="mcc-ops-title-icon"><Layers3 size={22}/></div><div><p className="mcc-ops-eyebrow">MCC MNU / ADMINISTRATION</p><h1>What needs doing?</h1><p>A simpler workspace for the people, learning content, recruitment and feedback that keep the club moving.</p></div></header>
+    <div className="mcc-ops-summary-row mcc-ops-admin-stats">{stats.map(stat=><div className="mcc-ops-summary" key={stat.label}><span>{stat.label}</span><strong>{stat.value}</strong></div>)}</div>
+    <section className="mcc-ops-card"><div className="mcc-ops-card-head"><h2>Quick actions</h2><span className="mcc-ops-count">ADMIN TOOLKIT</span></div><div className="mcc-ops-admin-shortcuts">{quickLinks.map(({href,label,detail,Icon})=><Link href={href} key={href} className="mcc-ops-admin-shortcut"><span className="mcc-ops-admin-shortcut-icon"><Icon size={18}/></span><span><strong>{label}</strong><small>{detail}</small></span><ArrowRight size={17}/></Link>)}</div></section>
+    <section className="mcc-ops-card"><div className="mcc-ops-card-head"><h2>Recent applications</h2><Link className="mcc-ops-text-link" href="/admin/applications">View all <ArrowRight size={15}/></Link></div>{(latest ?? []).length===0?<p className="mcc-ops-empty">No applications have been submitted yet.</p>:<div className="mcc-ops-recent-apps">{(latest ?? []).map(app=><div key={app.id}><span className="mcc-ops-admin-app-avatar">{(app.name||"?").slice(0,1).toUpperCase()}</span><span className="mcc-ops-recent-app-name"><strong>{app.name}</strong><small>{new Date(app.created_at).toLocaleString()}</small></span><span className={"mcc-ops-tag "+(app.status==="accepted"?"active":"")}>{app.status}</span></div>)}</div>}</section>
+    <p className="mcc-ops-footnote"><BookOpen size={14}/> Manage real database content only. Changes to roles, track assignments and session feedback are restricted on the server and in Supabase row-level security.</p>
+  </div>;
 }

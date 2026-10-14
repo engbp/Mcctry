@@ -10,11 +10,17 @@ const STATUSES = ["pending", "reviewing", "accepted", "rejected", "withdrawn"] a
 export default async function AdminApplicationsPage() {
   await requireAdmin("/admin/applications");
   const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase
-    .from("applications")
-    .select("*")
-    .order("created_at", { ascending: false })
-    .limit(200);
+  const [applicationResult, questionResult] = await Promise.all([
+    supabase.from("applications")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(200),
+    (supabase as unknown as { from: (table: string) => any }).from("recruitment_questions")
+      .select("id,label").order("position"),
+  ]);
+  const { data, error } = applicationResult;
+  const questionLabels = new Map<string, string>(((questionResult.data ?? []) as Array<{id:string;label:string}>).map((q) => [q.id,q.label]));
+
 
   return (
     <>
@@ -41,8 +47,16 @@ export default async function AdminApplicationsPage() {
                 </div>
                 <span className={`mcc-admin-badge mcc-admin-badge-${app.status}`}>{app.status}</span>
               </div>
+              {app.phone_number && <p className="mcc-admin-app-phone"><strong>Phone:</strong> <a href={`tel:${app.phone_number}`}>{app.phone_number}</a></p>}
               {app.interests?.length > 0 && (
                 <p className="mcc-admin-app-interests">{app.interests.join(" · ")}</p>
+              )}
+              {app.answers && Object.keys(app.answers).length > 0 && (
+                <dl className="mcc-admin-app-answers">
+                  {Object.entries(app.answers as Record<string, string>).map(([questionId, answer]) => (
+                    <div key={questionId}><dt>{questionLabels.get(questionId) ?? "Additional answer"}</dt><dd>{answer}</dd></div>
+                  ))}
+                </dl>
               )}
               {app.motivation && <p className="mcc-admin-app-motivation">{app.motivation}</p>}
               <div className="mcc-admin-app-foot">

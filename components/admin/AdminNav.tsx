@@ -2,16 +2,27 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, ClipboardCheck, Network, BookOpen, ListChecks, Link2, LogOut } from "lucide-react";
+import { LayoutDashboard, ClipboardCheck, Network, BookOpen, ListChecks, Link2, LogOut, Users, MessageSquareText, ClipboardList, QrCode, Layers3 } from "lucide-react";
 import { signOutAction } from "@/lib/auth-actions";
 
-const links = [
+const adminLinks = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard },
   { href: "/admin/applications", label: "Applications", icon: ClipboardCheck },
+  { href: "/admin/people", label: "People & roles", icon: Users },
   { href: "/admin/tracks", label: "Tracks", icon: Network },
   { href: "/admin/courses", label: "Courses", icon: BookOpen },
   { href: "/admin/lessons", label: "Lessons", icon: ListChecks },
   { href: "/admin/resources", label: "Resources", icon: Link2 },
+  { href: "/admin/questions", label: "Recruitment form", icon: ClipboardList },
+  { href: "/admin/sessions", label: "Session QR feedback", icon: QrCode },
+  { href: "/admin/feedback", label: "Feedback inbox", icon: MessageSquareText },
+];
+
+const leaderLinks = [
+  { href: "/admin/leader", label: "Assigned tracks", icon: Layers3 },
+  { href: "/admin/leader/resources", label: "Track resources", icon: Link2 },
+  { href: "/admin/sessions", label: "Session QR feedback", icon: QrCode },
+  { href: "/admin/feedback", label: "Feedback inbox", icon: MessageSquareText },
 ];
 
 export function AdminNav({ role, displayName }: { role: string; displayName: string | null }) {
@@ -22,7 +33,7 @@ export function AdminNav({ role, displayName }: { role: string; displayName: str
         MCC <span>MNU</span> <small>ADMIN</small>
       </Link>
       <nav className="mcc-admin-links">
-        {links.map(({ href, label, icon: Icon }) => {
+        {(role === "admin" ? adminLinks : leaderLinks).map(({ href, label, icon: Icon }) => {
           const active = href === "/admin" ? pathname === "/admin" : pathname.startsWith(href);
           return (
             <Link key={href} href={href} className={active ? "is-current" : undefined} aria-current={active ? "page" : undefined}>
@@ -34,7 +45,7 @@ export function AdminNav({ role, displayName }: { role: string; displayName: str
       <div className="mcc-admin-nav-foot">
         <span className="mcc-admin-who">
           <strong>{displayName ?? "Admin"}</strong>
-          <small>{role}</small>
+          <small>{role === "admin" ? "Global administrator" : "Track leader"}</small>
         </span>
         <form action={signOutAction}>
           <button type="submit" className="mcc-admin-signout">

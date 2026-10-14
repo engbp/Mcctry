@@ -4,6 +4,7 @@ import { loadCourses, loadLessonsForCourse } from "@/lib/content-views";
 import { getCurrentUser } from "@/lib/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { LessonClient } from "./LessonClient";
+import { FeedbackForm } from "@/components/feedback/FeedbackForm";
 
 // Progress and auth state are per-visitor; never cache the rendered page.
 export const dynamic = "force-dynamic";
@@ -59,19 +60,26 @@ export default async function LessonPage({ params }: LessonPageProps) {
   }
 
   return (
-    <LessonClient
-      course={course}
-      lesson={lesson}
-      lessons={lessons}
-      lessonIndex={lessonIndex}
-      lessonNumber={lessonIndex + 1}
-      totalLessons={lessons.length}
-      prevLesson={prevLesson}
-      nextLesson={nextLesson}
-      slug={slug}
-      isSignedIn={Boolean(user)}
-      initialCompleted={initialCompleted}
-      completedLessonIds={completedLessonIds}
-    />
+    <>
+      <LessonClient
+        course={course}
+        lesson={lesson}
+        lessons={lessons}
+        lessonIndex={lessonIndex}
+        lessonNumber={lessonIndex + 1}
+        totalLessons={lessons.length}
+        prevLesson={prevLesson}
+        nextLesson={nextLesson}
+        slug={slug}
+        isSignedIn={Boolean(user)}
+        initialCompleted={initialCompleted}
+        completedLessonIds={completedLessonIds}
+      />
+      {course.id && lesson.id && /^[0-9a-f-]{36}$/i.test(course.id) && /^[0-9a-f-]{36}$/i.test(lesson.id) && (
+        <div className="container mcc-feedback-course-wrap">
+          <FeedbackForm courseId={course.id} courseTitle={course.title} lessonId={lesson.id} />
+        </div>
+      )}
+    </>
   );
 }

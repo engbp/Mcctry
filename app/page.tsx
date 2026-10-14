@@ -1,119 +1,92 @@
+import Image from "next/image";
 import Link from "next/link";
-import {
-  ArrowRight, ArrowUpRight, BookOpen,
-  Code2, Cloud, ShieldCheck,
-} from "lucide-react";
+import { ArrowDownRight, ArrowRight, ArrowUpRight, BookOpen, Code2, Compass, Orbit, PlayCircle, Sparkles } from "lucide-react";
 import { loadTracks } from "@/lib/content-views";
-import { Reveal } from "@/components/fx/Reveal";
-import { ScrambleText } from "@/components/fx/ScrambleText";
+import { getCurrentProfile, getCurrentUser } from "@/lib/auth";
 
 export const revalidate = 300;
 
-const trackIcons = { BookOpen, Code2, Cloud, ShieldCheck } as const;
-
-const principles = [
-  { number: "01", title: "Learn with real courses", text: "Start with the Introduction to AI course. Watch the lessons, mark them complete, and keep your progress on your account." },
-  { number: "02", title: "Join the community", text: "Create a free student account to save progress across devices. Recruitment for club teams runs in announced cycles." },
-  { number: "03", title: "Keep building", text: "MCC MNU is a learning community first. More tracks and materials will appear here as they are published." },
-];
-
 export default async function HomePage() {
-  const tracksResult = await loadTracks();
-  const tracks = tracksResult.items;
+  const [{ items: tracks }, user, profile] = await Promise.all([
+    loadTracks(),
+    getCurrentUser(),
+    getCurrentProfile(),
+  ]);
+  const signedIn = Boolean(user);
+  const role = profile?.role;
+  const dashboardHref = role === "admin" || role === "leader" ? "/admin" : "/dashboard";
 
   return (
-    <div className="mcc-home">
-      <section className="mcc-hero" aria-labelledby="mcc-hero-title">
-        <div className="mcc-hero-grid" aria-hidden="true" />
-        <div className="mcc-hero-inner">
-          <div className="mcc-hero-copy">
-            <span className="mcc-kicker"><span className="mcc-kicker-dot" /> <ScrambleText text="MCC MNU / MICROSOFT CAMPUS CLUB" /></span>
-            <h1 id="mcc-hero-title">Make room for <span>what&apos;s next.</span></h1>
-            <p className="mcc-hero-lede">A student community at Mansoura National University to explore technology, build things together, and turn curiosity into momentum.</p>
-            <div className="mcc-hero-actions">
-              <Link className="mcc-button mcc-button-light" href="/courses">Start learning <ArrowRight size={17} /></Link>
-              <Link className="mcc-button mcc-button-outline" href="/signup">Create free account <ArrowUpRight size={17} /></Link>
+    <div className="mcc-v2-home">
+      <section className="mcc-v2-hero" aria-labelledby="mcc-v2-title">
+        <div className="mcc-v2-hero-grid" aria-hidden="true" />
+        <div className="mcc-v2-hero-content">
+          <div className="mcc-v2-hero-copy">
+            <p className="mcc-v2-eyebrow"><span className="mcc-v2-live-dot" /> MICROSOFT CAMPUS CLUB <span className="mcc-v2-eyebrow-divider">/</span> MANSOURA NATIONAL UNIVERSITY</p>
+            <h1 id="mcc-v2-title">Learn it.<br /><span>Build it.</span><br />Share what&apos;s next.</h1>
+            <p className="mcc-v2-hero-lede">A campus community for curious minds. Explore technology, learn from one another, and turn ideas into things people can use.</p>
+            <div className="mcc-v2-hero-actions">
+              <Link className="mcc-v2-button mcc-v2-button-bright" href="/courses">Explore courses <ArrowRight size={18} /></Link>
+              {signedIn ? (
+                <Link className="mcc-v2-button mcc-v2-button-quiet" href={dashboardHref}>Your workspace <ArrowUpRight size={17} /></Link>
+              ) : (
+                <Link className="mcc-v2-button mcc-v2-button-quiet" href="/join">Meet the club <ArrowUpRight size={17} /></Link>
+              )}
             </div>
-            <div className="mcc-hero-note"><span>01</span> Learn something new. <span>02</span> Build with people. <span>03</span> Share what you make.</div>
+            <div className="mcc-v2-hero-footnote"><span className="mcc-v2-footline" /> LEARN AT YOUR PACE. BUILD WITH YOUR PEOPLE.</div>
           </div>
-
-          <div className="mcc-hero-poster" aria-label="MCC MNU community poster">
-            <div className="mcc-poster-top"><span>STUDENT COMMUNITY</span><span>MN / 26</span></div>
-            <div className="mcc-poster-art" aria-hidden="true">
-              <span className="mcc-poster-ring mcc-poster-ring-one" />
-              <span className="mcc-poster-ring mcc-poster-ring-two" />
-              <span className="mcc-poster-cross">+</span>
-              <span className="mcc-poster-word">MAKE<br />IT<br /><em>REAL.</em></span>
-              <span className="mcc-poster-stamp">IDEAS<br />IN MOTION</span>
-            </div>
-            <div className="mcc-poster-bottom"><strong>LEARN / BUILD / CONNECT</strong><span>MAN SOURA · EGYPT</span></div>
+          <div className="mcc-v2-hero-art" aria-label="MCC MNU robot mascot">
+            <div className="mcc-v2-art-frame" />
+            <Image src="/mcc-mascot.jpeg" alt="MCC MNU robot mascot wearing navy and white campus-club gear" width={853} height={1280} priority className="mcc-v2-mascot" />
+            <div className="mcc-v2-art-chip mcc-v2-art-chip-top"><span className="mcc-v2-chip-mark">M</span><span><strong>MCC MNU</strong><small>Learn · Build · Grow</small></span></div>
+            <div className="mcc-v2-art-chip mcc-v2-art-chip-bottom"><Sparkles size={17} /><span><strong>Curiosity, in motion.</strong><small>A community made for makers</small></span></div>
+            <span className="mcc-v2-art-index">MNU / 01</span>
           </div>
-          <div className="mcc-hero-side-note" aria-hidden="true">CURIOUS MINDS, SHARED WORK.</div>
         </div>
-        <div className="mcc-hero-bottomline"><span>MICROSOFT CAMPUS CLUB</span><span>MANSOURA NATIONAL UNIVERSITY</span><span>COMMUNITY FIRST — ALWAYS BUILDING</span></div>
+        <div className="mcc-v2-hero-bottom"><span>01 — LEARN</span><span>02 — BUILD</span><span>03 — SHARE</span><ArrowDownRight size={17} /></div>
       </section>
 
-      <section className="mcc-intro section" aria-labelledby="mcc-intro-title">
-        <Reveal className="container mcc-intro-grid">
-          <div>
-            <span className="mcc-section-label">01 / THE CLUB</span>
-            <h2 id="mcc-intro-title">A place to explore.<br /><em>A reason to build.</em></h2>
-          </div>
-          <div className="mcc-intro-copy">
-            <p>MCC MNU brings students together around technology, practical learning, and community. You don&apos;t have to follow one path or already know everything — start with what interests you.</p>
-            <Link href="/about" className="mcc-text-link">Get to know MCC <ArrowRight size={16} /></Link>
-          </div>
-        </Reveal>
-      </section>
-
-      <section className="mcc-tracks section" aria-labelledby="mcc-tracks-title">
-        <div className="container">
-          <div className="mcc-section-heading">
-            <div><span className="mcc-section-label">02 / LEARNING</span><h2 id="mcc-tracks-title">Find your direction.</h2></div>
-            <Link href="/courses" className="mcc-text-link">All courses <ArrowRight size={16} /></Link>
-          </div>
-          {tracks.length === 0 ? (
-            <div className="notice notice-info">Courses will appear here once they are published.</div>
-          ) : (
-            <div className="mcc-track-list">
-              {tracks.map((track, index) => {
-                const Icon = trackIcons[track.icon as keyof typeof trackIcons] ?? BookOpen;
-                return (
-                  <Link key={track.slug} href={`/tracks/${track.slug}`} className="mcc-track-row" style={{ "--track-color": track.color } as React.CSSProperties}>
-                    <span className="mcc-track-index">0{index + 1}</span>
-                    <span className="mcc-track-icon"><Icon size={22} /></span>
-                    <span className="mcc-track-main"><strong>{track.title}</strong><small>{track.description}</small></span>
-                    <span className="mcc-track-meta">{track.coursesCount} courses <span>·</span> {track.duration}</span>
-                    <span className="mcc-track-arrow"><ArrowUpRight size={20} /></span>
-                  </Link>
-                );
-              })}
-            </div>
-          )}
+      <section className="mcc-v2-section mcc-v2-pathways" aria-labelledby="pathways-title">
+        <div className="mcc-v2-section-heading">
+          <div><p className="mcc-v2-overline">YOUR NEXT CHAPTER</p><h2 id="pathways-title">Find your way in.</h2></div>
+          <p className="mcc-v2-section-intro">Start with a skill, a question, or a project idea. There&apos;s more than one way to be part of the club.</p>
+        </div>
+        <div className="mcc-v2-path-grid">
+          <Link href="/courses" className="mcc-v2-path-card mcc-v2-path-card-primary"><span className="mcc-v2-path-number">01 / LEARN</span><BookOpen size={27} strokeWidth={1.6} /><h3>Learn something real.</h3><p>Follow video lessons and keep your progress together in one place.</p><span className="mcc-v2-path-link">Browse courses <ArrowUpRight size={17} /></span></Link>
+          <Link href="/tracks" className="mcc-v2-path-card"><span className="mcc-v2-path-number">02 / EXPLORE</span><Compass size={27} strokeWidth={1.6} /><h3>Choose a direction.</h3><p>Explore the learning tracks currently published by MCC MNU.</p><span className="mcc-v2-path-link">Explore tracks <ArrowUpRight size={17} /></span></Link>
+          <Link href="/join" className="mcc-v2-path-card"><span className="mcc-v2-path-number">03 / CONNECT</span><Orbit size={27} strokeWidth={1.6} /><h3>Meet your people.</h3><p>Learn how club recruitment works and apply when applications are open.</p><span className="mcc-v2-path-link">Get to know MCC <ArrowUpRight size={17} /></span></Link>
         </div>
       </section>
 
-      <section className="mcc-community section" aria-labelledby="mcc-community-title">
-        <div className="container mcc-community-grid">
-          <div className="mcc-community-head">
-            <span className="mcc-section-label">03 / HOW IT WORKS</span>
-            <h2 id="mcc-community-title">Learning that sticks.</h2>
-            <p>Create an account, work through the published lessons, and keep your completion state across sessions.</p>
-            <Link href="/signup" className="mcc-text-link">Create a free account <ArrowRight size={16} /></Link>
-          </div>
-          <div className="mcc-principles">
-            {principles.map((item) => (
-              <article className="mcc-principle" key={item.number}>
-                <span>{item.number}</span><div><h3>{item.title}</h3><p>{item.text}</p></div><ArrowUpRight size={18} />
-              </article>
-            ))}
-          </div>
+      <section className="mcc-v2-section mcc-v2-tracks" aria-labelledby="tracks-title">
+        <div className="mcc-v2-section-heading">
+          <div><p className="mcc-v2-overline">LEARNING AT MCC</p><h2 id="tracks-title">Built around curiosity.</h2></div>
+          <Link className="mcc-v2-text-link" href="/tracks">All tracks <ArrowRight size={17} /></Link>
         </div>
+        {tracks.length ? (
+          <div className="mcc-v2-track-grid">
+            {tracks.slice(0, 4).map((track, index) => {
+              const TrackIcon = index % 2 === 0 ? Code2 : PlayCircle;
+              return <Link href={`/tracks/${track.slug}`} className="mcc-v2-track-card" key={track.slug}>
+                <div className="mcc-v2-track-card-top"><span>TRACK / {String(index + 1).padStart(2, "0")}</span><ArrowUpRight size={19} /></div>
+                <div className="mcc-v2-track-icon"><TrackIcon size={23} /></div>
+                <h3>{track.title}</h3>
+                <p>{track.description || "Explore the published learning path and its available courses."}</p>
+                <span className="mcc-v2-track-open">View track <ArrowRight size={16} /></span>
+              </Link>;
+            })}
+          </div>
+        ) : (
+          <div className="mcc-v2-empty-state"><div className="mcc-v2-empty-icon"><BookOpen size={24} /></div><h3>New learning paths are on the way.</h3><p>Published tracks will appear here as the club adds them. Start with the current course catalogue in the meantime.</p><Link href="/courses" className="mcc-v2-text-link">View courses <ArrowRight size={16} /></Link></div>
+        )}
       </section>
 
-      <section className="mcc-join-band" aria-labelledby="mcc-join-title">
-        <div className="container mcc-join-inner"><div><span className="mcc-section-label">YOUR NEXT CHAPTER</span><h2 id="mcc-join-title">Curiosity is a good place to start.</h2><p>Explore the public club space now. Official team recruitment opens in announced application cycles.</p></div><div className="mcc-join-actions"><Link href="/join" className="mcc-button mcc-button-light">Recruitment information <ArrowRight size={16} /></Link><a href="https://www.facebook.com/share/14sQQMH2mxJ/" target="_blank" rel="noreferrer" className="mcc-button mcc-button-outline">Follow MCC MNU <ArrowUpRight size={16} /></a></div></div>
+      <section className="mcc-v2-community" aria-labelledby="community-title">
+        <div className="mcc-v2-community-art"><Image src="/mcc-banner.jpeg" alt="MCC MNU robot mascot at work in a cinematic technology workspace" width={1280} height={720} loading="lazy" /><div className="mcc-v2-community-tag">MCC MNU / COMMUNITY</div></div>
+        <div className="mcc-v2-community-copy"><p className="mcc-v2-overline">BETTER, TOGETHER</p><h2 id="community-title">A club is more than a logo.</h2><p>It&apos;s the questions after a session, the project that almost works, and the people who help you get it over the line. MCC MNU brings students together to learn by doing.</p><div className="mcc-v2-community-actions"><Link href="/about" className="mcc-v2-button mcc-v2-button-bright">Discover MCC <ArrowRight size={17} /></Link><Link href="/join" className="mcc-v2-text-link">Recruitment information <ArrowUpRight size={16} /></Link></div></div>
       </section>
+
+      <section className="mcc-v2-bottom-cta"><div><p className="mcc-v2-overline">START WHERE YOU ARE</p><h2>{signedIn ? "Ready for your next lesson?" : "Your next idea starts here."}</h2><p>{signedIn ? "Pick up your learning and keep moving forward." : "No need to have everything figured out. Bring your curiosity."}</p></div><Link href={signedIn ? dashboardHref : "/courses"} className="mcc-v2-button mcc-v2-button-dark">{signedIn ? "Open your workspace" : "Start learning"} <ArrowRight size={17} /></Link></section>
     </div>
   );
 }

@@ -1,15 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, Suspense } from "react";
+import { useActionState, Suspense, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { UserPlus, CheckCircle } from "lucide-react";
+import { Eye, EyeOff, UserPlus, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { AuthShell, AuthFieldError, AuthNotice } from "@/components/auth/AuthShell";
 import { signupAction, type AuthFormState } from "@/lib/auth-actions";
 
 function SignupForm() {
   const searchParams = useSearchParams();
+  const [showPassword, setShowPassword] = useState(false);
+  const [password, setPassword] = useState("");
+  const strength = useMemo(() => [password.length >= 8, /[A-Z]/.test(password), /[0-9]/.test(password), /[^A-Za-z0-9]/.test(password)].filter(Boolean).length, [password]);
   const next = searchParams.get("next") ?? "";
   const [state, formAction, isPending] = useActionState<AuthFormState, FormData>(
     signupAction,
@@ -77,7 +80,9 @@ function SignupForm() {
           <input
             id="password"
             name="password"
-            type="password"
+            type={showPassword ? "text" : "password"}
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
             autoComplete="new-password"
             minLength={8}
             required
