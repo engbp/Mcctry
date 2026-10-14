@@ -13,17 +13,15 @@ const iconComponents: Record<IconName, React.ComponentType<{ size?: number }>> =
 const values = [
   { number: "01", icon: "Users" as IconName, title: "Community First", description: "The best learning happens together. MCC MNU connects students across disciplines to share knowledge, collaborate on projects, and build lasting relationships." },
   { number: "02", icon: "BookOpen" as IconName, title: "Practical Learning", description: "Tracks organize sessions and learning materials into practical paths. Students can join multiple tracks and access each track after enrollment." },
-  { number: "03", icon: "Code2" as IconName, title: "Build Real Things", description: "Theory meets practice in our project showcases. Students build portfolio-worthy projects that solve real problems." },
+  { number: "03", icon: "Code2" as IconName, title: "Build Real Things", description: "Theory meets practice when students apply what they learn to real problems and practical work." },
   { number: "04", icon: "Lightbulb" as IconName, title: "Innovation Mindset", description: "We encourage experimentation and creative problem-solving. Hackathons, build nights, and open challenges push boundaries." },
-  { number: "05", icon: "Target" as IconName, title: "Industry Connections", description: "Explore official announcements and opportunities as they are published. Any partner programs, credits, certifications, or mentorship offers should be listed only when confirmed." },
+  { number: "05", icon: "Target" as IconName, title: "Industry Connections", description: "External programs and learning opportunities are shared only when details are confirmed and relevant to students." },
   { number: "06", icon: "Heart" as IconName, title: "Inclusive Culture", description: "Everyone belongs here. Regardless of background, experience level, or major — if you're curious about technology, you're welcome." },
 ];
 
 const team = [
-  { role: "Administrators", description: "Manage club-wide membership, recruitment decisions, team structure, and platform-wide settings.", icon: "Users" as IconName, color: "#0078d4" },
-  { role: "Track Leaders", description: "Manage sessions, assignments, attendance, and learning activities within their assigned tracks.", icon: "BookOpen" as IconName, color: "#00b7c3" },
-  { role: "Operational-Team Leaders", description: "Coordinate their assigned team, manage day-to-day work, and recommend candidates without independently granting membership.", icon: "Code2" as IconName, color: "#8c52ff" },
-  { role: "Team Members", description: "Contribute through one operational team while remaining free to join multiple learning tracks.", icon: "Heart" as IconName, color: "#ffb900" },
+  { role: "Administrators", description: "Manage user roles, learning content, and platform-wide settings.", icon: "Users" as IconName, color: "#0078d4" },
+  { role: "Track Leaders", description: "Manage learning tracks, courses, video lessons, and resources within their assigned tracks.", icon: "BookOpen" as IconName, color: "#00b7c3" },
 ];
 
 const stats = [
@@ -34,11 +32,11 @@ const stats = [
 ];
 
 const timeline = [
-  { year: "01", title: "Explore", text: "Discover technology topics and public community events." },
+  { year: "01", title: "Explore", text: "Discover technology topics and published learning tracks." },
   { year: "02", title: "Learn", text: "Join learning tracks and access sessions and materials." },
   { year: "03", title: "Build", text: "Apply what you learn through projects and practical work." },
-  { year: "04", title: "Connect", text: "Meet students and take part in the wider community." },
-  { year: "05", title: "Contribute", text: "Apply during official recruitment cycles to join an operational team." },
+  { year: "04", title: "Connect", text: "Use community resources and learn alongside other students." },
+  { year: "05", title: "Contribute", text: "Share what you learn and help others solve practical problems." },
 ];
 
 export default function AboutPage() {
@@ -106,10 +104,10 @@ export default function AboutPage() {
           <div className="cm-about-structure">
             <div className="cm-about-copy">
               <p>
-                MCC MNU brings students together through learning tracks, events, projects, and club-wide team membership. Track enrollment and operational-team membership are separate so students can learn across multiple areas.
+                MCC MNU brings students together through published learning tracks, video courses, and shared resources. Students can explore multiple areas and keep track of their own learning progress.
               </p>
               <p>
-                Administrators manage team promotions and appoint operational-team leaders. Leaders coordinate within their assigned scope, while members can nominate replacements when a leadership position becomes vacant.
+                Administrators manage user roles and track assignments. Track leaders can edit learning content and resources only within the tracks assigned to them.
               </p>
             </div>
             <Reveal className="cm-team-grid" role="list">
@@ -140,9 +138,9 @@ export default function AboutPage() {
           <Reveal className="cm-story">
             <div className="cm-story-copy">
               <h3>How to participate</h3>
-              <p>Start by exploring the public tracks, events, and student-project showcase. Track enrollment gives students access to that track&apos;s sessions and learning materials, and students can participate in more than one track at a time.</p>
+              <p>Start by exploring the published tracks and courses. Follow video lessons, save your progress, and use the resources published alongside learning content.</p>
               <h3>How to contribute</h3>
-              <p>Club-wide team membership is handled through formal recruitment cycles. Administrators make final selection and promotion decisions, then assign each team member to one operational team. Graduates may remain active team members with administrator approval.</p>
+              <p>Administrators manage platform roles and assign track leaders. Track leaders focus on keeping learning content useful, organized, and up to date.</p>
             </div>
             <ol className="cm-timeline" aria-label="MCC MNU timeline">
               {timeline.map((item) => (
@@ -163,11 +161,11 @@ export default function AboutPage() {
         <div className="container lk-cta-inner">
           <div>
             <span className="hp-section-kicker" style={{ color: "var(--mcc-cyan)" }}>BE PART OF IT</span>
-            <h2 id="join-title" className="hp-section-title" style={{ color: "#fff" }}>Ready to join?</h2>
-            <p>The best way to understand MCC MNU is to participate. Attend an event, start a course, or propose a project.</p>
+            <h2 id="join-title" className="hp-section-title" style={{ color: "#fff" }}>Ready to start learning?</h2>
+            <p>Explore a course, follow a learning track, or start with a trusted resource.</p>
           </div>
-          <Link href="/join" className="lk-cta-btn">
-            Join MCC MNU <ArrowRight size={17} />
+          <Link href="/courses" className="lk-cta-btn">
+            Explore courses <ArrowRight size={17} />
           </Link>
         </div>
       </section>
