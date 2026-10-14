@@ -39,7 +39,7 @@ export default async function ResourcesPage() {
               <span className="mcc-section-label">NO RESOURCES PUBLISHED YET</span>
               <h2>The library is being restocked.</h2>
               <p>Approved links, tools and references will appear here once administrators publish them.</p>
-              <Link href="/join" className="mcc-text-link">Join MCC MNU <ArrowRight size={16} /></Link>
+              <Link href="/courses" className="mcc-text-link">Browse courses <ArrowRight size={16} /></Link>
             </div>
           ) : (
             <Reveal className="cm-res-grid" role="list">
@@ -82,12 +82,12 @@ export default async function ResourcesPage() {
       <section className="lk-cta-band" aria-labelledby="mcc-resources-title">
         <div className="container lk-cta-inner">
           <div>
-            <span className="hp-section-kicker" style={{ color: "var(--mcc-cyan)" }}>MCC RESOURCES</span>
-            <h2 id="mcc-resources-title" className="hp-section-title" style={{ color: "#fff" }}>More materials on the way.</h2>
-            <p>Official MCC learning materials will be published here as they are ready.</p>
+            <span className="hp-section-kicker" style={{ color: "var(--mcc-cyan)" }}>KEEP LEARNING</span>
+            <h2 id="mcc-resources-title" className="hp-section-title" style={{ color: "#fff" }}>Put these resources to work.</h2>
+            <p>Explore the published courses and learning tracks connected to your interests.</p>
           </div>
-          <Link href="/join" className="lk-cta-btn">
-            Join MCC <ArrowRight size={17} />
+          <Link href="/courses" className="lk-cta-btn">
+            Explore courses <ArrowRight size={17} />
           </Link>
         </div>
       </section>
