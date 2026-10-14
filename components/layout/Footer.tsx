@@ -1,19 +1,18 @@
 import Link from "next/link";
-import { ArrowUpRight, Facebook, Instagram, Linkedin, Mail, GraduationCap } from "lucide-react";
+import { ArrowUpRight, Facebook, Instagram, Linkedin, GraduationCap } from "lucide-react";
 import { ScrambleText } from "@/components/fx/ScrambleText";
 import { MagneticButton } from "@/components/fx/MagneticButton";
 import { Reveal } from "@/components/fx/Reveal";
 
 const footerLinks = {
-  discover: [
+  learn: [
+    { label: "All Courses", href: "/courses" },
     { label: "Learning Tracks", href: "/tracks" },
-    { label: "Courses & Resources", href: "/courses" },
     { label: "Resources", href: "/resources" },
   ],
-  community: [
+  club: [
     { label: "About MCC", href: "/about" },
     { label: "Recruitment", href: "/join" },
-    { label: "Events", href: "/events" },
   ],
   account: [
     { label: "Sign in", href: "/login" },
@@ -39,7 +38,7 @@ export function Footer() {
             <p className="footer-cta-lede">Explore the tracks, meet the community, and find your next thing to build.</p>
           </Reveal>
           <div className="footer-cta-actions">
-            <MagneticButton><Link href="/tracks" className="footer-cta-btn footer-cta-btn-solid">Explore tracks <ArrowUpRight size={17} /></Link></MagneticButton>
+            <MagneticButton><Link href="/courses" className="footer-cta-btn footer-cta-btn-solid">Start learning <ArrowUpRight size={17} /></Link></MagneticButton>
             <MagneticButton><Link href="/join" className="footer-cta-btn footer-cta-btn-ghost">Recruitment info <ArrowUpRight size={17} /></Link></MagneticButton>
           </div>
         </div>

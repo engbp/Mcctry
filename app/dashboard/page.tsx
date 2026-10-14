@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowRight, BookOpen, CheckCircle, LogOut } from "lucide-react";
+import { ArrowRight, BookOpen, CheckCircle, LogOut, PlayCircle } from "lucide-react";
 import { BandHero } from "@/components/layout/BandHero";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -8,7 +8,7 @@ import { SpotlightCard } from "@/components/fx/SpotlightCard";
 import { Reveal } from "@/components/fx/Reveal";
 import { getCurrentUser, getCurrentProfile } from "@/lib/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { loadCourses } from "@/lib/content-views";
+import { loadCourses, loadLessonsForCourse } from "@/lib/content-views";
 import { signOutAction } from "@/lib/auth-actions";
 
 export const dynamic = "force-dynamic";
@@ -35,7 +35,6 @@ export default async function DashboardPage({
       .eq("user_id", user.id),
   ]);
 
-  // Per-course progress for the signed-in student.
   const { data: progressRows } = await supabase
     .from("lesson_progress")
     .select("course_id, lesson_id")
@@ -47,6 +46,17 @@ export default async function DashboardPage({
     set.add(row.lesson_id);
     progressByCourse.set(row.course_id, set);
   }
+
+  // Load lessons for each published course so students can open lessons
+  // directly from the dashboard.
+  const lessonsByCourse = await Promise.all(
+    courses.map(async (course) => {
+      if (!course.id) return { slug: course.slug, lessons: [] as Awaited<ReturnType<typeof loadLessonsForCourse>>["items"] };
+      const { items } = await loadLessonsForCourse(course.id);
+      return { slug: course.slug, lessons: items };
+    })
+  );
+  const lessonsMap = new Map(lessonsByCourse.map((entry) => [entry.slug, entry.lessons]));
 
   return (
     <>
@@ -103,9 +113,10 @@ export default async function DashboardPage({
                 const done = course.id ? (progressByCourse.get(course.id)?.size ?? 0) : 0;
                 const total = course.lessonsCount;
                 const pct = total ? Math.round((done / total) * 100) : 0;
+                const lessons = lessonsMap.get(course.slug) ?? [];
                 return (
-                  <SpotlightCard key={course.slug} as="a" href={`/courses/${course.slug}`} className="db-continue">
-                    <div className="db-continue-body">
+                  <div key={course.slug} className="db-continue" style={{ display: "block" }}>
+                    <Link href={`/courses/${course.slug}`} className="db-continue-body" style={{ textDecoration: "none", color: "inherit" }}>
                       <div className="db-continue-badges">
                         <span className="cat-chip cat-chip-active" style={{ background: course.color, color: "#fff" }}>
                           {course.track}
@@ -125,11 +136,52 @@ export default async function DashboardPage({
                           <div className="db-progress-fill" style={{ width: `${pct}%` }} />
                         </div>
                       </div>
-                    </div>
-                    <span className="db-continue-cta">
+                    </Link>
+
+                    {lessons.length > 0 && (
+                      <ul className="db-lesson-list" style={{ listStyle: "none", margin: "14px 0 0", padding: 0, display: "flex", flexDirection: "column", gap: 8 }}>
+                        {lessons.map((lesson, index) => {
+                          const completed = lesson.id
+                            ? (progressByCourse.get(course.id ?? "")?.has(lesson.id) ?? false)
+                            : false;
+                          return (
+                            <li key={lesson.slug}>
+                              <Link
+                                href={`/courses/${course.slug}/lessons/${lesson.slug}`}
+                                className="db-lesson-link"
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 10,
+                                  padding: "10px 12px",
+                                  borderRadius: 10,
+                                  border: "1px solid rgba(255,255,255,.08)",
+                                  background: "rgba(255,255,255,.03)",
+                                  color: "inherit",
+                                  textDecoration: "none",
+                                  fontSize: "0.92rem",
+                                }}
+                              >
+                                {completed ? (
+                                  <CheckCircle size={16} style={{ color: "#5bd49a", flexShrink: 0 }} />
+                                ) : (
+                                  <PlayCircle size={16} style={{ opacity: 0.7, flexShrink: 0 }} />
+                                )}
+                                <span style={{ flex: 1 }}>
+                                  {index + 1}. {lesson.title}
+                                </span>
+                                <ArrowRight size={14} style={{ opacity: 0.6 }} />
+                              </Link>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    )}
+
+                    <Link href={`/courses/${course.slug}`} className="db-continue-cta" style={{ marginTop: 14 }}>
                       Open course <ArrowRight size={17} />
-                    </span>
-                  </SpotlightCard>
+                    </Link>
+                  </div>
                 );
               })}
             </Reveal>

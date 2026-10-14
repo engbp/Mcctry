@@ -16,6 +16,10 @@ export interface AuthFormState {
 const AUTH_RATE_LIMIT_MAX = 10;
 const AUTH_RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
 
+function siteUrl(): string {
+  return (process.env.NEXT_PUBLIC_SITE_URL ?? "https://mcctry.vercel.app").replace(/\/$/, "");
+}
+
 function sanitizeNext(next: string | null): string {
   if (next && next.startsWith("/") && !next.startsWith("//")) return next;
   return "/dashboard";
@@ -30,6 +34,34 @@ function rateLimited(state: AuthFormState, key: string): AuthFormState | null {
     };
   }
   return null;
+}
+
+function friendlyAuthError(error: { code?: string; message: string }): string {
+  const code = (error.code ?? "").toLowerCase();
+  const msg = error.message.toLowerCase();
+
+  if (code === "email_not_confirmed" || msg.includes("confirm")) {
+    return "Please confirm your email address first. Check your inbox (and spam) for the confirmation link.";
+  }
+  if (code === "over_email_send_rate_limit" || msg.includes("rate limit")) {
+    return "Too many sign-up attempts for this email. Wait a minute and try again.";
+  }
+  if (code === "user_already_exists" || msg.includes("already registered") || msg.includes("already been registered")) {
+    return "An account with this email already exists. Try signing in instead.";
+  }
+  if (code === "weak_password" || msg.includes("password should be")) {
+    return "That password is too weak. Use at least 8 characters.";
+  }
+  if (code === "validation_failed" || msg.includes("invalid")) {
+    return error.message;
+  }
+  if (code === "database_error" || msg.includes("database error")) {
+    return "Account creation failed on the server. Please try again in a moment.";
+  }
+  if (code === "unexpected_failure" || msg.includes("unexpected")) {
+    return "Something went wrong on the server. Please try again in a moment.";
+  }
+  return error.message;
 }
 
 export async function loginAction(
@@ -58,13 +90,13 @@ export async function loginAction(
     if (error.code === "email_not_confirmed") {
       return {
         status: "needs_confirmation",
-        message: "Please confirm your email address first. Check your inbox for the confirmation link.",
+        message: "Please confirm your email address first. Check your inbox for the confirmation link, then sign in.",
       };
     }
     if (error.message.toLowerCase().includes("invalid login")) {
       return { status: "error", message: "Incorrect email or password." };
     }
-    return { status: "error", message: error.message };
+    return { status: "error", message: friendlyAuthError(error) };
   }
   if (!data.session) {
     return { status: "error", message: "Sign-in failed. Please try again." };
@@ -105,25 +137,19 @@ export async function signupAction(
       // role 'member'. display_name is a hint only; role is never taken
       // from metadata.
       data: { display_name: displayName },
-      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://mcctry.vercel.app"}/auth/confirm?next=${encodeURIComponent(next)}`,
+      emailRedirectTo: `${siteUrl()}/auth/confirm?next=${encodeURIComponent(next)}`,
     },
   });
 
   if (error) {
-    if (error.message.toLowerCase().includes("already registered")) {
-      return {
-        status: "error",
-        message: "An account with this email already exists. Try signing in instead.",
-      };
-    }
-    return { status: "error", message: error.message };
+    return { status: "error", message: friendlyAuthError(error) };
   }
 
   // No session => email confirmation is required before sign-in.
   if (!data.session) {
     return {
       status: "needs_confirmation",
-      message: "Almost there — check your inbox and confirm your email address, then sign in.",
+      message: "Almost there — check your inbox (and spam) and confirm your email address, then sign in. If no email arrives within a few minutes, try signing up again or contact the club.",
     };
   }
 
@@ -150,7 +176,7 @@ export async function requestPasswordResetAction(
 
   const supabase = await createSupabaseServerClient();
   await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://mcctry.vercel.app"}/auth/update-password`,
+    redirectTo: `${siteUrl()}/auth/update-password`,
   });
   // Always show success so the response does not reveal whether the email exists.
   return {
@@ -182,7 +208,7 @@ export async function updatePasswordAction(
 
   const { error } = await supabase.auth.updateUser({ password });
   if (error) {
-    return { status: "error", message: error.message };
+    return { status: "error", message: friendlyAuthError(error) };
   }
   redirect("/dashboard");
 }

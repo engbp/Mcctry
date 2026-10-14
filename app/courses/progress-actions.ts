@@ -54,8 +54,16 @@ export async function toggleLessonCompletion(
 ): Promise<ProgressActionState> {
   const lessonId = String(formData.get("lessonId") ?? "");
   const courseId = String(formData.get("courseId") ?? "");
+  const lessonSlug = String(formData.get("lessonSlug") ?? "");
+  const courseSlug = String(formData.get("courseSlug") ?? "");
   const currentlyCompleted = String(formData.get("completed") ?? "") === "true";
   const result = await setLessonCompletion(lessonId, courseId, !currentlyCompleted);
-  if (result.ok) revalidatePath("/dashboard");
+  if (result.ok) {
+    revalidatePath("/dashboard");
+    revalidatePath(`/courses/${courseSlug || "unknown"}`);
+    if (courseSlug && lessonSlug) {
+      revalidatePath(`/courses/${courseSlug}/lessons/${lessonSlug}`);
+    }
+  }
   return result;
 }

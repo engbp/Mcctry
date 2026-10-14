@@ -94,7 +94,7 @@ export default function JoinPage() {
                 <Link href="/">Back to home <ArrowRight size={17} /></Link>
               </Button>
               <Button variant="outline" asChild size="lg">
-                <Link href="/events">Explore events <ArrowUpRight size={17} /></Link>
+                <Link href="/about">About MCC <ArrowUpRight size={17} /></Link>
               </Button>
             </div>
           </div>

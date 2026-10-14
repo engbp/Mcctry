@@ -36,6 +36,7 @@ function revalidateAdmin() {
   revalidatePath("/admin/courses");
   revalidatePath("/admin/lessons");
   revalidatePath("/admin/resources");
+  revalidatePath("/");
   revalidatePath("/tracks");
   revalidatePath("/courses");
   revalidatePath("/resources");

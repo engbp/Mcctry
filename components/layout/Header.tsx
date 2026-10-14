@@ -32,7 +32,6 @@ const searchIndex = [
   { label: "Resources", href: "/resources", type: "Page" },
   { label: "About MCC", href: "/about", type: "Page" },
   { label: "Join MCC", href: "/join", type: "Page" },
-  { label: "Getting Started", href: "/tracks/getting-started", type: "Track" },
   { label: "Introduction to AI", href: "/courses/introduction-to-ai", type: "Course" },
   { label: "Student Dashboard", href: "/dashboard", type: "Page" },
   { label: "Sign in", href: "/login", type: "Page" },

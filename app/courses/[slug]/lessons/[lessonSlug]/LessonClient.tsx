@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useEffect } from "react";
+import { useActionState } from "react";
 import { ArrowRight, ArrowLeft, CheckCircle, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
@@ -34,14 +34,10 @@ export function LessonClient({
     { ok: true, completed: initialCompleted }
   );
 
-  useEffect(() => {
-    // Reset visual completion when navigating to a different lesson.
-  }, [lesson.slug]);
-
   const completed = progressState.completed ?? initialCompleted;
-  const completedCount = completedLessonIds.length;
+  const completedCount = completedLessonIds.length + (completed && !initialCompleted ? 1 : 0);
   const progressPercent = totalLessons
-    ? Math.round((completedCount / totalLessons) * 100)
+    ? Math.min(100, Math.round((completedCount / totalLessons) * 100))
     : 0;
 
   return (
@@ -53,7 +49,7 @@ export function LessonClient({
           </Link>
           <span className="lesson-topbar-progress">
             Lesson {lessonNumber} of {totalLessons}
-            <span className="lesson-topbar-bar"><i style={{ width: `${((lessonIndex + (completed ? 1 : 0)) / totalLessons) * 100}%` }} /></span>
+            <span className="lesson-topbar-bar"><i style={{ width: `${progressPercent}%` }} /></span>
           </span>
         </div>
       </header>
@@ -75,6 +71,8 @@ export function LessonClient({
                 <form action={formAction} className="lesson-complete-form">
                   <input type="hidden" name="lessonId" value={lesson.id ?? ""} />
                   <input type="hidden" name="courseId" value={lesson.courseId ?? ""} />
+                  <input type="hidden" name="lessonSlug" value={lesson.slug} />
+                  <input type="hidden" name="courseSlug" value={slug} />
                   <input type="hidden" name="completed" value={completed ? "true" : "false"} />
                   <Button
                     variant={completed ? "secondary" : "primary"}

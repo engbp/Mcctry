@@ -2,7 +2,7 @@ import { ReactNode, HTMLAttributes } from "react";
 
 interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
   children: ReactNode;
-  variant?: "blue" | "cyan" | "navy" | "demo" | "featured" | "success" | "warning" | "default";
+  variant?: "blue" | "cyan" | "navy" | "featured" | "success" | "warning" | "default";
   size?: "sm" | "md" | "lg";
   className?: string;
   dot?: boolean;
@@ -23,7 +23,6 @@ export function Badge({
     blue: "badge-blue",
     cyan: "badge-cyan",
     navy: "badge-navy",
-    demo: "badge-demo",
     featured: "badge-featured",
     success: "badge-success",
     warning: "badge-warning",

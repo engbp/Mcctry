@@ -58,11 +58,19 @@ export default async function CoursePage({ params }: CoursePageProps) {
           </>
         }
         actions={
-          <Button variant="inverse" asChild size="lg">
-            <Link href={`/courses/${slug}/lessons/${lessons[0]?.slug ?? "introduction"}`}>
-              <Play size={17} fill="currentColor" /> Start course
-            </Link>
-          </Button>
+          lessons[0] ? (
+            <Button variant="inverse" asChild size="lg">
+              <Link href={`/courses/${slug}/lessons/${lessons[0].slug}`}>
+                <Play size={17} fill="currentColor" /> Start course
+              </Link>
+            </Button>
+          ) : (
+            <Button variant="inverse" asChild size="lg" disabled>
+              <span>
+                <Play size={17} fill="currentColor" /> Lessons coming soon
+              </span>
+            </Button>
+          )
         }
         icon={<BookOpen size={56} />}
       />
@@ -116,11 +124,17 @@ export default async function CoursePage({ params }: CoursePageProps) {
             <div className="lk-side-card">
               <h3 id="sidebar-title">Start learning</h3>
               <p className="lk-side-sub">{totalLessons} lessons · {totalDuration} · {course.level ?? "All levels"}</p>
-              <Button variant="primary" asChild size="lg" style={{ width: "100%" }}>
-                <Link href={`/courses/${slug}/lessons/${lessons[0]?.slug ?? "introduction"}`}>
-                  Start course <ArrowRight size={17} />
-                </Link>
-              </Button>
+              {lessons[0] ? (
+                <Button variant="primary" asChild size="lg" style={{ width: "100%" }}>
+                  <Link href={`/courses/${slug}/lessons/${lessons[0].slug}`}>
+                    Start course <ArrowRight size={17} />
+                  </Link>
+                </Button>
+              ) : (
+                <Button variant="primary" size="lg" style={{ width: "100%" }} disabled>
+                  Lessons coming soon
+                </Button>
+              )}
               <div className="lk-side-navlinks">
                 {prevCourse && (
                   <Link href={`/courses/${prevCourse.slug}`}>

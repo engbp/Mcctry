@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { ArrowRight, BookOpen, Code2, Cloud, ShieldCheck, Map, Rocket, Award } from "lucide-react";
+import { ArrowRight, BookOpen, Code2, Cloud, ShieldCheck, Map, Rocket } from "lucide-react";
 import { BandHero } from "@/components/layout/BandHero";
-import { loadTracks } from "@/lib/content-views";
+import { loadTracks, loadCourses } from "@/lib/content-views";
 import { SpotlightCard } from "@/components/fx/SpotlightCard";
 import { Reveal } from "@/components/fx/Reveal";
 
@@ -10,13 +10,17 @@ export const revalidate = 300;
 const trackIcons = { BookOpen, Code2, Cloud, ShieldCheck } as const;
 
 const steps = [
-  { icon: Map, title: "Pick a Track", text: "Choose from AI & Data, Software Development, Cloud, or Cybersecurity based on your interests." },
-  { icon: BookOpen, title: "Take Courses", text: "Progress through structured courses with short video lessons, resources, and checkpoints." },
-  { icon: Rocket, title: "Build Projects", text: "Apply what you've learned in guided projects and showcase your work to the community." },
+  { icon: Map, title: "Pick a Track", text: "Choose the learning path that fits your interests." },
+  { icon: BookOpen, title: "Take Courses", text: "Work through structured courses with short video lessons." },
+  { icon: Rocket, title: "Track Progress", text: "Mark lessons complete and pick up where you left off." },
 ];
 
 export default async function TracksPage() {
-  const { items: tracks } = await loadTracks();
+  const [{ items: tracks }, { items: courses }] = await Promise.all([
+    loadTracks(),
+    loadCourses(),
+  ]);
+  const totalLessons = courses.reduce((sum, course) => sum + course.lessonsCount, 0);
 
   return (
     <>
@@ -24,8 +28,8 @@ export default async function TracksPage() {
         crumbs={[{ label: "Tracks" }]}
         kicker="LEARN · DISCOVER"
         title="Explore learning paths."
-        lede="Choose a direction, then follow a clear path through courses and lessons. Learning stays lightweight and practical."
-        meta={<span className="band-meta-pill"><BookOpen size={14} /> {tracks.length} tracks · 33+ lessons</span>}
+        lede="Choose a direction, then follow a clear path through courses and lessons."
+        meta={<span className="band-meta-pill"><BookOpen size={14} /> {tracks.length} tracks · {totalLessons} lessons</span>}
         icon={<BookOpen size={56} />}
       />
 
@@ -44,7 +48,7 @@ export default async function TracksPage() {
               <span className="mcc-section-label">NO TRACKS PUBLISHED YET</span>
               <h2>New learning paths will appear here.</h2>
               <p>Tracks are published by MCC administrators. In the meantime, browse the courses catalogue.</p>
-              <Link href="/courses" className="mcc-text-link">Browse all courses <ArrowRight size={15} /></Link>
+              <Link href="/courses" className="mcc-text-link">Browse all courses <ArrowRight size={16} /></Link>
             </div>
           ) : (
             <Reveal className="hp-track-grid" role="list">
@@ -90,19 +94,6 @@ export default async function TracksPage() {
               </div>
             ))}
           </Reveal>
-        </div>
-      </section>
-
-      <section className="lk-cta-band" aria-labelledby="tracks-cta-title">
-        <div className="container lk-cta-inner">
-          <div>
-            <span className="hp-section-kicker" style={{ color: "var(--mcc-cyan)" }}>READY TO START</span>
-            <h2 id="tracks-cta-title" className="hp-section-title" style={{ color: "#fff" }}>Your learning journey begins here.</h2>
-            <p>Pick a track and start with the first course. No prerequisites, no pressure — just practical learning.</p>
-          </div>
-          <Link href="/courses" className="lk-cta-btn">
-            Browse all courses <ArrowRight size={17} />
-          </Link>
         </div>
       </section>
     </>

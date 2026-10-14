@@ -7,8 +7,7 @@
 // `source: "db"`. When the database is empty, the query fails, or Supabase is
 // not configured, the loaders return an empty list with `source: "unavailable"`
 // so pages show an honest empty/unavailable state — never fabricated sample
-// content and never a raw database error. `lib/data.ts` remains only as the
-// date/format helpers and for unit tests of the old prototype shapes.
+// content and never a raw database error.
 
 import {
   getPublishedContent,
