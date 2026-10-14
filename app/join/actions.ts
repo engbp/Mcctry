@@ -61,6 +61,8 @@ export async function submitJoinApplication(
   const parsed = validateApplication({
     name: formData.get("name"),
     email: formData.get("email"),
+    phone: formData.get("phone"),
+    answers: Object.fromEntries([...formData.entries()].filter(([key]) => key.startsWith("question_")).map(([key, value]) => [key.slice("question_".length), String(value)])),
     interests: formData.getAll("interests"),
     customInterest: formData.get("customInterest"),
     motivation: formData.get("motivation"),
@@ -70,12 +72,35 @@ export async function submitJoinApplication(
     return { status: "error", errors: parsed.errors };
   }
 
+  // Load current form configuration on the server; validate answers even if a
+  // caller bypasses the browser's required attributes.
+  const { createSupabaseServerClient } = await import("@/lib/supabase/server");
+  const questionClient = await createSupabaseServerClient();
+  const questionResult = await (questionClient as unknown as { from: (table: string) => any })
+    .from("recruitment_questions").select("id,label,field_type,options,required").eq("enabled", true);
+  if (questionResult.error) {
+    return { status: "error", message: "The application form is temporarily unavailable. Please try again later." };
+  }
+  const acceptedAnswers: Record<string, string> = {};
+  for (const question of (questionResult.data ?? []) as Array<{ id: string; label: string; field_type: string; options: string[]; required: boolean }>) {
+    const raw = parsed.value.answers[question.id] ?? "";
+    if (question.required && !raw.trim()) {
+      return { status: "error", errors: { ["question_" + question.id]: question.label + " is required." } };
+    }
+    if (raw && (raw.length > 2000 || (question.field_type === "select" && !(question.options ?? []).includes(raw)))) {
+      return { status: "error", errors: { ["question_" + question.id]: "Choose a valid answer for this question." } };
+    }
+    if (raw) acceptedAnswers[question.id] = raw;
+  }
+
   // 4. Persist (anon client, RLS-enforced pending).
   const result = await submitApplication(
     {
       name: parsed.value.name,
       email: parsed.value.email,
       interests: parsed.value.interests,
+      phone_number: parsed.value.phone,
+      answers: acceptedAnswers,
       motivation: parsed.value.motivation,
       heard_from: parsed.value.heardFrom,
     },

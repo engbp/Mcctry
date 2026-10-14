@@ -12,7 +12,7 @@ export async function MainLayout({ children }: MainLayoutProps) {
   const profile = user ? await getCurrentProfile() : null;
   return (
     <>
-      <Header isSignedIn={Boolean(user)} isAdmin={profile?.role === "admin"} />
+      <Header isSignedIn={Boolean(user)} isAdmin={profile?.role === "admin"} isTrackLeader={profile?.role === "leader"} />
       <main id="main-content" className="main-content">
         {children}
       </main>

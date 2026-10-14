@@ -33,6 +33,8 @@ export async function submitApplication(
     name: input.name,
     email: input.email,
     interests: input.interests,
+    phone_number: input.phone_number,
+    answers: input.answers,
     motivation: input.motivation ?? null,
     heard_from: input.heard_from ?? null,
     status: "pending" as const,

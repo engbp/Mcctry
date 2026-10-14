@@ -30,6 +30,7 @@ export type Team = {
 
 export type Profile = {
   id: string;
+  email: string | null;
   role: AppRole;
   display_name: string | null;
   team_id: string | null;
@@ -140,6 +141,8 @@ export type Application = {
   id: string;
   name: string;
   email: string;
+  phone_number: string | null;
+  answers: Record<string, string>;
   interests: string[];
   motivation: string | null;
   heard_from: string | null;
@@ -155,6 +158,8 @@ export type ApplicationInsert = {
   name: string;
   email: string;
   interests: string[];
+  phone_number: string;
+  answers: Record<string, string>;
   motivation?: string | null;
   heard_from?: string | null;
 };

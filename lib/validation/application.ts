@@ -9,7 +9,9 @@ export type ValidationResult =
 export interface ValidatedApplication {
   name: string;
   email: string;
+  phone: string;
   interests: string[];
+  answers: Record<string, string>;
   motivation: string | null;
   heardFrom: string | null;
 }
@@ -18,13 +20,16 @@ const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 const MAX_NAME = 120;
 const MAX_EMAIL = 254;
 const MAX_MOTIVATION = 3000;
+const MAX_PHONE = 30;
 const MAX_HEARD_FROM = 200;
 const MAX_INTERESTS = 20;
 
 export interface RawApplicationInput {
   name?: unknown;
   email?: unknown;
+  phone?: unknown;
   interests?: unknown;
+  answers?: unknown;
   customInterest?: unknown;
   motivation?: unknown;
   heardFrom?: unknown;
@@ -52,6 +57,20 @@ export function validateApplication(
   if (!email) errors.email = "Email is required";
   else if (email.length > MAX_EMAIL) errors.email = `Email must be ${MAX_EMAIL} characters or fewer`;
   else if (!EMAIL_RE.test(email)) errors.email = "Enter a valid email address";
+
+  const phone = asString(input.phone);
+  const compactPhone = phone.replace(/[\s().-]/g, "");
+  if (!phone) errors.phone = "Phone number is required";
+  else if (phone.length > MAX_PHONE || !/^\+?[0-9]{7,20}$/.test(compactPhone)) errors.phone = "Enter a valid phone number (7–20 digits)";
+
+  const rawAnswers = input.answers && typeof input.answers === "object" && !Array.isArray(input.answers)
+    ? input.answers as Record<string, unknown>
+    : {};
+  const answers: Record<string, string> = {};
+  for (const [id, value] of Object.entries(rawAnswers)) {
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id)) continue;
+    if (typeof value === "string" && value.trim()) answers[id] = value.trim().slice(0, 2000);
+  }
 
   const rawInterests = Array.isArray(input.interests)
     ? input.interests.filter((i): i is string => typeof i === "string").map((i) => i.trim()).filter(Boolean)
@@ -86,6 +105,6 @@ export function validateApplication(
 
   return {
     ok: true,
-    value: { name, email, interests, motivation, heardFrom },
+    value: { name, email, phone, interests, answers, motivation, heardFrom },
   };
 }

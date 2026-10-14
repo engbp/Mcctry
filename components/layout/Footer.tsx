@@ -1,76 +1,27 @@
+import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, Facebook, Instagram, Linkedin, GraduationCap } from "lucide-react";
-import { ScrambleText } from "@/components/fx/ScrambleText";
-import { MagneticButton } from "@/components/fx/MagneticButton";
-import { Reveal } from "@/components/fx/Reveal";
+import { ArrowUpRight, Facebook, Instagram, Linkedin } from "lucide-react";
+import { getCurrentProfile, getCurrentUser } from "@/lib/auth";
 
-const footerLinks = {
-  learn: [
-    { label: "All Courses", href: "/courses" },
-    { label: "Learning Tracks", href: "/tracks" },
-    { label: "Resources", href: "/resources" },
-  ],
-  club: [
-    { label: "About MCC", href: "/about" },
-    { label: "Recruitment", href: "/join" },
-  ],
-  account: [
-    { label: "Sign in", href: "/login" },
-    { label: "Create account", href: "/signup" },
-    { label: "Student Dashboard", href: "/dashboard" },
-  ],
-};
-
-const socialLinks = [
-  { label: "Facebook", href: "https://www.facebook.com/share/14sQQMH2mxJ/", icon: Facebook },
-  { label: "LinkedIn", href: "https://www.linkedin.com/company/mccmnuegypt/", icon: Linkedin },
-  { label: "Instagram", href: "https://www.instagram.com/mcc_mansnu?xtok=ejFyYmJlMDhtZHBy", icon: Instagram },
+const socials = [
+  { label: "Facebook", href: "https://www.facebook.com/share/14sQQMH2mxJ/", Icon: Facebook },
+  { label: "LinkedIn", href: "https://www.linkedin.com/company/mccmnuegypt/", Icon: Linkedin },
+  { label: "Instagram", href: "https://www.instagram.com/mcc_mansnu/", Icon: Instagram },
 ];
 
-export function Footer() {
-  return (
-    <footer className="site-footer" role="contentinfo">
-      <div className="footer-cta">
-        <div className="footer-cta-inner">
-          <Reveal className="footer-cta-copy">
-            <span className="footer-cta-kicker">MCC MNU · MICROSOFT CAMPUS CLUB</span>
-            <ScrambleText as="h2" className="footer-cta-title" text="Curiosity is a good place to start." />
-            <p className="footer-cta-lede">Explore the tracks, meet the community, and find your next thing to build.</p>
-          </Reveal>
-          <div className="footer-cta-actions">
-            <MagneticButton><Link href="/courses" className="footer-cta-btn footer-cta-btn-solid">Start learning <ArrowUpRight size={17} /></Link></MagneticButton>
-            <MagneticButton><Link href="/join" className="footer-cta-btn footer-cta-btn-ghost">Recruitment info <ArrowUpRight size={17} /></Link></MagneticButton>
-          </div>
-        </div>
-      </div>
-      <div className="footer-main">
-        <Reveal className="container footer-grid">
-          <div className="footer-brand-section">
-            <Link className="footer-brand" href="/">
-              <span className="brand-logo" aria-hidden="true"><GraduationCap size={20} /></span>
-              MCC <span>MNU</span>
-            </Link>
-            <p>Microsoft Campus Club · Mansoura National University</p>
-            <div className="footer-social">
-              {socialLinks.map((social) => (
-                <a key={social.label} href={social.href} className="footer-social-link" aria-label={social.label} target="_blank" rel="noreferrer">
-                  <social.icon size={18} />
-                </a>
-              ))}
-            </div>
-          </div>
-          {Object.entries(footerLinks).map(([group, links]) => (
-            <nav key={group} aria-label={group} className="footer-col">
-              <h3>{group.toUpperCase()}</h3>
-              {links.map((link) => <Link key={link.label} href={link.href}>{link.label}</Link>)}
-            </nav>
-          ))}
-        </Reveal>
-        <div className="container footer-bottom">
-          <span>© MCC MNU · Microsoft Campus Club at Mansoura National University</span>
-          <span>Student accounts, courses, and publishing run on live club data.</span>
-        </div>
-      </div>
-    </footer>
-  );
+export async function Footer() {
+  const user = await getCurrentUser();
+  const profile = user ? await getCurrentProfile() : null;
+  const homeAccountLink = user ? (profile?.role === "admin" || profile?.role === "leader" ? "/admin" : "/dashboard") : "/signup";
+  const homeAccountLabel = user ? (profile?.role === "admin" || profile?.role === "leader" ? "Workspace" : "My dashboard") : "Create account";
+
+  return <footer className="mcc-v2-footer">
+    <div className="mcc-v2-footer-main">
+      <div className="mcc-v2-footer-brand"><Link href="/" aria-label="MCC MNU home"><Image src="/mcc-mnu-logo.svg" alt="Microsoft Campus Club — Mansoura National University" width={228} height={54} /></Link><p>A student community for learning, building, and connecting through technology.</p><div className="mcc-v2-socials">{socials.map(({label,href,Icon}) => <a key={label} href={href} aria-label={label} target="_blank" rel="noreferrer"><Icon size={17} /></a>)}</div></div>
+      <div className="mcc-v2-footer-col"><h3>Learn</h3><Link href="/courses">Courses</Link><Link href="/tracks">Learning tracks</Link><Link href="/resources">Resources</Link></div>
+      <div className="mcc-v2-footer-col"><h3>Club</h3><Link href="/about">About MCC</Link><Link href="/join">Recruitment</Link><Link href="/privacy">Privacy policy</Link></div>
+      <div className="mcc-v2-footer-col"><h3>Your space</h3><Link href={homeAccountLink}>{homeAccountLabel}</Link>{!user && <Link href="/login">Sign in</Link>}<Link href="/dashboard">Student dashboard</Link></div>
+    </div>
+    <div className="mcc-v2-footer-bottom"><span>© {new Date().getFullYear()} Microsoft Campus Club — Mansoura National University</span><span className="mcc-v2-footer-note">LEARN <i /> BUILD <i /> GROW</span><Link href="/privacy">Privacy &amp; data <ArrowUpRight size={13} /></Link></div>
+  </footer>;
 }

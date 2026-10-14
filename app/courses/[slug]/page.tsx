@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { loadCourses, loadLessonsForCourse } from "@/lib/content-views";
 import { Reveal } from "@/components/fx/Reveal";
 import { SpotlightCard } from "@/components/fx/SpotlightCard";
+import { FeedbackForm } from "@/components/feedback/FeedbackForm";
 
 export const revalidate = 300;
 
@@ -198,6 +199,11 @@ export default async function CoursePage({ params }: CoursePageProps) {
           </Reveal>
         </div>
       </section>
+      {course.id && /^[0-9a-f-]{36}$/i.test(course.id) && (
+        <div className="container mcc-feedback-course-wrap">
+          <FeedbackForm courseId={course.id} courseTitle={course.title} />
+        </div>
+      )}
     </>
   );
 }

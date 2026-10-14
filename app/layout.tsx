@@ -1,6 +1,12 @@
 import type { Metadata, Viewport } from "next";
 import { Space_Grotesk, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
+import "./mcc-feature-styles-01.css";
+import "./mcc-feature-styles-02.css";
+import "./mcc-feature-styles-03.css";
+import "./mcc-feature-styles-04.css";
+import "./mcc-feature-styles-05.css";
+import "./mcc-feature-styles-06.css";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { ParticleBackground } from "@/components/fx/ParticleBackground";
 import { CursorGlow } from "@/components/fx/CursorGlow";

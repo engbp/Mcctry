@@ -1,15 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, Suspense } from "react";
+import { useActionState, Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { LogIn } from "lucide-react";
+import { Eye, EyeOff, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { AuthShell, AuthFieldError, AuthNotice } from "@/components/auth/AuthShell";
 import { loginAction, type AuthFormState } from "@/lib/auth-actions";
 
 function LoginForm() {
   const searchParams = useSearchParams();
+  const [showPassword, setShowPassword] = useState(false);
   const next = searchParams.get("next") ?? "";
   const [state, formAction, isPending] = useActionState<AuthFormState, FormData>(
     loginAction,
@@ -56,12 +57,13 @@ function LoginForm() {
           <input
             id="password"
             name="password"
-            type="password"
+            type={showPassword ? "text" : "password"}
             autoComplete="current-password"
             required
             aria-invalid={state.fieldErrors?.password ? true : undefined}
             aria-describedby={state.fieldErrors?.password ? "password-error" : undefined}
           />
+          <button type="button" className="mcc-password-toggle" aria-label={showPassword ? "Hide password" : "Show password"} aria-pressed={showPassword} onClick={() => setShowPassword((show) => !show)}>{showPassword ? <EyeOff size={17} /> : <Eye size={17} />}</button>
           <span id="password-error">
             <AuthFieldError message={state.fieldErrors?.password} />
           </span>
