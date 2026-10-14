@@ -36,12 +36,10 @@ function SignupForm() {
   return (
     <AuthShell
       title="Create your account"
-      lede="A student account lets you watch lessons and save your progress. Applying to join the club is a separate step."
+      lede="A student account lets you watch lessons and keep your learning progress in one place."
       footer={
         <p>
           Already have an account? <Link href={next ? `/login?next=${encodeURIComponent(next)}` : "/login"}>Sign in</Link>
-          {" · "}
-          <Link href="/join">Apply to join the club</Link>
         </p>
       }
     >
@@ -94,10 +92,6 @@ function SignupForm() {
         <Button variant="primary" type="submit" size="lg" disabled={isPending} style={{ width: "100%" }}>
           <UserPlus size={17} /> {isPending ? "Creating account…" : "Create account"}
         </Button>
-        <p className="auth-fineprint">
-          Creating an account does not submit a club membership application.
-          Use <Link href="/join">the join form</Link> for recruitment.
-        </p>
       </form>
     </AuthShell>
   );
