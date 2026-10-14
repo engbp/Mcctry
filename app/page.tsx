@@ -77,7 +77,7 @@ export default async function HomePage() {
             })}
           </div>
         ) : (
-          <div className="mcc-v2-empty-state"><div className="mcc-v2-empty-icon"><BookOpen size={24} /></div><h3>New learning paths are on the way.</h3><p>Published tracks will appear here as the club adds them. Start with the current course catalogue in the meantime.</p><Link href="/courses" className="mcc-v2-text-link">View courses <ArrowRight size={16} /></Link></div>
+          <div className="mcc-v2-empty-state"><div className="mcc-v2-empty-icon"><BookOpen size={24} /></div><h3>No learning tracks are published yet.</h3><p>Published tracks will appear here when available. Start with the current course catalogue in the meantime.</p><Link href="/courses" className="mcc-v2-text-link">View courses <ArrowRight size={16} /></Link></div>
         )}
       </section>
 
