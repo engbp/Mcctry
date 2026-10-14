@@ -61,4 +61,13 @@ describe("MCC community migration guardrails", () => {
     expect(sql).toMatch(/alter table public\.lessons add column if not exists video_url text/i);
   });
 
+  it("limits anonymous and authenticated session reads to the QR-safe public columns", () => {
+    expect(sql).toMatch(/grant select \\(id, track_id, course_id, title, feedback_token, feedback_expires_at, feedback_closed_at, created_at\\) on public\\.feedback_sessions to anon, authenticated/i);
+    expect(sql).not.toMatch(/grant select on public\\.feedback_sessions to authenticated/i);
+  });
+
+  it("validates application answers on insert and only when answer or phone fields change", () => {
+    expect(sql).toMatch(/create trigger applications_validate_answers before insert or update of answers, phone_number\\s+on public\\.applications/i);
+  });
+
 });

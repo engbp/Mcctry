@@ -214,8 +214,7 @@ create policy feedback_sessions_leader_insert on public.feedback_sessions for in
 drop policy if exists feedback_sessions_leader_update on public.feedback_sessions;
 create policy feedback_sessions_leader_update on public.feedback_sessions for update to authenticated
  using (public.is_track_leader_for_track(track_id)) with check (public.is_track_leader_for_track(track_id));
-grant select (id, track_id, course_id, title, feedback_token, feedback_expires_at, feedback_closed_at, created_at) on public.feedback_sessions to anon;
-grant select on public.feedback_sessions to authenticated;
+grant select (id, track_id, course_id, title, feedback_token, feedback_expires_at, feedback_closed_at, created_at) on public.feedback_sessions to anon, authenticated;
 grant insert, update on public.feedback_sessions to authenticated;
 
 create table if not exists public.session_feedback (
@@ -273,7 +272,7 @@ begin
 end;
 $$;
 drop trigger if exists applications_validate_answers on public.applications;
-create trigger applications_validate_answers before insert or update
+create trigger applications_validate_answers before insert or update of answers, phone_number
 on public.applications for each row execute function public.validate_application_answers();
 revoke execute on function public.validate_application_answers() from public, anon, authenticated;
 
