@@ -46,7 +46,7 @@ export default async function TracksPage() {
           {tracks.length === 0 ? (
             <div className="mcc-empty-public">
               <span className="mcc-section-label">NO TRACKS PUBLISHED YET</span>
-              <h2>New learning paths will appear here.</h2>
+              <h2>No tracks are published yet.</h2>
               <p>Tracks are published by MCC administrators. In the meantime, browse the courses catalogue.</p>
               <Link href="/courses" className="mcc-text-link">Browse all courses <ArrowRight size={16} /></Link>
             </div>
