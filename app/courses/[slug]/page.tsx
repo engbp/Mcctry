@@ -68,7 +68,7 @@ export default async function CoursePage({ params }: CoursePageProps) {
           ) : (
             <Button variant="inverse" asChild size="lg" disabled>
               <span>
-                <Play size={17} fill="currentColor" /> Lessons coming soon
+                <Play size={17} fill="currentColor" /> No lessons published yet
               </span>
             </Button>
           )
@@ -133,7 +133,7 @@ export default async function CoursePage({ params }: CoursePageProps) {
                 </Button>
               ) : (
                 <Button variant="primary" size="lg" style={{ width: "100%" }} disabled>
-                  Lessons coming soon
+                  No lessons published yet
                 </Button>
               )}
               <div className="lk-side-navlinks">
