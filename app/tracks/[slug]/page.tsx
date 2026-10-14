@@ -4,9 +4,11 @@ import { notFound } from "next/navigation";
 import { ArrowRight, BookOpen, Code2, Cloud, ShieldCheck, Clock, Users, Layers, Sparkles, Award } from "lucide-react";
 import { BandHero } from "@/components/layout/BandHero";
 import { Badge } from "@/components/ui/Badge";
-import { tracksData, getCoursesByTrack } from "@/lib/data";
+import { loadCourses, loadTracks } from "@/lib/content-views";
 import { SpotlightCard } from "@/components/fx/SpotlightCard";
 import { Reveal } from "@/components/fx/Reveal";
+
+export const revalidate = 300;
 
 const trackIcons = { BookOpen, Code2, Cloud, ShieldCheck } as const;
 
@@ -16,7 +18,8 @@ interface TrackPageProps {
 
 export async function generateMetadata({ params }: TrackPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const track = tracksData.find((t) => t.slug === slug);
+  const { items: tracks } = await loadTracks();
+  const track = tracks.find((t) => t.slug === slug);
   if (!track) return { title: "Track Not Found" };
   return {
     title: `${track.title} — MCC MNU`,
@@ -26,10 +29,14 @@ export async function generateMetadata({ params }: TrackPageProps): Promise<Meta
 
 export default async function TrackPage({ params }: TrackPageProps) {
   const { slug } = await params;
-  const track = tracksData.find((t) => t.slug === slug);
+  const [{ items: tracks }, { items: allCourses }] = await Promise.all([
+    loadTracks(),
+    loadCourses(),
+  ]);
+  const track = tracks.find((t) => t.slug === slug);
   if (!track) notFound();
 
-  const courses = getCoursesByTrack(slug);
+  const courses = allCourses.filter((course) => course.trackSlug === slug);
   const TrackIcon = trackIcons[track.icon as keyof typeof trackIcons] ?? BookOpen;
 
   const gains = [
@@ -120,7 +127,7 @@ export default async function TrackPage({ params }: TrackPageProps) {
             <Link href="/tracks" className="hp-section-link">View all tracks <ArrowRight size={15} /></Link>
           </Reveal>
           <Reveal className="hp-track-grid" role="list">
-            {tracksData.filter((t) => t.slug !== slug).map((otherTrack) => {
+            {tracks.filter((t) => t.slug !== slug).map((otherTrack) => {
               const OtherIcon = trackIcons[otherTrack.icon as keyof typeof trackIcons] ?? BookOpen;
               return (
                 <SpotlightCard key={otherTrack.slug} as="a" href={`/tracks/${otherTrack.slug}`} className="hp-track-card" role="listitem" style={{ "--track-color": otherTrack.color } as React.CSSProperties}>

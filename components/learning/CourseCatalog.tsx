@@ -3,27 +3,38 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import { Search, Clock, BookOpen, ArrowRight, X } from "lucide-react";
-import { coursesData, tracksData } from "@/lib/data";
+import type { CourseView, TrackView } from "@/lib/content-views";
 import { Badge } from "@/components/ui/Badge";
 import { SpotlightCard } from "@/components/fx/SpotlightCard";
 import { Reveal } from "@/components/fx/Reveal";
 
-const levels = ["Beginner", "Intermediate"];
+interface CourseCatalogProps {
+  courses: CourseView[];
+  tracks: TrackView[];
+}
 
-export function CourseCatalog() {
+export function CourseCatalog({ courses, tracks }: CourseCatalogProps) {
   const [query, setQuery] = useState("");
   const [track, setTrack] = useState<string | null>(null);
   const [level, setLevel] = useState<string | null>(null);
 
+  const levels = useMemo(
+    () =>
+      Array.from(
+        new Set(courses.map((c) => c.level).filter((l): l is string => Boolean(l)))
+      ),
+    [courses]
+  );
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return coursesData.filter((c) => {
+    return courses.filter((c) => {
       if (track && c.track !== track) return false;
       if (level && c.level !== level) return false;
       if (q && !`${c.title} ${c.description} ${c.track}`.toLowerCase().includes(q)) return false;
       return true;
     });
-  }, [query, track, level]);
+  }, [query, track, level, courses]);
 
   const clearAll = () => {
     setQuery("");
@@ -55,7 +66,7 @@ export function CourseCatalog() {
           <button className={`cat-chip ${!track ? "cat-chip-active" : ""}`} onClick={() => setTrack(null)}>
             All tracks
           </button>
-          {tracksData.map((t) => (
+          {tracks.map((t) => (
             <button
               key={t.slug}
               className={`cat-chip ${track === t.title ? "cat-chip-active" : ""}`}
@@ -81,7 +92,7 @@ export function CourseCatalog() {
 
       <div className="cat-status" role="status">
         <span>
-          <strong>{filtered.length}</strong> of {coursesData.length} courses
+          <strong>{filtered.length}</strong> of {courses.length} courses
         </span>
         {hasFilters && (
           <button className="cat-reset" onClick={clearAll}>

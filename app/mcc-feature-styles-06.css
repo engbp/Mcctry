@@ -1,0 +1,43 @@
+.mcc-ops-course-heading { margin:28px 0 0; padding-top:18px; border-top:1px solid rgba(121,159,204,.14); }
+.mcc-ops-course-heading h3 { display:flex; align-items:center; gap:8px; color:#b8cde6; font-size:13px; }
+.mcc-ops-editor { margin-top:15px; border:1px solid rgba(111,153,205,.15); background:rgba(3,11,21,.4); border-radius:5px; }
+.mcc-ops-editor>summary { display:flex; align-items:center; gap:7px; padding:11px 13px; color:#84bde0; cursor:pointer; font-size:11px; font-weight:650; list-style-position:inside; }
+.mcc-ops-editor[open]>summary { border-bottom:1px solid rgba(111,153,205,.14); }
+.mcc-ops-editor>.mcc-ops-form { padding:0 13px 15px; margin-top:14px; }
+.mcc-ops-lesson-editor { width:100%; border:1px solid rgba(111,153,205,.13); border-radius:5px; }
+.mcc-ops-lesson-editor>summary { display:flex; align-items:center; gap:8px; padding:10px; cursor:pointer; list-style:none; color:#a9bdd6; font-size:11px; }
+.mcc-ops-lesson-editor>summary::-webkit-details-marker { display:none; }
+.mcc-ops-lesson-editor>summary svg { flex-shrink:0; color:#6fb7e7; }
+.mcc-ops-lesson-editor>summary span { flex:1; }
+.mcc-ops-lesson-editor>summary small { color:#748baa; font-size:9px; }
+.mcc-ops-lesson-editor[open]>summary { border-bottom:1px solid rgba(111,153,205,.13); }
+.mcc-ops-lesson-editor>.mcc-ops-form { margin:0; padding:12px; }
+@media (max-width:580px) { .mcc-ops-editor>.mcc-ops-form { padding-left:10px; padding-right:10px; } }
+.mcc-ops-admin-stats { grid-template-columns:repeat(5,minmax(0,1fr)); }
+.mcc-ops-admin-shortcuts { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+.mcc-ops-admin-shortcut { min-width:0; display:flex; align-items:center; gap:12px; padding:14px; color:inherit; border:1px solid rgba(111,153,205,.16); border-radius:6px; background:rgba(3,11,21,.35); text-decoration:none; }
+.mcc-ops-admin-shortcut:hover { border-color:rgba(49,179,239,.5); background:rgba(8,58,96,.19); }
+.mcc-ops-admin-shortcut>span:nth-child(2) { flex:1; min-width:0; display:grid; gap:5px; }
+.mcc-ops-admin-shortcut strong { color:#e8f2ff; font-size:12px; }
+.mcc-ops-admin-shortcut small { color:#8098b7; font-size:10px; line-height:1.55; }
+.mcc-ops-admin-shortcut>svg { flex-shrink:0; color:#78bce7; }
+.mcc-ops-admin-shortcut-icon { display:grid; place-items:center; flex-shrink:0; width:36px; height:36px; border:1px solid rgba(67,170,235,.2); color:#64c4f2; background:rgba(9,117,207,.11); border-radius:5px; }
+.mcc-ops-recent-apps { display:grid; }
+.mcc-ops-recent-apps>div { display:flex; align-items:center; gap:12px; padding:14px 0; border-top:1px solid rgba(121,159,204,.13); }
+.mcc-ops-recent-apps>div:first-child { border-top:0; }
+.mcc-ops-admin-app-avatar { display:grid; place-items:center; width:34px; height:34px; flex-shrink:0; color:#73cbfa; background:rgba(9,117,207,.12); border:1px solid rgba(67,170,235,.2); border-radius:50%; font-size:12px; font-weight:700; }
+.mcc-ops-recent-app-name { display:grid; gap:5px; flex:1; min-width:0; }
+.mcc-ops-recent-app-name strong { color:#deebfb; font-size:12px; }
+.mcc-ops-recent-app-name small { color:#738baa; font-size:10px; }
+.mcc-ops-text-link { display:inline-flex; gap:8px; align-items:center; color:#66c4f2; font-size:11px; text-decoration:none; }
+@media (max-width:980px) { .mcc-ops-admin-stats { grid-template-columns:repeat(3,minmax(0,1fr)); } }
+@media (max-width:580px) { .mcc-ops-admin-stats { grid-template-columns:repeat(2,minmax(0,1fr)); } .mcc-ops-admin-shortcuts { grid-template-columns:1fr; } }
+.mcc-ops-resource-row { display:grid; grid-template-columns:minmax(170px,.8fr) minmax(250px,1fr) auto; align-items:start; gap:14px; padding:18px 0; border-top:1px solid rgba(121,159,204,.15); }
+.mcc-ops-resource-row:first-child { border-top:0; }
+.mcc-ops-resource-row h3 { color:#e7f1ff; margin:8px 0 5px; font-size:13px; }
+.mcc-ops-resource-row p { color:#8098b6; margin:0; font-size:11px; }
+.mcc-ops-resource-row a { overflow-wrap:anywhere; }
+.mcc-ops-resource-row>.mcc-ops-editor { margin-top:0; }
+@media (max-width:850px) { .mcc-ops-resource-row { grid-template-columns:1fr; } .mcc-ops-resource-row>.mcc-ops-editor { width:100%; } .mcc-ops-resource-row>form { justify-self:start; } }
+
+.mcc-session-expiry { margin:8px 0 0; color:#f0c87a; font-size:11px; line-height:1.6; }

@@ -8075,7 +8075,7 @@ a.cm-res-card:hover h3 {
   }
 
   .footer-grid {
-    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
   }
 
   .video-layout {
@@ -8148,7 +8148,8 @@ a.cm-res-card:hover h3 {
   }
 
   .footer-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: 2fr 1fr 1fr;
+    row-gap: 34px;
   }
 
   .editorial-grid {
@@ -9254,12 +9255,18 @@ html {
    STAGE 4 — home page effects
    ============================================================ */
 
+/* Content is visible by default so no-JS users and crawlers always see it.
+   The entrance animation is applied only when the `js` class is present. */
 .reveal {
+  opacity: 1;
+  transform: none;
+}
+html.js .reveal {
   opacity: 0;
   transform: translateY(26px);
   transition: opacity .65s ease, transform .65s cubic-bezier(.16, 1, .3, 1);
 }
-.reveal.is-visible {
+html.js .reveal.is-visible {
   opacity: 1;
   transform: none;
 }
@@ -9567,6 +9574,10 @@ html {
 .mcc-publication-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
 .mcc-publication-card { min-height:270px; position:relative; display:flex; flex-direction:column; align-items:flex-start; padding:25px; color:#fff; transition:transform .2s; }
 .mcc-publication-card:hover { transform:translateY(-4px); }
+.mcc-publication-card { text-decoration:none; }
+.mcc-publication-card>.spot-layer { z-index:0; }
+.mcc-publication-card>span, .mcc-publication-card>strong, .mcc-publication-card>small, .mcc-publication-card>svg { position:relative; z-index:1; }
+.mcc-publication-card>svg { position:absolute; right:25px; top:25px; }
 .mcc-publication-card-blue { background:#082d50; }
 .mcc-publication-card-cyan { background:#0879c8; }
 .mcc-publication-card-paper { background:#fff; color:#08182b; border:1px solid #dce2e7; }
@@ -9749,4 +9760,112 @@ html {
   .mcc-admin-kpis { margin:24px 0 36px; }
   .mcc-admin-module { min-height:0; }
   .mcc-admin-module p { min-height:0; }
+}
+
+.jn-hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+/* ===========================================================================
+   MVP addition: auth pages, admin workspace, real video player
+   =========================================================================== */
+
+.auth-section { min-height: 70vh; }
+.auth-container { max-width: 520px; margin: 0 auto; }
+.auth-back { display: inline-flex; align-items: center; gap: 6px; color: var(--mcc-muted, #8b9bb4); font-size: 0.9rem; margin-bottom: 20px; text-decoration: none; }
+.auth-back:hover { color: #fff; }
+.auth-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 18px; padding: 36px 32px; }
+.auth-title { font-size: clamp(1.8rem, 4vw, 2.4rem); margin: 8px 0 8px; }
+.auth-lede { color: #9fb0c7; margin: 0 0 24px; line-height: 1.55; }
+.auth-form { display: flex; flex-direction: column; gap: 16px; }
+.auth-field-error { color: #ff8f8f; font-size: 0.85rem; margin: 6px 0 0; }
+.auth-hint { color: #7d8ea6; font-size: 0.8rem; margin: 6px 0 0; }
+.auth-fineprint { color: #7d8ea6; font-size: 0.82rem; line-height: 1.5; margin: 4px 0 0; }
+.auth-fineprint a { color: #9fd0ff; }
+.auth-footer { text-align: center; margin-top: 20px; color: #9fb0c7; font-size: 0.92rem; }
+.auth-footer a { color: #9fd0ff; }
+.auth-notice { margin-bottom: 18px; }
+.auth-notice-error { border-color: rgba(255,120,120,0.4); }
+.auth-notice-success { border-color: rgba(80,200,140,0.4); }
+.auth-notice-info { border-color: rgba(120,180,255,0.4); }
+
+.lesson-player-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; min-height: 280px; background: #0a1424; border: 1px dashed rgba(255,255,255,0.18); border-radius: 14px; color: #9fb0c7; text-align: center; padding: 32px; }
+.lesson-player-empty-icon { opacity: 0.5; }
+.lesson-player-yt { position: relative; aspect-ratio: 16 / 9; background: #000; border-radius: 14px; overflow: hidden; }
+.lesson-video-frame { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.lesson-player-native { background: #000; border-radius: 14px; overflow: hidden; }
+.lesson-video-el { width: 100%; display: block; aspect-ratio: 16 / 9; }
+.lesson-complete-form { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; margin: 20px 0; }
+.lesson-progress-hint { color: #8b9bb4; font-size: 0.88rem; margin: 0; }
+.lesson-complete-badge { display: inline-flex; align-items: center; gap: 5px; color: #5bd49a; font-size: 0.85rem; }
+
+/* Admin workspace */
+.mcc-admin-shell { display: grid; grid-template-columns: 230px 1fr; gap: 0; min-height: 70vh; align-items: start; }
+.mcc-admin-nav { position: sticky; top: 90px; padding: 28px 18px; border-right: 1px solid rgba(255,255,255,0.08); display: flex; flex-direction: column; gap: 18px; min-height: 60vh; }
+.mcc-admin-brand-link { font-weight: 700; letter-spacing: 0.04em; text-decoration: none; color: #fff; font-size: 1.05rem; }
+.mcc-admin-brand-link span { color: var(--mcc-cyan, #00b7c3); }
+.mcc-admin-brand-link small { display: block; font-size: 0.65rem; letter-spacing: 0.2em; color: #8b9bb4; margin-top: 2px; }
+.mcc-admin-links { display: flex; flex-direction: column; gap: 4px; }
+.mcc-admin-links a { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; color: #b7c5d8; text-decoration: none; font-size: 0.92rem; }
+.mcc-admin-links a:hover { background: rgba(255,255,255,0.05); color: #fff; }
+.mcc-admin-links a.is-current { background: rgba(0,183,195,0.12); color: #fff; }
+.mcc-admin-nav-foot { margin-top: auto; display: flex; flex-direction: column; gap: 10px; font-size: 0.85rem; }
+.mcc-admin-who { display: flex; flex-direction: column; color: #9fb0c7; }
+.mcc-admin-who strong { color: #fff; }
+.mcc-admin-signout { display: inline-flex; align-items: center; gap: 6px; background: none; border: 1px solid rgba(255,255,255,0.15); color: #c9d6e5; border-radius: 8px; padding: 8px 12px; cursor: pointer; font: inherit; }
+.mcc-admin-signout:hover { border-color: rgba(255,255,255,0.35); color: #fff; }
+.mcc-admin-back { color: #8b9bb4; text-decoration: none; }
+.mcc-admin-back:hover { color: #fff; }
+.mcc-admin-main-body { padding: 32px 36px 64px; max-width: 1000px; }
+.mcc-admin-page-head h1 { font-size: clamp(1.7rem, 3vw, 2.3rem); margin: 6px 0; }
+.mcc-admin-page-head p { color: #9fb0c7; margin: 0 0 28px; }
+.mcc-admin-stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; margin-bottom: 36px; }
+.mcc-admin-stat { display: flex; flex-direction: column; gap: 4px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 18px; text-decoration: none; color: inherit; }
+.mcc-admin-stat:hover { border-color: rgba(0,183,195,0.45); }
+.mcc-admin-stat-label { font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: #8b9bb4; }
+.mcc-admin-stat-value { font-size: 1.9rem; font-weight: 700; }
+.mcc-admin-stat small { color: #7d8ea6; font-size: 0.78rem; }
+.mcc-admin-section { margin-bottom: 36px; }
+.mcc-admin-section h2 { font-size: 1.15rem; margin: 0 0 14px; }
+.mcc-admin-section-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.mcc-admin-section-bar h2 { margin: 0; }
+.mcc-admin-section-bar a { color: #9fd0ff; font-size: 0.9rem; }
+.mcc-admin-empty { color: #8b9bb4; padding: 24px; border: 1px dashed rgba(255,255,255,0.15); border-radius: 12px; }
+.mcc-admin-table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+.mcc-admin-table th { text-align: left; color: #8b9bb4; font-weight: 500; padding: 8px 10px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+.mcc-admin-table td { padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.mcc-admin-badge { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; }
+.mcc-admin-badge-pending { background: rgba(255,185,0,0.15); color: #ffcf5c; }
+.mcc-admin-badge-reviewing { background: rgba(0,120,212,0.18); color: #7cc4ff; }
+.mcc-admin-badge-accepted { background: rgba(16,185,129,0.18); color: #5bd49a; }
+.mcc-admin-badge-rejected { background: rgba(255,90,90,0.15); color: #ff9c9c; }
+.mcc-admin-badge-withdrawn { background: rgba(140,140,140,0.15); color: #b7c5d8; }
+.mcc-admin-card-list { display: flex; flex-direction: column; gap: 16px; }
+.mcc-admin-app-card, .mcc-admin-edit-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 20px; }
+.mcc-admin-app-head { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
+.mcc-admin-app-head h3 { margin: 0 0 4px; }
+.mcc-admin-app-head a { color: #9fd0ff; font-size: 0.9rem; }
+.mcc-admin-app-interests { color: #8b9bb4; font-size: 0.85rem; margin: 10px 0 0; }
+.mcc-admin-app-motivation { color: #c9d6e5; margin: 10px 0 0; line-height: 1.5; white-space: pre-wrap; }
+.mcc-admin-app-foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 14px; flex-wrap: wrap; }
+.mcc-admin-app-foot small { color: #7d8ea6; }
+.mcc-admin-inline-form { display: flex; align-items: center; gap: 8px; margin: 0; }
+.mcc-admin-inline-form select { background: #0d1a2c; color: #fff; border: 1px solid rgba(255,255,255,0.18); border-radius: 8px; padding: 7px 10px; font: inherit; }
+.mcc-admin-form { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px 16px; align-items: end; margin-bottom: 10px; }
+.mcc-admin-form label { display: flex; flex-direction: column; gap: 5px; font-size: 0.85rem; color: #b7c5d8; }
+.mcc-admin-form input:not([type="checkbox"]), .mcc-admin-form select, .mcc-admin-form textarea { background: #0d1a2c; color: #fff; border: 1px solid rgba(255,255,255,0.16); border-radius: 8px; padding: 9px 11px; font: inherit; width: 100%; }
+.mcc-admin-form input:focus, .mcc-admin-form select:focus, .mcc-admin-form textarea:focus { outline: 2px solid rgba(0,183,195,0.5); outline-offset: 1px; }
+.mcc-admin-check { flex-direction: row !important; align-items: center; gap: 8px !important; }
+.mcc-admin-check input { width: auto !important; }
+.mcc-admin-delete-form { margin-top: 8px; }
+.mcc-admin-delete-form button { background: rgba(255,90,90,0.12); border: 1px solid rgba(255,90,90,0.35); color: #ff9c9c; }
+.mcc-admin-edit-card h3 { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+.nav-signin { gap: 6px; }
+
+@media (max-width: 860px) {
+  .mcc-admin-shell { grid-template-columns: 1fr; }
+  .mcc-admin-nav { position: static; border-right: 0; border-bottom: 1px solid rgba(255,255,255,0.08); flex-direction: row; flex-wrap: wrap; align-items: center; }
+  .mcc-admin-links { flex-direction: row; flex-wrap: wrap; }
+  .mcc-admin-nav-foot { margin-top: 0; flex-direction: row; align-items: center; flex-wrap: wrap; }
+  .mcc-admin-main-body { padding: 24px 18px 48px; }
+  .mcc-admin-form { grid-template-columns: 1fr; }
 }

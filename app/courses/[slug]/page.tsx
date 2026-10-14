@@ -5,9 +5,12 @@ import { ArrowRight, ArrowLeft, BookOpen, Clock, Play, CheckCircle, ChevronRight
 import { BandHero } from "@/components/layout/BandHero";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { coursesData, getCoursesByTrack, lessonsData } from "@/lib/data";
+import { loadCourses, loadLessonsForCourse } from "@/lib/content-views";
 import { Reveal } from "@/components/fx/Reveal";
 import { SpotlightCard } from "@/components/fx/SpotlightCard";
+import { FeedbackForm } from "@/components/feedback/FeedbackForm";
+
+export const revalidate = 300;
 
 interface CoursePageProps {
   params: Promise<{ slug: string }>;
@@ -15,7 +18,8 @@ interface CoursePageProps {
 
 export async function generateMetadata({ params }: CoursePageProps): Promise<Metadata> {
   const { slug } = await params;
-  const course = coursesData.find((c) => c.slug === slug);
+  const { items: courses } = await loadCourses();
+  const course = courses.find((c) => c.slug === slug);
   if (!course) return { title: "Course Not Found" };
   return {
     title: `${course.title} — MCC MNU`,
@@ -23,19 +27,20 @@ export async function generateMetadata({ params }: CoursePageProps): Promise<Met
   };
 }
 
-const skills = ["AI Fundamentals", "Structured Prompting", "Model Evaluation", "Responsible AI Use"];
-
 export default async function CoursePage({ params }: CoursePageProps) {
   const { slug } = await params;
-  const course = coursesData.find((c) => c.slug === slug);
+  const { items: courses } = await loadCourses();
+  const course = courses.find((c) => c.slug === slug);
   if (!course) notFound();
 
-  const trackCourses = getCoursesByTrack(course.trackSlug);
+  const { items: lessons } = await loadLessonsForCourse(course.id);
+
+  const trackCourses = courses.filter((c) => c.trackSlug === course.trackSlug);
   const courseIndex = trackCourses.findIndex((c) => c.slug === slug);
   const prevCourse = courseIndex > 0 ? trackCourses[courseIndex - 1] : null;
   const nextCourse = courseIndex < trackCourses.length - 1 ? trackCourses[courseIndex + 1] : null;
 
-  const totalLessons = lessonsData.length;
+  const totalLessons = lessons.length;
   const totalDuration = course.duration;
 
   return (
@@ -50,15 +55,23 @@ export default async function CoursePage({ params }: CoursePageProps) {
           <>
             <span className="band-meta-pill"><BookOpen size={14} /> {totalLessons} lessons</span>
             <span className="band-meta-pill"><Clock size={14} /> {totalDuration}</span>
-            <span className="band-meta-pill"><Gauge size={14} /> {course.level}</span>
+            <span className="band-meta-pill"><Gauge size={14} /> {course.level ?? "All levels"}</span>
           </>
         }
         actions={
-          <Button variant="inverse" asChild size="lg">
-            <Link href={`/courses/${slug}/lessons/${lessonsData[0]?.slug ?? "introduction"}`}>
-              <Play size={17} fill="currentColor" /> Start course
-            </Link>
-          </Button>
+          lessons[0] ? (
+            <Button variant="inverse" asChild size="lg">
+              <Link href={`/courses/${slug}/lessons/${lessons[0].slug}`}>
+                <Play size={17} fill="currentColor" /> Start course
+              </Link>
+            </Button>
+          ) : (
+            <Button variant="inverse" asChild size="lg" disabled>
+              <span>
+                <Play size={17} fill="currentColor" /> Lessons coming soon
+              </span>
+            </Button>
+          )
         }
         icon={<BookOpen size={56} />}
       />
@@ -74,42 +87,55 @@ export default async function CoursePage({ params }: CoursePageProps) {
             </Reveal>
             <div className="lk-prose">
               <p>{course.description}</p>
-              <p>This demo course is structured like a lightweight learning path: short lessons, useful resources, and a clear next step after every lesson. Perfect for fitting learning into a busy student schedule.</p>
             </div>
 
             <Reveal className="lk-section-head" style={{ marginTop: "48px" }}>
               <div>
                 <span className="hp-section-kicker">COURSE CONTENTS</span>
-                <h2 className="hp-section-title">{totalLessons} lessons, {totalDuration} total.</h2>
+                <h2 className="hp-section-title">
+                  {totalLessons > 0 ? `${totalLessons} lessons, ${totalDuration} total.` : "No lessons published yet."}
+                </h2>
               </div>
             </Reveal>
-            <Reveal className="lk-lesson-list" role="list">
-              {lessonsData.map((lesson, i) => (
-                <SpotlightCard key={lesson.slug} as="a" href={`/courses/${slug}/lessons/${lesson.slug}`} className="lk-lesson-row" role="listitem">
-                  <span className="lk-lesson-play" aria-hidden="true"><Play size={15} fill="currentColor" /></span>
-                  <span className="lk-lesson-index">{String(i + 1).padStart(2, "0")}</span>
-                  <div className="lk-lesson-info">
-                    <h3>{lesson.title}</h3>
-                    <div className="lk-lesson-meta">
-                      <span><Clock size={13} /> {lesson.duration}</span>
-                      <span>{lesson.type}</span>
+            {totalLessons === 0 ? (
+              <div className="notice notice-info">
+                Lessons for this course have not been published yet. Check back soon.
+              </div>
+            ) : (
+              <Reveal className="lk-lesson-list" role="list">
+                {lessons.map((lesson, i) => (
+                  <SpotlightCard key={lesson.slug} as="a" href={`/courses/${slug}/lessons/${lesson.slug}`} className="lk-lesson-row" role="listitem">
+                    <span className="lk-lesson-play" aria-hidden="true"><Play size={15} fill="currentColor" /></span>
+                    <span className="lk-lesson-index">{String(i + 1).padStart(2, "0")}</span>
+                    <div className="lk-lesson-info">
+                      <h3>{lesson.title}</h3>
+                      <div className="lk-lesson-meta">
+                        <span><Clock size={13} /> {lesson.duration}</span>
+                        <span>{lesson.type}</span>
+                      </div>
                     </div>
-                  </div>
-                  <ChevronRight className="lk-lesson-chevron" size={18} />
-                </SpotlightCard>
-              ))}
-            </Reveal>
+                    <ChevronRight className="lk-lesson-chevron" size={18} />
+                  </SpotlightCard>
+                ))}
+              </Reveal>
+            )}
           </div>
 
           <aside className="course-sidebar" aria-labelledby="sidebar-title">
             <div className="lk-side-card">
               <h3 id="sidebar-title">Start learning</h3>
-              <p className="lk-side-sub">{totalLessons} lessons · {totalDuration} · {course.level}</p>
-              <Button variant="primary" asChild size="lg" style={{ width: "100%" }}>
-                <Link href={`/courses/${slug}/lessons/${lessonsData[0]?.slug ?? "introduction"}`}>
-                  Start course <ArrowRight size={17} />
-                </Link>
-              </Button>
+              <p className="lk-side-sub">{totalLessons} lessons · {totalDuration} · {course.level ?? "All levels"}</p>
+              {lessons[0] ? (
+                <Button variant="primary" asChild size="lg" style={{ width: "100%" }}>
+                  <Link href={`/courses/${slug}/lessons/${lessons[0].slug}`}>
+                    Start course <ArrowRight size={17} />
+                  </Link>
+                </Button>
+              ) : (
+                <Button variant="primary" size="lg" style={{ width: "100%" }} disabled>
+                  Lessons coming soon
+                </Button>
+              )}
               <div className="lk-side-navlinks">
                 {prevCourse && (
                   <Link href={`/courses/${prevCourse.slug}`}>
@@ -125,20 +151,26 @@ export default async function CoursePage({ params }: CoursePageProps) {
             </div>
 
             <div className="lk-side-card">
-              <h3>Skills you&apos;ll gain</h3>
+              <h3>How learning works here</h3>
               <ul className="lk-skills">
-                {skills.map((skill) => (
-                  <li key={skill}>
-                    <CheckCircle size={16} aria-hidden="true" />
-                    <span>{skill}</span>
-                  </li>
-                ))}
+                <li>
+                  <CheckCircle size={16} aria-hidden="true" />
+                  <span>Watch real video lessons</span>
+                </li>
+                <li>
+                  <CheckCircle size={16} aria-hidden="true" />
+                  <span>Mark lessons complete</span>
+                </li>
+                <li>
+                  <CheckCircle size={16} aria-hidden="true" />
+                  <span>Progress saved to your account</span>
+                </li>
               </ul>
             </div>
 
             <div className="lk-side-card lk-side-card-notice">
-              <strong>Demo mode</strong>
-              <p>Progress is local and no account is connected. This is a presentation prototype.</p>
+              <strong>Student account</strong>
+              <p>Create a free account to save lesson completion and continue where you left off from the dashboard.</p>
             </div>
           </aside>
         </div>
@@ -167,6 +199,11 @@ export default async function CoursePage({ params }: CoursePageProps) {
           </Reveal>
         </div>
       </section>
+      {course.id && /^[0-9a-f-]{36}$/i.test(course.id) && (
+        <div className="container mcc-feedback-course-wrap">
+          <FeedbackForm courseId={course.id} courseTitle={course.title} />
+        </div>
+      )}
     </>
   );
 }

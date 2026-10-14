@@ -3,9 +3,9 @@ import { ArrowRight, ArrowUpRight, Compass, Home, Search } from "lucide-react";
 import { BandHero } from "@/components/layout/BandHero";
 
 const suggestions = [
-  { href: "/courses", title: "Browse courses", text: "Short, focused lessons across 4 learning tracks.", icon: "hp-pillar-icon-blue" },
-  { href: "/events", title: "See events", text: "Workshops, build nights, and meetups coming up.", icon: "hp-pillar-icon-cyan" },
-  { href: "/projects", title: "Explore projects", text: "See what MCC students are building right now.", icon: "hp-pillar-icon-purple" },
+  { href: "/courses", title: "Browse courses", text: "Published courses and lessons from MCC MNU.", icon: "hp-pillar-icon-blue" },
+  { href: "/resources", title: "Open resources", text: "Curated tools and references for learning.", icon: "hp-pillar-icon-cyan" },
+  { href: "/join", title: "Join MCC", text: "Submit a recruitment application for the next cycle.", icon: "hp-pillar-icon-purple" },
 ];
 
 export default function NotFound() {
