@@ -1,14 +1,12 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Activity, ArrowRight, BookOpen, ClipboardCheck, Layers3, MessageSquareText, QrCode, Users } from "lucide-react";
+import { ArrowRight, BookOpen, Layers3, MessageSquareText, QrCode, Users } from "lucide-react";
 import { getCurrentProfile } from "@/lib/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
 const quickLinks = [
-  { href: "/admin/applications", label: "Review recruitment", detail: "See applications, phone numbers and answers", Icon: ClipboardCheck },
-  { href: "/admin/questions", label: "Edit application form", detail: "Add, disable or remove recruiting questions", Icon: Activity },
   { href: "/admin/people", label: "Manage people & roles", detail: "Promote admins and assign track leaders", Icon: Users },
   { href: "/admin/sessions", label: "Create session QR", detail: "Collect anonymous feedback at offline sessions", Icon: QrCode },
   { href: "/admin/feedback", label: "Read feedback", detail: "Review anonymous course and session responses", Icon: MessageSquareText },
@@ -36,7 +34,7 @@ export default async function AdminOverviewPage() {
     { label: "Accounts", value: users ?? 0 },
   ];
   return <div className="mcc-ops-page mcc-admin-home">
-    <header className="mcc-ops-page-head"><div className="mcc-ops-title-icon"><Layers3 size={22}/></div><div><p className="mcc-ops-eyebrow">MCC MNU / ADMINISTRATION</p><h1>What needs doing?</h1><p>A simpler workspace for the people, learning content, recruitment and feedback that keep the club moving.</p></div></header>
+    <header className="mcc-ops-page-head"><div className="mcc-ops-title-icon"><Layers3 size={22}/></div><div><p className="mcc-ops-eyebrow">MCC MNU / ADMINISTRATION</p><h1>What needs doing?</h1><p>A workspace for managing learning content, track assignments, and community feedback.</p></div></header>
     <div className="mcc-ops-summary-row mcc-ops-admin-stats">{stats.map(stat=><div className="mcc-ops-summary" key={stat.label}><span>{stat.label}</span><strong>{stat.value}</strong></div>)}</div>
     <section className="mcc-ops-card"><div className="mcc-ops-card-head"><h2>Quick actions</h2><span className="mcc-ops-count">ADMIN TOOLKIT</span></div><div className="mcc-ops-admin-shortcuts">{quickLinks.map(({href,label,detail,Icon})=><Link href={href} key={href} className="mcc-ops-admin-shortcut"><span className="mcc-ops-admin-shortcut-icon"><Icon size={18}/></span><span><strong>{label}</strong><small>{detail}</small></span><ArrowRight size={17}/></Link>)}</div></section>
     <section className="mcc-ops-card"><div className="mcc-ops-card-head"><h2>Recent applications</h2><Link className="mcc-ops-text-link" href="/admin/applications">View all <ArrowRight size={15}/></Link></div>{(latest ?? []).length===0?<p className="mcc-ops-empty">No applications have been submitted yet.</p>:<div className="mcc-ops-recent-apps">{(latest ?? []).map(app=><div key={app.id}><span className="mcc-ops-admin-app-avatar">{(app.name||"?").slice(0,1).toUpperCase()}</span><span className="mcc-ops-recent-app-name"><strong>{app.name}</strong><small>{new Date(app.created_at).toLocaleString()}</small></span><span className={"mcc-ops-tag "+(app.status==="accepted"?"active":"")}>{app.status}</span></div>)}</div>}</section>
