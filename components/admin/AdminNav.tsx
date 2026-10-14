@@ -2,18 +2,16 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, ClipboardCheck, Network, BookOpen, ListChecks, Link2, LogOut, Users, MessageSquareText, ClipboardList, QrCode, Layers3 } from "lucide-react";
+import { LayoutDashboard, Network, BookOpen, ListChecks, Link2, LogOut, Users, MessageSquareText, QrCode, Layers3 } from "lucide-react";
 import { signOutAction } from "@/lib/auth-actions";
 
 const adminLinks = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard },
-  { href: "/admin/applications", label: "Applications", icon: ClipboardCheck },
   { href: "/admin/people", label: "People & roles", icon: Users },
   { href: "/admin/tracks", label: "Tracks", icon: Network },
   { href: "/admin/courses", label: "Courses", icon: BookOpen },
   { href: "/admin/lessons", label: "Lessons", icon: ListChecks },
   { href: "/admin/resources", label: "Resources", icon: Link2 },
-  { href: "/admin/questions", label: "Recruitment form", icon: ClipboardList },
   { href: "/admin/sessions", label: "Session QR feedback", icon: QrCode },
   { href: "/admin/feedback", label: "Feedback inbox", icon: MessageSquareText },
 ];
