@@ -16,7 +16,7 @@ const menus = [
   ]},
   { label: "Club", href: "/about", children: [
     { label: "About MCC", href: "/about", hint: "What we're here to build together" },
-    { label: "Recruitment", href: "/join", hint: "Learn how to apply to the club" },
+    { label: "Privacy & data", href: "/privacy", hint: "How account and feedback data is handled" },
   ]},
 ];
 
@@ -72,7 +72,7 @@ export function Header({ isSignedIn = false, isAdmin = false, isTrackLeader = fa
       <button ref={menuButtonRef} type="button" className="mcc-v2-mobile-toggle" aria-label={mobileOpen ? "Close menu" : "Open menu"} aria-expanded={mobileOpen} onClick={() => setMobileOpen((open) => !open)}>{mobileOpen ? <X size={22} /> : <Menu size={22} />}</button>
     </div>
     {mobileOpen && <nav className="mcc-v2-mobile-nav" aria-label="Mobile navigation">
-      <Link href="/courses">Courses</Link><Link href="/tracks">Learning tracks</Link><Link href="/resources">Resources</Link><Link href="/about">About MCC</Link><Link href="/join">Recruitment</Link>
+      <Link href="/courses">Courses</Link><Link href="/tracks">Learning tracks</Link><Link href="/resources">Resources</Link><Link href="/about">About MCC</Link><Link href="/privacy">Privacy &amp; data</Link>
       {isSignedIn ? <Link href={dashboardHref}>{isAdmin ? "Admin workspace" : isTrackLeader ? "Track workspace" : "My dashboard"}</Link> : <><Link href="/login">Sign in</Link><Link href="/signup">Create account</Link></>}
     </nav>}
   </header>;
