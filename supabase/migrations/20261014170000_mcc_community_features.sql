@@ -309,3 +309,33 @@ create policy resources_leader_delete_assigned on public.resources
    or (lesson_id is not null and public.is_track_leader_for_lesson(lesson_id))
  );
 grant select, insert, update, delete on public.resources to authenticated;
+
+
+-- Keep course/lesson resource associations consistent in the database, not
+-- only in the admin form. A leader cannot attach an assigned course to a
+-- lesson belonging to another track.
+create or replace function public.validate_resource_course_lesson_match()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  lesson_course_id uuid;
+begin
+  if new.course_id is not null and new.lesson_id is not null then
+    select l.course_id into lesson_course_id
+      from public.lessons l
+     where l.id = new.lesson_id;
+    if lesson_course_id is null or lesson_course_id <> new.course_id then
+      raise exception 'resource course and lesson must belong together';
+    end if;
+  end if;
+  return new;
+end;
+$$;
+revoke execute on function public.validate_resource_course_lesson_match() from public, anon, authenticated;
+drop trigger if exists resources_validate_course_lesson_match on public.resources;
+create trigger resources_validate_course_lesson_match
+before insert or update of course_id, lesson_id on public.resources
+for each row execute function public.validate_resource_course_lesson_match();

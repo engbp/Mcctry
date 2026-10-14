@@ -61,13 +61,21 @@ describe("MCC community migration guardrails", () => {
     expect(sql).toMatch(/alter table public\.lessons add column if not exists video_url text/i);
   });
 
+
   it("limits anonymous and authenticated session reads to the QR-safe public columns", () => {
-    expect(sql).toMatch(/grant select \\(id, track_id, course_id, title, feedback_token, feedback_expires_at, feedback_closed_at, created_at\\) on public\\.feedback_sessions to anon, authenticated/i);
-    expect(sql).not.toMatch(/grant select on public\\.feedback_sessions to authenticated/i);
+    expect(sql).toContain("grant select (id, track_id, course_id, title, feedback_token, feedback_expires_at, feedback_closed_at, created_at) on public.feedback_sessions to anon, authenticated;");
+    expect(sql).not.toContain("grant select on public.feedback_sessions to authenticated;");
   });
 
-  it("validates application answers on insert and only when answer or phone fields change", () => {
-    expect(sql).toMatch(/create trigger applications_validate_answers before insert or update of answers, phone_number\\s+on public\\.applications/i);
+  it("validates application answers only when answers or phone fields change", () => {
+    expect(sql).toContain("create trigger applications_validate_answers before insert or update of answers, phone_number");
+  });
+
+  it("prevents a resource from linking a course to another course's lesson", () => {
+    expect(sql).toContain("create or replace function public.validate_resource_course_lesson_match()");
+    expect(sql).toContain("lesson_course_id <> new.course_id");
+    expect(sql).toContain("create trigger resources_validate_course_lesson_match");
+    expect(sql).toContain("before insert or update of course_id, lesson_id on public.resources");
   });
 
 });
