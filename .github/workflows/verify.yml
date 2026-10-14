@@ -1,0 +1,37 @@
+name: Verify MCC website
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches:
+      - main
+      - cleanup/remove-join-and-demo
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: TypeScript check
+        run: npm run lint
+      - name: Unit and guardrail tests
+        run: npm test
+      - name: Production build
+        run: npm run build

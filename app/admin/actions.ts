@@ -7,7 +7,6 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/auth";
-import type { ApplicationStatus } from "@/lib/supabase/types";
 
 export interface AdminActionResult {
   ok: boolean;
@@ -31,7 +30,6 @@ async function requireAdminClient() {
 
 function revalidateAdmin() {
   revalidatePath("/admin");
-  revalidatePath("/admin/applications");
   revalidatePath("/admin/tracks");
   revalidatePath("/admin/courses");
   revalidatePath("/admin/lessons");
@@ -49,30 +47,6 @@ function slugify(value: string): string {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "")
     .slice(0, 80);
-}
-
-// ---------------------------------------------------------------------------
-// Applications
-// ---------------------------------------------------------------------------
-
-export async function updateApplicationStatusAction(
-  _prev: AdminActionResult,
-  formData: FormData
-): Promise<AdminActionResult> {
-  const { supabase } = await requireAdminClient();
-  const id = String(formData.get("id") ?? "");
-  const status = String(formData.get("status") ?? "") as ApplicationStatus;
-  const allowed: ApplicationStatus[] = ["pending", "reviewing", "accepted", "rejected", "withdrawn"];
-  if (!id || !allowed.includes(status)) {
-    return { ok: false, message: "Invalid application or status." };
-  }
-  const { error } = await supabase
-    .from("applications")
-    .update({ status })
-    .eq("id", id);
-  if (error) return { ok: false, message: error.message };
-  revalidateAdmin();
-  return { ok: true };
 }
 
 // ---------------------------------------------------------------------------

@@ -65,24 +65,18 @@ describe.skipIf(!configured)("RLS + integration (requires live Supabase)", () =>
     expect(error).toBeTruthy();
   });
 
-  it("anon application insert is forced to pending and is not readable", async () => {
-    const email = `rls-test-${Date.now()}@example.com`;
+  it("anonymous visitors cannot submit new applications", async () => {
+    const email = `closed-intake-${Date.now()}@example.com`;
     const { error } = await anon.from("applications").insert({
-      name: "RLS Test",
+      name: "RLS Closed Intake Test",
       email,
+      phone_number: "01012345678",
       interests: ["Cloud"],
-      status: "accepted", // must be rejected/overridden by policy
+      answers: {},
+      status: "pending",
     });
-    // Either the row is rejected outright, or inserted as pending.
-    if (error) {
-      expect(error).toBeTruthy();
-    } else {
-      const { data } = await anon
-        .from("applications")
-        .select("status")
-        .eq("email", email);
-      expect(data ?? []).toHaveLength(0); // anon must not read it back
-    }
+    if (!error) await admin.from("applications").delete().eq("email", email);
+    expect(error).toBeTruthy();
   });
 
   it("anon cannot read any application rows", async () => {
@@ -106,16 +100,10 @@ describe.skipIf(!configured)("RLS + integration (requires live Supabase)", () =>
     expect(error).toBeTruthy();
   });
 
-  it("duplicate application email is rejected by the unique index", async () => {
-    const email = `dupe-${Date.now()}@example.com`;
-    const first = await anon
-      .from("applications")
-      .insert({ name: "A", email, interests: ["Cloud"] });
-    expect(first.error).toBeNull();
-    const second = await anon
-      .from("applications")
-      .insert({ name: "B", email, interests: ["Cloud"] });
-    expect(second.error).toBeTruthy();
+  it("anonymous visitors cannot read recruitment questions", async () => {
+    const { data, error } = await anon.from("recruitment_questions").select("id").limit(1);
+    expect(error).toBeTruthy();
+    expect(data ?? []).toHaveLength(0);
   });
 
   it("admin can promote a profile to admin", async () => {

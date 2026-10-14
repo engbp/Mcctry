@@ -10,7 +10,8 @@ export const revalidate = 300;
 const iconMap = { BookOpen, Code2, Layers, Globe } as const;
 
 export default async function ResourcesPage() {
-  const { items: resources } = await loadResources();
+  const { items: loadedResources } = await loadResources();
+  const resources = loadedResources.filter((resource) => Boolean(resource.link.trim()));
 
   return (
     <>
@@ -37,9 +38,9 @@ export default async function ResourcesPage() {
             <div className="mcc-empty-public">
               <span className="mcc-empty-icon"><BookOpen size={22} /></span>
               <span className="mcc-section-label">NO RESOURCES PUBLISHED YET</span>
-              <h2>The library is being restocked.</h2>
-              <p>Approved links, tools and references will appear here once administrators publish them.</p>
-              <Link href="/join" className="mcc-text-link">Join MCC MNU <ArrowRight size={16} /></Link>
+              <h2>No resources are published yet.</h2>
+              <p>Resources published by MCC administrators will appear here.</p>
+              <Link href="/courses" className="mcc-text-link">Browse courses <ArrowRight size={16} /></Link>
             </div>
           ) : (
             <Reveal className="cm-res-grid" role="list">
@@ -69,7 +70,7 @@ export default async function ResourcesPage() {
                   );
                 }
                 return (
-                  <SpotlightCard key={resource.slug ?? resource.title} className="cm-res-card cm-res-card-soon" role="listitem">
+                  <SpotlightCard key={resource.slug ?? resource.title} as="a" href={resource.link} className="cm-res-card" role="listitem">
                     {body}
                   </SpotlightCard>
                 );
@@ -82,12 +83,12 @@ export default async function ResourcesPage() {
       <section className="lk-cta-band" aria-labelledby="mcc-resources-title">
         <div className="container lk-cta-inner">
           <div>
-            <span className="hp-section-kicker" style={{ color: "var(--mcc-cyan)" }}>MCC RESOURCES</span>
-            <h2 id="mcc-resources-title" className="hp-section-title" style={{ color: "#fff" }}>More materials on the way.</h2>
-            <p>Official MCC learning materials will be published here as they are ready.</p>
+            <span className="hp-section-kicker" style={{ color: "var(--mcc-cyan)" }}>KEEP LEARNING</span>
+            <h2 id="mcc-resources-title" className="hp-section-title" style={{ color: "#fff" }}>Put these resources to work.</h2>
+            <p>Explore the published courses and learning tracks connected to your interests.</p>
           </div>
-          <Link href="/join" className="lk-cta-btn">
-            Join MCC <ArrowRight size={17} />
+          <Link href="/courses" className="lk-cta-btn">
+            Explore courses <ArrowRight size={17} />
           </Link>
         </div>
       </section>

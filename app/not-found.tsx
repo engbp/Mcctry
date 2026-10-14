@@ -5,7 +5,7 @@ import { BandHero } from "@/components/layout/BandHero";
 const suggestions = [
   { href: "/courses", title: "Browse courses", text: "Published courses and lessons from MCC MNU.", icon: "hp-pillar-icon-blue" },
   { href: "/resources", title: "Open resources", text: "Curated tools and references for learning.", icon: "hp-pillar-icon-cyan" },
-  { href: "/join", title: "Join MCC", text: "Submit a recruitment application for the next cycle.", icon: "hp-pillar-icon-purple" },
+  { href: "/about", title: "About MCC", text: "Learn about the campus technology community.", icon: "hp-pillar-icon-purple" },
 ];
 
 export default function NotFound() {
@@ -24,8 +24,8 @@ export default function NotFound() {
             <Link href="/" className="band-hero-btn">
               <Home size={17} /> Back home <ArrowRight size={16} />
             </Link>
-            <Link href="/join" className="band-hero-btn band-hero-btn-ghost">
-              Join MCC <ArrowUpRight size={16} />
+            <Link href="/courses" className="band-hero-btn band-hero-btn-ghost">
+              Explore courses <ArrowUpRight size={16} />
             </Link>
           </>
         }

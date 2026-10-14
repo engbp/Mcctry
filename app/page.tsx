@@ -30,7 +30,7 @@ export default async function HomePage() {
               {signedIn ? (
                 <Link className="mcc-v2-button mcc-v2-button-quiet" href={dashboardHref}>Your workspace <ArrowUpRight size={17} /></Link>
               ) : (
-                <Link className="mcc-v2-button mcc-v2-button-quiet" href="/join">Meet the club <ArrowUpRight size={17} /></Link>
+                <Link className="mcc-v2-button mcc-v2-button-quiet" href="/about">Meet the club <ArrowUpRight size={17} /></Link>
               )}
             </div>
             <div className="mcc-v2-hero-footnote"><span className="mcc-v2-footline" /> LEARN AT YOUR PACE. BUILD WITH YOUR PEOPLE.</div>
@@ -54,7 +54,7 @@ export default async function HomePage() {
         <div className="mcc-v2-path-grid">
           <Link href="/courses" className="mcc-v2-path-card mcc-v2-path-card-primary"><span className="mcc-v2-path-number">01 / LEARN</span><BookOpen size={27} strokeWidth={1.6} /><h3>Learn something real.</h3><p>Follow video lessons and keep your progress together in one place.</p><span className="mcc-v2-path-link">Browse courses <ArrowUpRight size={17} /></span></Link>
           <Link href="/tracks" className="mcc-v2-path-card"><span className="mcc-v2-path-number">02 / EXPLORE</span><Compass size={27} strokeWidth={1.6} /><h3>Choose a direction.</h3><p>Explore the learning tracks currently published by MCC MNU.</p><span className="mcc-v2-path-link">Explore tracks <ArrowUpRight size={17} /></span></Link>
-          <Link href="/join" className="mcc-v2-path-card"><span className="mcc-v2-path-number">03 / CONNECT</span><Orbit size={27} strokeWidth={1.6} /><h3>Meet your people.</h3><p>Learn how club recruitment works and apply when applications are open.</p><span className="mcc-v2-path-link">Get to know MCC <ArrowUpRight size={17} /></span></Link>
+          <Link href="/resources" className="mcc-v2-path-card"><span className="mcc-v2-path-number">03 / EXPLORE</span><Orbit size={27} strokeWidth={1.6} /><h3>Find your next tool.</h3><p>Use trusted references and resources to support what you learn.</p><span className="mcc-v2-path-link">Browse resources <ArrowUpRight size={17} /></span></Link>
         </div>
       </section>
 
@@ -77,13 +77,13 @@ export default async function HomePage() {
             })}
           </div>
         ) : (
-          <div className="mcc-v2-empty-state"><div className="mcc-v2-empty-icon"><BookOpen size={24} /></div><h3>New learning paths are on the way.</h3><p>Published tracks will appear here as the club adds them. Start with the current course catalogue in the meantime.</p><Link href="/courses" className="mcc-v2-text-link">View courses <ArrowRight size={16} /></Link></div>
+          <div className="mcc-v2-empty-state"><div className="mcc-v2-empty-icon"><BookOpen size={24} /></div><h3>No learning tracks are published yet.</h3><p>Published tracks will appear here when available. Start with the current course catalogue in the meantime.</p><Link href="/courses" className="mcc-v2-text-link">View courses <ArrowRight size={16} /></Link></div>
         )}
       </section>
 
       <section className="mcc-v2-community" aria-labelledby="community-title">
         <div className="mcc-v2-community-art"><Image src="/mcc-banner.jpeg" alt="MCC MNU robot mascot at work in a cinematic technology workspace" width={1280} height={720} loading="lazy" /><div className="mcc-v2-community-tag">MCC MNU / COMMUNITY</div></div>
-        <div className="mcc-v2-community-copy"><p className="mcc-v2-overline">BETTER, TOGETHER</p><h2 id="community-title">A club is more than a logo.</h2><p>It&apos;s the questions after a session, the project that almost works, and the people who help you get it over the line. MCC MNU brings students together to learn by doing.</p><div className="mcc-v2-community-actions"><Link href="/about" className="mcc-v2-button mcc-v2-button-bright">Discover MCC <ArrowRight size={17} /></Link><Link href="/join" className="mcc-v2-text-link">Recruitment information <ArrowUpRight size={16} /></Link></div></div>
+        <div className="mcc-v2-community-copy"><p className="mcc-v2-overline">BETTER, TOGETHER</p><h2 id="community-title">A club is more than a logo.</h2><p>It&apos;s the questions after a session, the project that almost works, and the people who help you get it over the line. MCC MNU brings students together to learn by doing.</p><div className="mcc-v2-community-actions"><Link href="/about" className="mcc-v2-button mcc-v2-button-bright">Discover MCC <ArrowRight size={17} /></Link><Link href="/tracks" className="mcc-v2-text-link">Explore learning tracks <ArrowUpRight size={16} /></Link></div></div>
       </section>
 
       <section className="mcc-v2-bottom-cta"><div><p className="mcc-v2-overline">START WHERE YOU ARE</p><h2>{signedIn ? "Ready for your next lesson?" : "Your next idea starts here."}</h2><p>{signedIn ? "Pick up your learning and keep moving forward." : "No need to have everything figured out. Bring your curiosity."}</p></div><Link href={signedIn ? dashboardHref : "/courses"} className="mcc-v2-button mcc-v2-button-dark">{signedIn ? "Open your workspace" : "Start learning"} <ArrowRight size={17} /></Link></section>

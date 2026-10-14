@@ -7,6 +7,11 @@ const sql = readFileSync(
   "utf8",
 );
 
+const recruitmentDisabledSql = readFileSync(
+  resolve(process.cwd(), "supabase/migrations/20261015010000_disable_public_recruitment.sql"),
+  "utf8",
+);
+
 describe("MCC community migration guardrails", () => {
   it("keeps feedback responses independent of authenticated user IDs", () => {
     const courseFeedback = sql.match(/create table if not exists public\.course_feedback \(([\s\S]*?)\n\);/i)?.[1] ?? "";
@@ -78,4 +83,15 @@ describe("MCC community migration guardrails", () => {
     expect(sql).toContain("before insert or update of course_id, lesson_id on public.resources");
   });
 
+});
+
+
+describe("Recruitment shutdown migration guardrails", () => {
+  it("disables public submission and question discovery without deleting historical records", () => {
+    expect(recruitmentDisabledSql).toMatch(/drop policy if exists applications_anon_insert on public\.applications/i);
+    expect(recruitmentDisabledSql).toMatch(/revoke insert on table public\.applications from anon, authenticated, public/i);
+    expect(recruitmentDisabledSql).toMatch(/drop policy if exists recruitment_questions_public_enabled_read/i);
+    expect(recruitmentDisabledSql).toMatch(/revoke select on table public\.recruitment_questions from anon, public/i);
+    expect(recruitmentDisabledSql).not.toMatch(/drop table|truncate|delete from public\.applications/i);
+  });
 });

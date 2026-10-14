@@ -286,8 +286,8 @@ function resourceView(resource: Resource): ResourceView {
     category: resource.category ?? "",
     description: resource.description ?? "",
     link: resource.link ?? "",
-    // A resource that points nowhere renders as the internal "coming soon"
-    // card instead of a broken external link.
+    // The public page excludes resources without a destination and
+    // renders linked internal resources as real site links.
     external: resource.external && Boolean(resource.link),
     icon: resource.icon ?? "BookOpen",
   };
