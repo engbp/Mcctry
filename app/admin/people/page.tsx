@@ -1,4 +1,4 @@
-"import { Users, ShieldCheck } from \"lucide-react\";
+import { Users, ShieldCheck } from \"lucide-react\";
 import { requireGlobalAdmin } from \"@/lib/admin/authorization\";
 import { updateMemberRoleAction } from \"./actions\";
 
