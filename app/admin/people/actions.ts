@@ -4,13 +4,15 @@ import { revalidatePath } from "next/cache";
 import { requireGlobalAdmin } from "@/lib/admin/authorization";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const ROLES = ["admin", "leader", "member", "student"] as const;
+type Role = (typeof ROLES)[number];
 
 export async function updateMemberRoleAction(formData: FormData) {
   const { user, supabase } = await requireGlobalAdmin("/admin/people");
   const targetUserId = String(formData.get("user_id") ?? "");
-  const role = String(formData.get("role") ?? "");
+  const role = String(formData.get("role") ?? "") as Role;
   const trackId = String(formData.get("track_id") ?? "");
-  if (!UUID.test(targetUserId) || !["admin", "leader", "member"].includes(role)) return;
+  if (!UUID.test(targetUserId) || !ROLES.includes(role)) return;
   if (targetUserId === user.id && role !== "admin") return;
   if (role === "leader" && !UUID.test(trackId)) return;
 
@@ -21,6 +23,7 @@ export async function updateMemberRoleAction(formData: FormData) {
     const { count } = await db.from("profiles").select("id", { count: "exact", head: true }).eq("role", "admin");
     if ((count ?? 0) <= 1) return;
   }
+
   const changed = await db.rpc("admin_set_profile_role", { target_user_id: targetUserId, new_role: role });
   if (changed.error) return;
 
@@ -29,6 +32,7 @@ export async function updateMemberRoleAction(formData: FormData) {
   } else {
     await db.from("track_leaders").delete().eq("user_id", targetUserId);
   }
+
   revalidatePath("/admin/people");
   revalidatePath("/admin/leader");
   revalidatePath("/admin");
