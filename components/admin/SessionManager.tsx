@@ -3,7 +3,7 @@
 import { useActionState, useEffect, useMemo, useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import Link from "next/link";
-import { CheckCircle2, Clock3, Copy, QrCode, XCircle } from "lucide-react";
+import { CheckCircle2, Clock3, Copy, Download, QrCode, XCircle } from "lucide-react";
 import { closeFeedbackSessionAction, createFeedbackSessionAction, type CreateSessionState } from "@/app/admin/sessions/actions";
 
 type TrackOption = { id: string; title: string; published: boolean };
@@ -11,21 +11,17 @@ type CourseOption = { id: string; track_id: string; title: string; published: bo
 type Session = { id: string; title: string; track_id: string; course_id: string; feedback_token: string; feedback_expires_at: string; feedback_closed_at: string | null; created_at: string };
 const initialState: CreateSessionState = { status: "idle" };
 
-export function SessionManager({ tracks, courses, sessions, isAdmin }: { tracks: TrackOption[]; courses: CourseOption[]; sessions: Session[]; isAdmin: boolean }) {
+export function SessionManager({ tracks, courses, sessions, isAdmin, publicOrigin }: { tracks: TrackOption[]; courses: CourseOption[]; sessions: Session[]; isAdmin: boolean; publicOrigin: string }) {
   const [state, formAction, pending] = useActionState(createFeedbackSessionAction, initialState);
   const [trackId, setTrackId] = useState(tracks[0]?.id ?? "");
-  const [origin, setOrigin] = useState("");
   const [copied, setCopied] = useState(false);
   const filteredCourses = useMemo(() => courses.filter((course) => course.track_id === trackId), [courses, trackId]);
   const [courseId, setCourseId] = useState("");
   useEffect(() => {
-    setOrigin(window.location.origin);
-  }, []);
-  useEffect(() => {
     if (!filteredCourses.some((course) => course.id === courseId)) setCourseId(filteredCourses[0]?.id ?? "");
   }, [filteredCourses, courseId]);
 
-  const url = state.session && origin ? `${origin}/feedback/session/${state.session.token}` : "";
+  const url = state.session ? `${publicOrigin}/feedback/session/${state.session.token}` : "";
 
   async function copyUrl() {
     if (!url) return;
@@ -36,6 +32,19 @@ export function SessionManager({ tracks, courses, sessions, isAdmin }: { tracks:
     } catch {
       setCopied(false);
     }
+  }
+
+  function downloadQr() {
+    const svg = document.querySelector(".mcc-ops-qr-card svg") as SVGSVGElement | null;
+    if (!svg || !state.session) return;
+    const source = new XMLSerializer().serializeToString(svg);
+    const blob = new Blob([source], { type: "image/svg+xml;charset=utf-8" });
+    const href = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = href;
+    anchor.download = `mcc-feedback-${state.session.token}.svg`;
+    anchor.click();
+    URL.revokeObjectURL(href);
   }
 
   return <div className="mcc-ops-session-layout">
@@ -52,8 +61,8 @@ export function SessionManager({ tracks, courses, sessions, isAdmin }: { tracks:
       </form>
       {state.message && <p className={state.status === "success" ? "mcc-feedback-status success" : "mcc-feedback-status error"} role="status">{state.message}</p>}
       {state.session && <div className="mcc-ops-qr-result">
-        <div className="mcc-ops-qr-card"><QRCodeSVG value={url || `/feedback/session/${state.session.token}`} size={232} level="H" includeMargin /></div>
-        <div className="mcc-ops-qr-copy"><span className="mcc-ops-tag active">QR READY</span><h3>{state.session.title}</h3><p>Expires {new Date(state.session.expiresAt).toLocaleString()}</p><code>{url || `/feedback/session/${state.session.token}`}</code><div className="mcc-ops-inline-actions"><button className="mcc-ops-primary" type="button" onClick={copyUrl}><Copy size={15}/>{copied ? "Copied" : "Copy link"}</button><button className="mcc-ops-secondary" type="button" onClick={() => window.print()}>Print QR</button><Link className="mcc-ops-secondary as-link" href={`/feedback/session/${state.session.token}`} target="_blank">Preview form</Link></div></div>
+        <div className="mcc-ops-qr-card" id="feedback-qr"><QRCodeSVG value={url} size={232} level="H" includeMargin /></div>
+        <div className="mcc-ops-qr-copy"><span className="mcc-ops-tag active">QR READY</span><h3>{state.session.title}</h3><p>Expires {new Date(state.session.expiresAt).toLocaleString()}</p><code>{url}</code><div className="mcc-ops-inline-actions"><button className="mcc-ops-primary" type="button" onClick={copyUrl}><Copy size={15}/>{copied ? "Copied" : "Copy link"}</button><button className="mcc-ops-secondary" type="button" onClick={downloadQr}><Download size={15}/>Download QR</button><button className="mcc-ops-secondary" type="button" onClick={() => window.print()}>Print QR</button><Link className="mcc-ops-secondary as-link" href={`/feedback/session/${state.session.token}`} target="_blank">Preview form</Link></div></div>
       </div>}
     </section>
     <section className="mcc-ops-card">
