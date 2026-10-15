@@ -6,7 +6,7 @@ on:
   push:
     branches:
       - main
-      - cleanup/remove-join-and-demo
+      - '**'
 
 permissions:
   contents: read
