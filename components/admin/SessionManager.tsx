@@ -35,7 +35,7 @@ export function SessionManager({ tracks, courses, sessions, isAdmin, publicOrigi
   }
 
   function downloadQr() {
-    const svg = document.querySelector(".mcc-ops-qr-card svg") as SVGSVGElement | null;
+    const svg = document.querySelector("#feedback-qr svg") as SVGSVGElement | null;
     if (!svg || !state.session) return;
     const source = new XMLSerializer().serializeToString(svg);
     const blob = new Blob([source], { type: "image/svg+xml;charset=utf-8" });
@@ -44,20 +44,20 @@ export function SessionManager({ tracks, courses, sessions, isAdmin, publicOrigi
     anchor.href = href;
     anchor.download = `mcc-feedback-${state.session.token}.svg`;
     anchor.click();
-    URL.revokeObjectURL(href);
+    window.setTimeout(() => URL.revokeObjectURL(href), 1000);
   }
 
   return <div className="mcc-ops-session-layout">
     <section className="mcc-ops-card">
-      <h2><QrCode size={19}/> Generate session QR</h2>
-      <p className="mcc-ops-card-intro">Choose the learning track, course, session title, and how long the anonymous feedback link stays open. You can close it at any time.</p>
+      <h2><QrCode size={19}/> Create a feedback QR</h2>
+      <p className="mcc-ops-card-intro">Choose a course. The QR link is anonymous and closes automatically after its expiry.</p>
       <form action={formAction} className="mcc-ops-form">
-        <label>Track<select name="track_id" required value={trackId} onChange={(event) => setTrackId(event.target.value)}><option value="">Choose a track…</option>{tracks.map((track) => <option key={track.id} value={track.id}>{track.title}{!track.published ? " (draft)" : ""}</option>)}</select></label>
-        <label>Course<select name="course_id" required value={courseId} onChange={(event) => setCourseId(event.target.value)}><option value="">Choose a course…</option>{filteredCourses.map((course) => <option key={course.id} value={course.id}>{course.title}{!course.published ? " (draft)" : ""}</option>)}</select></label>
-        <label>Session title<input name="title" required minLength={2} maxLength={200} placeholder="e.g. Intro to AI — in-person workshop" /></label>
-        <label>Feedback duration<select name="duration_preset" defaultValue="60"><option value="15">15 minutes</option><option value="30">30 minutes</option><option value="60">1 hour</option><option value="240">4 hours</option><option value="1440">24 hours</option><option value="custom">Custom duration</option></select></label>
-        <label>Custom duration in minutes <span>(only used for Custom; max 10,080 minutes / 7 days)</span><input name="custom_minutes" type="number" min={1} max={10080} defaultValue={90} /></label>
-        <button className="mcc-ops-primary" type="submit" disabled={pending || !tracks.length || !filteredCourses.length}>{pending ? "Creating…" : "Create QR feedback session"} <QrCode size={16}/></button>
+        <label>Track<select name="track_id" required value={trackId} onChange={(event) => setTrackId(event.target.value)}><option value="">Choose a track…</option>{tracks.map((track) => <option key={track.id} value={track.id}>{track.title}</option>)}</select></label>
+        <label>Course<select name="course_id" required value={courseId} onChange={(event) => setCourseId(event.target.value)}><option value="">Choose a course…</option>{filteredCourses.map((course) => <option key={course.id} value={course.id}>{course.title}</option>)}</select></label>
+        <label>Session name <span>(optional)</span><input name="title" maxLength={200} placeholder="Defaults to the course name" /></label>
+        <label>Link stays open<select name="duration_preset" defaultValue="60"><option value="60">1 hour</option><option value="240">4 hours</option><option value="1440">24 hours</option><option value="15">15 minutes</option><option value="30">30 minutes</option><option value="custom">Custom…</option></select></label>
+        <details className="mcc-ops-advanced"><summary>Custom duration settings</summary><label>Minutes (only for Custom)<input name="custom_minutes" type="number" min={1} max={10080} defaultValue={90} /></label><small>Maximum 7 days.</small></details>
+        <button className="mcc-ops-primary" type="submit" disabled={pending || !tracks.length || !filteredCourses.length}>{pending ? "Creating QR…" : "Create QR"} <QrCode size={16}/></button>
       </form>
       {state.message && <p className={state.status === "success" ? "mcc-feedback-status success" : "mcc-feedback-status error"} role="status">{state.message}</p>}
       {state.session && <div className="mcc-ops-qr-result">
@@ -66,19 +66,19 @@ export function SessionManager({ tracks, courses, sessions, isAdmin, publicOrigi
       </div>}
     </section>
     <section className="mcc-ops-card">
-      <div className="mcc-ops-card-head"><h2><Clock3 size={19}/> Session links</h2><span className="mcc-ops-count">{sessions.length} sessions</span></div>
-      {sessions.length === 0 ? <p className="mcc-ops-empty">No session feedback links yet.</p> : <div className="mcc-ops-session-list">{sessions.map((session) => {
+      <div className="mcc-ops-card-head"><h2><Clock3 size={19}/> Existing sessions</h2><span className="mcc-ops-count">{sessions.length}</span></div>
+      {sessions.length === 0 ? <p className="mcc-ops-empty">No feedback sessions yet.</p> : <div className="mcc-ops-session-list">{sessions.map((session) => {
         const track = tracks.find((item) => item.id === session.track_id);
         const course = courses.find((item) => item.id === session.course_id);
         const expired = new Date(session.feedback_expires_at).getTime() <= Date.now();
         const closed = Boolean(session.feedback_closed_at);
         return <article className="mcc-ops-session" key={session.id}>
-          <div className="mcc-ops-session-copy"><span className={closed ? "mcc-ops-tag muted" : expired ? "mcc-ops-tag expired" : "mcc-ops-tag active"}>{closed ? "Closed early" : expired ? "Expired" : "Accepting feedback"}</span><h3>{session.title}</h3><p>{track?.title ?? "Track"} / {course?.title ?? "Course"}</p><small>{closed ? "Closed " + new Date(session.feedback_closed_at!).toLocaleString() : "Expires " + new Date(session.feedback_expires_at).toLocaleString()}</small><Link href={`/feedback/session/${session.feedback_token}`} target="_blank" className="mcc-ops-session-url">Open public link ↗</Link></div>
-          {!closed && !expired && <form action={closeFeedbackSessionAction}><input type="hidden" name="session_id" value={session.id}/><button className="mcc-ops-danger" type="submit" title="Close feedback now"><XCircle size={15}/> Close now</button></form>}
+          <div className="mcc-ops-session-copy"><span className={closed ? "mcc-ops-tag muted" : expired ? "mcc-ops-tag expired" : "mcc-ops-tag active"}>{closed ? "Closed" : expired ? "Expired" : "Open"}</span><h3>{session.title}</h3><p>{track?.title ?? "Track"} / {course?.title ?? "Course"}</p><small>{closed ? "Closed " + new Date(session.feedback_closed_at!).toLocaleString() : "Expires " + new Date(session.feedback_expires_at).toLocaleString()}</small><Link href={`/feedback/session/${session.feedback_token}`} target="_blank" className="mcc-ops-session-url">Open public link ↗</Link></div>
+          {!closed && !expired && <form action={closeFeedbackSessionAction}><input type="hidden" name="session_id" value={session.id}/><button className="mcc-ops-danger" type="submit" title="Close feedback now"><XCircle size={15}/> Close</button></form>}
           {(closed || expired) && <span className="mcc-ops-session-done"><CheckCircle2 size={16}/></span>}
         </article>;
       })}</div>}
     </section>
-    <p className="mcc-ops-footnote">Expired/closed QR codes stop accepting submissions on the database policy too. People can submit without an account, and their account IDs are not stored with responses. {isAdmin ? "Only global admins can create or close forms for any track; track leaders are limited to assigned tracks." : "Your access is limited to tracks assigned to your account."}</p>
+    <p className="mcc-ops-footnote">Submissions are anonymous. {isAdmin ? "You can manage sessions for every track." : "You can manage sessions only for tracks assigned to you."}</p>
   </div>;
 }
