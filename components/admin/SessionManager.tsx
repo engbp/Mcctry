@@ -54,7 +54,7 @@ export function SessionManager({ tracks, courses, sessions, isAdmin, publicOrigi
       <form action={formAction} className="mcc-ops-form">
         <label>Track<select name="track_id" required value={trackId} onChange={(event) => setTrackId(event.target.value)}><option value="">Choose a track…</option>{tracks.map((track) => <option key={track.id} value={track.id}>{track.title}</option>)}</select></label>
         <label>Course<select name="course_id" required value={courseId} onChange={(event) => setCourseId(event.target.value)}><option value="">Choose a course…</option>{filteredCourses.map((course) => <option key={course.id} value={course.id}>{course.title}</option>)}</select></label>
-        <label>Session name <span>(optional)</span><input name="title" maxLength={200} placeholder="Defaults to the course name" /></label>
+        <label>Session name<input name="title" required minLength={2} maxLength={200} placeholder="e.g. Intro to AI workshop" /></label>
         <label>Link stays open<select name="duration_preset" defaultValue="60"><option value="60">1 hour</option><option value="240">4 hours</option><option value="1440">24 hours</option><option value="15">15 minutes</option><option value="30">30 minutes</option><option value="custom">Custom…</option></select></label>
         <details className="mcc-ops-advanced"><summary>Custom duration settings</summary><label>Minutes (only for Custom)<input name="custom_minutes" type="number" min={1} max={10080} defaultValue={90} /></label><small>Maximum 7 days.</small></details>
         <button className="mcc-ops-primary" type="submit" disabled={pending || !tracks.length || !filteredCourses.length}>{pending ? "Creating QR…" : "Create QR"} <QrCode size={16}/></button>
