@@ -20,9 +20,10 @@ export default async function SessionFeedbackAdminPage() {
   const sessions = ((sessionResult.data ?? []) as Array<{id:string;title:string;track_id:string;course_id:string;feedback_token:string;feedback_expires_at:string;feedback_closed_at:string|null;created_at:string}>)
     .filter((session) => trackIdSet.has(session.track_id));
   const error = trackResult.error || courseResult.error || sessionResult.error;
+  const publicOrigin = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://mcctry.vercel.app").replace(/\/$/, "");
   return <div className="mcc-ops-page">
     <header className="mcc-ops-page-head"><div className="mcc-ops-title-icon"><span aria-hidden="true">QR</span></div><div><p className="mcc-ops-eyebrow">IN-PERSON LEARNING</p><h1>Session QR feedback</h1><p>Create a QR code for an offline session, choose its expiry, and close the form whenever you need to.</p></div></header>
-    {error && <div className="mcc-ops-alert">Session feedback storage is not available yet. Confirm that the new Supabase migration has been applied to the intended test environment.</div>}
-    <SessionManager tracks={tracks} courses={courses} sessions={sessions} isAdmin={profile.role === "admin"} />
+    {error && <div className="mcc-ops-alert">Session feedback storage is not available yet. Confirm that the latest Supabase migration has been applied to the intended environment.</div>}
+    <SessionManager tracks={tracks} courses={courses} sessions={sessions} isAdmin={profile.role === "admin"} publicOrigin={publicOrigin} />
   </div>;
 }
