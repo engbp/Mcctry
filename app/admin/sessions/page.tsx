@@ -13,10 +13,10 @@ export default async function SessionFeedbackAdminPage() {
   ]);
   const allowedIds = profile.role === "admin" ? null : new Set(assignedTrackIds);
   const tracks = ((trackResult.data ?? []) as Array<{id:string;title:string;published:boolean;position:number}>)
-    .filter((track) => !allowedIds || allowedIds.has(track.id));
+    .filter((track) => track.published && (!allowedIds || allowedIds.has(track.id)));
   const trackIdSet = new Set(tracks.map((track) => track.id));
   const courses = ((courseResult.data ?? []) as Array<{id:string;track_id:string;title:string;published:boolean;position:number}>)
-    .filter((course) => trackIdSet.has(course.track_id));
+    .filter((course) => course.published && trackIdSet.has(course.track_id));
   const sessions = ((sessionResult.data ?? []) as Array<{id:string;title:string;track_id:string;course_id:string;feedback_token:string;feedback_expires_at:string;feedback_closed_at:string|null;created_at:string}>)
     .filter((session) => trackIdSet.has(session.track_id));
   const error = trackResult.error || courseResult.error || sessionResult.error;
