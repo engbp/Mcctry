@@ -2,7 +2,7 @@
 // (supabase/migrations/20261011235451_init.sql).
 // Kept in sync manually; regenerate from a live instance later if desired.
 
-export type AppRole = "admin" | "leader" | "member";
+export type AppRole = "admin" | "leader" | "member" | "student";
 
 export type ContentKind =
   | "event"
@@ -152,8 +152,6 @@ export type Application = {
   updated_at: string;
 };
 
-// Shape passed to an INSERT on `applications`. `id`, `status`, timestamps and
-// `submitted_ip` are set server-side / by defaults, never by the client.
 export type ApplicationInsert = {
   name: string;
   email: string;
@@ -164,9 +162,6 @@ export type ApplicationInsert = {
   heard_from?: string | null;
 };
 
-/** Minimal row shape for the `Database` interface consumed by supabase-js.
- * Must be a type alias (not an interface) so row shapes get implicit index
- * signatures and satisfy `Record<string, unknown>` in GenericTable. */
 export type Database = {
   public: {
     Tables: {
@@ -180,15 +175,13 @@ export type Database = {
         Row: Profile;
         Insert: Partial<Profile> & { id: string };
         Update: Partial<Profile>;
-        Relationships: [
-          {
-            foreignKeyName: "profiles_team_id_fkey";
-            columns: ["team_id"];
-            isOneToOne: false;
-            referencedRelation: "teams";
-            referencedColumns: ["id"];
-          },
-        ];
+        Relationships: [{
+          foreignKeyName: "profiles_team_id_fkey";
+          columns: ["team_id"];
+          isOneToOne: false;
+          referencedRelation: "teams";
+          referencedColumns: ["id"];
+        }];
       };
       tracks: {
         Row: Track;
@@ -200,29 +193,25 @@ export type Database = {
         Row: Course;
         Insert: Partial<Course> & { track_id: string; slug: string; title: string };
         Update: Partial<Course>;
-        Relationships: [
-          {
-            foreignKeyName: "courses_track_id_fkey";
-            columns: ["track_id"];
-            isOneToOne: false;
-            referencedRelation: "tracks";
-            referencedColumns: ["id"];
-          },
-        ];
+        Relationships: [{
+          foreignKeyName: "courses_track_id_fkey";
+          columns: ["track_id"];
+          isOneToOne: false;
+          referencedRelation: "tracks";
+          referencedColumns: ["id"];
+        }];
       };
       lessons: {
         Row: Lesson;
         Insert: Partial<Lesson> & { course_id: string; slug: string; title: string };
         Update: Partial<Lesson>;
-        Relationships: [
-          {
-            foreignKeyName: "lessons_course_id_fkey";
-            columns: ["course_id"];
-            isOneToOne: false;
-            referencedRelation: "courses";
-            referencedColumns: ["id"];
-          },
-        ];
+        Relationships: [{
+          foreignKeyName: "lessons_course_id_fkey";
+          columns: ["course_id"];
+          isOneToOne: false;
+          referencedRelation: "courses";
+          referencedColumns: ["id"];
+        }];
       };
       lesson_progress: {
         Row: LessonProgress;
@@ -295,4 +284,4 @@ export type Database = {
     };
     CompositeTypes: Record<string, never>;
   };
-}
+};
