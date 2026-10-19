@@ -1,12 +1,16 @@
 "use client";
 
-import { CheckCircle, Play } from "lucide-react";
+import { CheckCircle, ExternalLink, Play } from "lucide-react";
 
 /**
- * Real video player. Recognizes YouTube watch/embed/youtu.be URLs and renders
- * the official privacy-enhanced iframe; any other http(s) URL renders a
- * native HTML5 <video> element. When no URL is set, shows an honest empty
- * state instead of a fake player.
+ * Lesson video player.
+ *
+ * Supports:
+ * - YouTube watch/embed/youtu.be URLs via the privacy-enhanced player.
+ * - Microsoft 365 video/recording links (Teams, Stream, SharePoint, OneDrive)
+ *   via an iframe, with a direct-link fallback because Microsoft permissions
+ *   and tenant policies can prevent third-party iframe playback.
+ * - Direct http(s) media URLs via the native HTML5 video element.
  */
 interface VideoPlayerProps {
   videoUrl: string | null;
@@ -34,6 +38,22 @@ function youtubeId(url: string): string | null {
   return null;
 }
 
+function isMicrosoftVideoUrl(url: string): boolean {
+  try {
+    const host = new URL(url).hostname.toLowerCase().replace(/^www\./, "");
+    return (
+      host === "teams.microsoft.com" ||
+      host.endsWith(".teams.microsoft.com") ||
+      host === "stream.microsoft.com" ||
+      host.endsWith(".sharepoint.com") ||
+      host === "onedrive.live.com" ||
+      host === "1drv.ms"
+    );
+  } catch {
+    return false;
+  }
+}
+
 export function VideoPlayer({ videoUrl, title }: VideoPlayerProps) {
   if (!videoUrl) {
     return (
@@ -57,6 +77,27 @@ export function VideoPlayer({ videoUrl, title }: VideoPlayerProps) {
           allowFullScreen
           loading="lazy"
         />
+      </div>
+    );
+  }
+
+  if (isMicrosoftVideoUrl(videoUrl)) {
+    return (
+      <div className="lesson-player lesson-player-microsoft">
+        <iframe
+          className="lesson-video-frame"
+          src={videoUrl}
+          title={title}
+          allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
+          allowFullScreen
+          loading="lazy"
+        />
+        <div className="lesson-player-external">
+          <span>Microsoft 365 video</span>
+          <a href={videoUrl} target="_blank" rel="noreferrer">
+            Open in Microsoft <ExternalLink size={15} />
+          </a>
+        </div>
       </div>
     );
   }
