@@ -1,14 +1,14 @@
 "use client";
 
 import { CheckCircle, ExternalLink, Play, ShieldAlert } from "lucide-react";
+import type { CSSProperties } from "react";
 
 /**
  * Lesson video player.
  *
- * Supports YouTube, true Microsoft-provided embed URLs, and direct http(s)
- * media URLs. Ordinary Teams/SharePoint sharing links are opened in Microsoft
- * 365 instead of being placed in an iframe: those pages commonly send
- * anti-framing headers and otherwise produce a large, empty white screen.
+ * Supports YouTube, official Microsoft video embed URLs (including safe
+ * conversions for normal SharePoint file paths), and direct HTTP media URLs.
+ * Opaque sharing/recap links are opened in Microsoft 365 rather than framed.
  */
 interface VideoPlayerProps {
   videoUrl: string | null;
@@ -56,9 +56,36 @@ function isMicrosoftHost(hostname: string): boolean {
 }
 
 function isMicrosoftEmbedUrl(url: URL): boolean {
-  // SharePoint/OneDrive's supported video embed URL, or a Microsoft Stream
-  // embed URL. A normal sharing/recap URL is not an embed URL.
   return /(?:^|\/)embed(?:\.aspx|\/)/i.test(url.pathname);
+}
+
+function microsoftEmbedUrl(recording: URL): string | null {
+  if (isMicrosoftEmbedUrl(recording)) return recording.toString();
+
+  const streamPage = recording.pathname.match(/^(.*\/_layouts\/15\/)stream\.aspx$/i);
+  if (streamPage && recording.hostname.toLowerCase().endsWith(".sharepoint.com")) {
+    const embed = new URL(recording.toString());
+    embed.pathname = `${streamPage[1]}embed.aspx`;
+    embed.searchParams.set("embed", "1");
+    return embed.toString();
+  }
+
+  if (!recording.hostname.toLowerCase().endsWith(".sharepoint.com")) return null;
+
+  // Some Teams fileUrl values resolve to the actual .mp4 path. SharePoint's
+  // supported embed.aspx endpoint can embed that path; opaque short-share
+  // tokens cannot be converted reliably and must use the external fallback.
+  let filePath = recording.pathname;
+  const routedShare = filePath.match(/^\/:([^/]+):\/r(\/.*)$/i);
+  if (routedShare) filePath = routedShare[2];
+
+  if (!/\.(?:mp4|m4v|mov|webm|wmv|avi)$/i.test(filePath)) return null;
+  const siteRootMatch = filePath.match(/^\/(personal|sites|teams)\/([^/]+)/i);
+  const siteRoot = siteRootMatch ? `/${siteRootMatch[1]}/${siteRootMatch[2]}` : "";
+  const embed = new URL(`${siteRoot}/_layouts/15/embed.aspx`, recording.origin);
+  embed.searchParams.set("id", `${recording.origin}${filePath}`);
+  embed.searchParams.set("embed", "1");
+  return embed.toString();
 }
 
 function microsoftVideo(url: string): MicrosoftVideo | null {
@@ -66,9 +93,6 @@ function microsoftVideo(url: string): MicrosoftVideo | null {
     const original = new URL(url);
     if (!isMicrosoftHost(original.hostname)) return null;
 
-    // Teams meeting recap links can point at the actual recording via fileUrl.
-    // Use it as the target that opens in a new tab, but do not assume it's
-    // iframe-safe just because it points at SharePoint.
     let recording = original;
     const fileUrl = original.searchParams.get("fileUrl");
     if (fileUrl) {
@@ -76,24 +100,20 @@ function microsoftVideo(url: string): MicrosoftVideo | null {
         const candidate = new URL(fileUrl);
         if (isMicrosoftHost(candidate.hostname)) recording = candidate;
       } catch {
-        // Ignore malformed fileUrl and retain the original Teams link.
+        // Keep the original Teams URL if fileUrl is malformed.
       }
     }
 
-    // Only iframe known Microsoft embed endpoints. Generic sharing pages are
-    // frequently blocked by X-Frame-Options / CSP and cause a blank player.
-    const embedUrl = isMicrosoftEmbedUrl(recording) ? recording.toString() : null;
-
     return {
       openUrl: recording.toString(),
-      embedUrl,
+      embedUrl: microsoftEmbedUrl(recording),
     };
   } catch {
     return null;
   }
 }
 
-const openLinkStyle: React.CSSProperties = {
+const openLinkStyle: CSSProperties = {
   display: "inline-flex",
   alignItems: "center",
   justifyContent: "center",
@@ -107,7 +127,7 @@ const openLinkStyle: React.CSSProperties = {
   lineHeight: 1.2,
 };
 
-const secondaryLinkStyle: React.CSSProperties = {
+const secondaryLinkStyle: CSSProperties = {
   ...openLinkStyle,
   background: "rgba(255,255,255,0.08)",
   border: "1px solid rgba(255,255,255,0.16)",
@@ -144,30 +164,36 @@ export function VideoPlayer({ videoUrl, title }: VideoPlayerProps) {
   if (microsoft) {
     if (microsoft.embedUrl) {
       return (
-        <div className="lesson-player lesson-player-yt">
-          <iframe
-            className="lesson-video-frame"
-            src={microsoft.embedUrl}
-            title={title}
-            allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
-            allowFullScreen
-            loading="lazy"
-            referrerPolicy="strict-origin-when-cross-origin"
-          />
+        <div className="lesson-player-microsoft-embed">
+          <div className="lesson-player lesson-player-yt">
+            <iframe
+              className="lesson-video-frame"
+              src={microsoft.embedUrl}
+              title={title}
+              allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="strict-origin-when-cross-origin"
+            />
+          </div>
+          <div style={{ display: "flex", justifyContent: "flex-end", paddingTop: 10 }}>
+            <a href={microsoft.openUrl} target="_blank" rel="noopener noreferrer" style={secondaryLinkStyle}>
+              Open recording in Microsoft 365 <ExternalLink size={15} />
+            </a>
+          </div>
         </div>
       );
     }
 
-    // Graceful, usable fallback for a standard Teams/SharePoint share link.
-    // Do not render the blocked page in an iframe: open the recording in its
-    // normal Microsoft 365 context where sign-in and permissions can work.
+    // Ordinary/opaque share links cannot safely be framed. Render a usable
+    // branded state instead of the giant white "refused to connect" page.
     return (
       <div className="lesson-player lesson-player-empty lesson-player-microsoft-fallback" role="group" aria-label="Microsoft 365 video">
         <span className="lesson-player-empty-icon"><Play size={32} /></span>
         <strong style={{ color: "#fff", fontSize: "1.15rem" }}>{title}</strong>
         <p style={{ maxWidth: 520, margin: 0, lineHeight: 1.6 }}>
-          This recording is hosted by Microsoft 365 and can’t be embedded from its sharing link.
-          Open it in a new tab to play it with your Microsoft account and recording permissions.
+          This Microsoft Teams link does not expose an embeddable video URL.
+          Open the recording in a new tab to play it with your university Microsoft account.
         </p>
         <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 10, marginTop: 8 }}>
           <a href={microsoft.openUrl} target="_blank" rel="noopener noreferrer" style={openLinkStyle}>
@@ -180,7 +206,7 @@ export function VideoPlayer({ videoUrl, title }: VideoPlayerProps) {
           )}
         </div>
         <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: "0.82rem", marginTop: 4 }}>
-          <ShieldAlert size={14} /> You may need to sign in with your university Microsoft account.
+          <ShieldAlert size={14} /> Video access is controlled by Microsoft 365 sharing permissions.
         </span>
       </div>
     );
