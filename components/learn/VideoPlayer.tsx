@@ -76,7 +76,7 @@ function microsoftEmbedUrl(recording: URL): string | null {
   // supported embed.aspx endpoint can embed that path; opaque short-share
   // tokens cannot be converted reliably and must use the external fallback.
   let filePath = recording.pathname;
-  const routedShare = filePath.match(/^\/:([^/]+):\/r(\/.*)$/i);
+  const routedShare = filePath.match(/^\/:([^/]+)\/r(\/.*)$/i);
   if (routedShare) filePath = routedShare[2];
 
   if (!/\.(?:mp4|m4v|mov|webm|wmv|avi)$/i.test(filePath)) return null;
