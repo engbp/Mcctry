@@ -25,7 +25,7 @@ export async function updateMemberRoleAction(formData: FormData) {
   }
 
   const { data: changed, error: changeError } = await db.from("profiles")
-    .update({ role, updated_at: new Date().toISOString() })
+    .update({ role })
     .eq("id", targetUserId)
     .select("id")
     .maybeSingle();
