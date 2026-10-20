@@ -9,7 +9,7 @@ export default async function AdminCoursesPage() {
   await requireAdmin("/admin/courses");
   const supabase = await createSupabaseServerClient();
   const [{ data: courses }, { data: tracks }] = await Promise.all([
-    supabase.from("courses").select("id,track_id,slug,title,description,level,color,duration,published,featured,position,tracks!inner(id,title,slug)").order("position"),
+    supabase.from("courses").select("id,track_id,slug,title,description,level,color,duration,published,featured,position").order("position"),
     supabase.from("tracks").select("id,title").order("title"),
   ]);
 
@@ -68,7 +68,7 @@ export default async function AdminCoursesPage() {
                   <label>Slug<input name="slug" defaultValue={course.slug} required /></label>
                   <label>Description<textarea name="description" defaultValue={course.description ?? ""} rows={2} /></label>
                   <label>Level<input name="level" defaultValue={course.level ?? ""} /></label>
-                  <label>Color<input name="color" type="color" defaultValue={course.color ?? "#0078d4" /></label>
+                  <label>Color<input name="color" type="color" defaultValue={course.color ?? "#0078d4"} /></label>
                   <label>Duration<input name="duration" defaultValue={course.duration ?? ""} /></label>
                   <label>Position<input name="position" type="number" defaultValue={course.position} /></label>
                   <label className="mcc-admin-check"><input name="published" type="checkbox" defaultChecked={course.published} /> Published</label>
