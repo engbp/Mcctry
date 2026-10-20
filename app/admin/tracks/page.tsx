@@ -8,7 +8,10 @@ export const dynamic = "force-dynamic";
 export default async function AdminTracksPage() {
   await requireAdmin("/admin/tracks");
   const supabase = await createSupabaseServerClient();
-  const { data: tracks } = await supabase.from("tracks").select("*").order("position");
+  const { data: tracks } = await supabase
+    .from("tracks")
+    .select("id,title,slug,description,color,duration,published,featured,position")
+    .order("position");
 
   return (
     <>
