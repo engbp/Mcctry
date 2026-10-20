@@ -1,7 +1,15 @@
 "use client";
 
-// The new experience uses lightweight CSS transitions instead of a full-screen
-// canvas and a continuously running pointer-following animation.
+import { usePathname } from "next/navigation";
+import { ParticleBackground } from "./ParticleBackground";
+
 export function GlobalEffects() {
-  return null;
+  const pathname = usePathname();
+  const isAdminRoute = pathname === "/admin" || pathname.startsWith("/admin/");
+
+  // Keep the site's animated atmosphere on public pages, but never run the
+  // particle canvas or cursor-following glow inside the admin workspace.
+  if (isAdminRoute) return null;
+
+  return <ParticleBackground />;
 }
