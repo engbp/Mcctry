@@ -65,7 +65,7 @@ export function AdminNav({ role, displayName }: { role: string; displayName: str
 
   return (
     <aside className="mcc-admin-nav" aria-label="Workspace navigation">
-      <Link href="/" className="mcc-admin-brand-link" aria-label="MCC MNU home">
+      <Link href="/" className="mcc-admin-brand-link" aria-label="MCC MNU home" prefetch={false}>
         <span className="mcc-admin-brand-symbol"><Layers3 size={21} strokeWidth={1.8} /></span>
         <span className="mcc-admin-brand-copy">
           <strong>MCC <i>MNU</i></strong>
@@ -85,6 +85,7 @@ export function AdminNav({ role, displayName }: { role: string; displayName: str
                   <Link
                     key={href}
                     href={href}
+                    prefetch={false}
                     className={active ? "is-current" : undefined}
                     aria-current={active ? "page" : undefined}
                   >
@@ -108,7 +109,7 @@ export function AdminNav({ role, displayName }: { role: string; displayName: str
             <small>{role === "admin" ? "Global administrator" : "Track leader"}</small>
           </span>
         </div>
-        <Link href="/" className="mcc-admin-back">
+        <Link href="/" className="mcc-admin-back" prefetch={false}>
           View learning site <ArrowUpRight size={15} />
         </Link>
         <form action={signOutAction}>
