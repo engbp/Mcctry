@@ -7,9 +7,9 @@ import "./mcc-feature-styles-03.css";
 import "./mcc-feature-styles-04.css";
 import "./mcc-feature-styles-05.css";
 import "./mcc-feature-styles-06.css";
+import "./mcc-redesign.css";
 import { MainLayout } from "@/components/layout/MainLayout";
-import { ParticleBackground } from "@/components/fx/ParticleBackground";
-import { CursorGlow } from "@/components/fx/CursorGlow";
+import { GlobalEffects } from "@/components/fx/GlobalEffects";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -87,8 +87,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <a href="#main-content" className="skip-link">
           Skip to main content
         </a>
-        <ParticleBackground />
-        <CursorGlow />
+        <GlobalEffects />
         <MainLayout>{children}</MainLayout>
       </body>
     </html>
