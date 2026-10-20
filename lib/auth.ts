@@ -10,11 +10,13 @@ export interface AuthUser {
 
 export const getCurrentUser = cache(async (): Promise<AuthUser | null> => {
   const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user || !user.email) return null;
-  return { id: user.id, email: user.email };
+  const { data, error } = await supabase.auth.getClaims();
+  if (error || !data?.claims?.sub) return null;
+
+  return {
+    id: data.claims.sub,
+    email: typeof data.claims.email === "string" ? data.claims.email : "",
+  };
 });
 
 export const getCurrentProfile = cache(async (): Promise<Profile | null> => {
