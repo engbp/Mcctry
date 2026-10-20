@@ -19,8 +19,6 @@ export async function proxy(request: NextRequest) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !anonKey) {
-    // Without credentials the public site still works; protected routes
-    // simply cannot verify a session, so bounce visitors to login.
     if (isProtected(pathname)) {
       const login = new URL("/login", request.url);
       login.searchParams.set("next", pathname);
@@ -44,11 +42,12 @@ export async function proxy(request: NextRequest) {
     },
   });
 
-  // Refresh the session (validates the JWT and rotates tokens when needed).
-  // getUser() is the trusted check — never decode the JWT cookie ourselves.
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // getClaims validates the signed JWT locally (using the cached JWKS for
+  // asymmetric signing keys) and refreshes an expiring session when needed.
+  // Unlike getUser(), it avoids a network round-trip to Supabase Auth on the
+  // normal request path.
+  const { data: claimsData } = await supabase.auth.getClaims();
+  const user = claimsData?.claims;
 
   if (isProtected(pathname) && !user) {
     const login = new URL("/login", request.url);
@@ -66,8 +65,16 @@ export async function proxy(request: NextRequest) {
   return response;
 }
 
+// The proxy is only needed for routes that actually use Supabase auth. Keeping
+// it off the public catalogue avoids an Auth request on every public page.
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
+    "/login",
+    "/signup",
+    "/auth/:path*",
+    "/dashboard",
+    "/dashboard/:path*",
+    "/admin",
+    "/admin/:path*",
   ],
 };
