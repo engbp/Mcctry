@@ -32,13 +32,13 @@ const adminGroups = [
   {
     label: "Community",
     links: [
-      { href: "/admin/sessions", label: "Session feedback QR", Icon: QrCode },
-      { href: "/admin/feedback", label: "Feedback inbox", Icon: MessageSquareText },
+      { href: "/admin/sessions", label: "Session QR", Icon: QrCode },
+      { href: "/admin/feedback", label: "Feedback", Icon: MessageSquareText },
     ],
   },
   {
     label: "Access",
-    links: [{ href: "/admin/people", label: "People & roles", Icon: Users }],
+    links: [{ href: "/admin/people", label: "People", Icon: Users }],
   },
 ];
 
@@ -46,15 +46,15 @@ const leaderGroups = [
   {
     label: "Workspace",
     links: [
-      { href: "/admin/leader", label: "Assigned tracks", Icon: Layers3 },
-      { href: "/admin/leader/resources", label: "Track resources", Icon: Link2 },
+      { href: "/admin/leader", label: "My tracks", Icon: Layers3 },
+      { href: "/admin/leader/resources", label: "Resources", Icon: Link2 },
     ],
   },
   {
     label: "Community",
     links: [
-      { href: "/admin/sessions", label: "Session feedback QR", Icon: QrCode },
-      { href: "/admin/feedback", label: "Feedback inbox", Icon: MessageSquareText },
+      { href: "/admin/sessions", label: "Session QR", Icon: QrCode },
+      { href: "/admin/feedback", label: "Feedback", Icon: MessageSquareText },
     ],
   },
 ];
@@ -65,11 +65,13 @@ export function AdminNav({ role, displayName }: { role: string; displayName: str
 
   return (
     <aside className="mcc-admin-nav" aria-label="Workspace navigation">
-      <Link href="/" className="mcc-admin-brand-link" aria-label="MCC MNU home" prefetch={false}>
-        <span className="mcc-admin-brand-symbol"><Layers3 size={21} strokeWidth={1.8} /></span>
+      <Link href="/" className="mcc-admin-brand-link" aria-label="MCC MNU home">
+        <span className="mcc-admin-brand-symbol" aria-hidden="true">
+          <i /><i /><i /><i />
+        </span>
         <span className="mcc-admin-brand-copy">
           <strong>MCC <i>MNU</i></strong>
-          <small>ADMIN WORKSPACE</small>
+          <small>WORKSPACE</small>
         </span>
       </Link>
 
@@ -85,11 +87,10 @@ export function AdminNav({ role, displayName }: { role: string; displayName: str
                   <Link
                     key={href}
                     href={href}
-                    prefetch={false}
                     className={active ? "is-current" : undefined}
                     aria-current={active ? "page" : undefined}
                   >
-                    <Icon size={17} strokeWidth={1.8} aria-hidden="true" />
+                    <Icon size={16} strokeWidth={1.8} aria-hidden="true" />
                     <span>{label}</span>
                   </Link>
                 );
@@ -106,15 +107,15 @@ export function AdminNav({ role, displayName }: { role: string; displayName: str
           </span>
           <span className="mcc-admin-user-copy">
             <strong>{displayName || (role === "admin" ? "Administrator" : "Track leader")}</strong>
-            <small>{role === "admin" ? "Global administrator" : "Track leader"}</small>
+            <small>{role === "admin" ? "Administrator" : "Track leader"}</small>
           </span>
         </div>
-        <Link href="/" className="mcc-admin-back" prefetch={false}>
-          View learning site <ArrowUpRight size={15} />
+        <Link href="/" className="mcc-admin-back">
+          View site <ArrowUpRight size={14} />
         </Link>
         <form action={signOutAction}>
           <button type="submit" className="mcc-admin-signout">
-            <LogOut size={15} /> Sign out
+            <LogOut size={14} /> Sign out
           </button>
         </form>
       </div>
