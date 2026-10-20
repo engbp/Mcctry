@@ -4,38 +4,41 @@ import {
   ArrowUpRight,
   BookOpen,
   Compass,
+  Link2,
   PlayCircle,
-  Layers3,
 } from "lucide-react";
 import { loadTracks } from "@/lib/content-views";
 import { getCurrentProfile, getCurrentUser } from "@/lib/auth";
 
 export const revalidate = 300;
 
-const startingPoints = [
+const pathways = [
   {
     number: "01",
-    title: "Find your direction",
-    copy: "Browse the learning tracks published by MCC MNU.",
+    label: "LEARNING PATHS",
+    title: "Find a direction.",
+    description: "Explore the learning tracks currently published by MCC MNU.",
     href: "/tracks",
-    label: "Explore tracks",
+    action: "Explore tracks",
     Icon: Compass,
   },
   {
     number: "02",
-    title: "Start with a lesson",
-    copy: "Follow video lessons in the courses currently available.",
+    label: "VIDEO COURSES",
+    title: "Learn one step at a time.",
+    description: "Follow lesson videos in sequence and return when you are ready for more.",
     href: "/courses",
-    label: "Browse courses",
+    action: "Browse courses",
     Icon: PlayCircle,
   },
   {
     number: "03",
-    title: "Keep exploring",
-    copy: "Use supporting links and references when you need more.",
+    label: "LEARNING RESOURCES",
+    title: "Go a little deeper.",
+    description: "Open the references and resources available alongside the learning content.",
     href: "/resources",
-    label: "Open resources",
-    Icon: BookOpen,
+    action: "View resources",
+    Icon: Link2,
   },
 ];
 
@@ -45,214 +48,193 @@ export default async function HomePage() {
     getCurrentUser(),
     getCurrentProfile(),
   ]);
-
   const signedIn = Boolean(user);
-  const workspaceHref =
+  const dashboardHref =
     profile?.role === "admin" || profile?.role === "leader"
       ? "/admin"
       : "/dashboard";
 
   return (
-    <div className="mcc-restart-home">
-      <section className="mcc-restart-hero" aria-labelledby="mcc-restart-title">
-        <div className="mcc-restart-hero-grain" aria-hidden="true" />
-        <div className="mcc-restart-shell mcc-restart-hero-layout">
-          <div className="mcc-restart-copy">
-            <p className="mcc-restart-eyebrow">
-              <span className="mcc-restart-eyebrow-mark"><span /><span /><span /><span /></span>
-              MICROSOFT CAMPUS CLUB <i>/</i> MANSOURA NATIONAL UNIVERSITY
+    <div className="mcc-landing">
+      <section className="mcc-landing-hero" aria-labelledby="mcc-landing-title">
+        <div className="mcc-landing-hero-glow" aria-hidden="true" />
+        <div className="mcc-landing-wrap mcc-landing-hero-inner">
+          <div className="mcc-landing-copy">
+            <p className="mcc-landing-kicker">
+              <span className="mcc-landing-live-dot" />
+              MICROSOFT CAMPUS CLUB
+              <span className="mcc-landing-kicker-divider">/</span>
+              MANSOURA NATIONAL UNIVERSITY
             </p>
-            <h1 id="mcc-restart-title">
-              Make your next
+            <h1 id="mcc-landing-title">
+              Learn tech.
               <br />
-              move in <span>tech.</span>
+              Make it <span>real.</span>
             </h1>
-            <p className="mcc-restart-lede">
-              A campus community for people who want to understand technology by
-              working with it. Start with a topic, follow the lessons, and build
-              skills you can use beyond the screen.
+            <p className="mcc-landing-lede">
+              Explore the learning tracks and video courses published by MCC MNU.
+              Pick a topic, follow the lessons, and build your skills at a pace
+              that works for you.
             </p>
-            <div className="mcc-restart-actions">
-              <Link href="/tracks" className="mcc-restart-button mcc-restart-button-blue">
+            <div className="mcc-landing-actions">
+              <Link className="mcc-landing-button mcc-landing-button-primary" href="/tracks">
                 Explore learning tracks <ArrowRight size={18} />
               </Link>
-              <Link href="/about" className="mcc-restart-text-button">
-                Get to know MCC <ArrowUpRight size={17} />
+              <Link className="mcc-landing-button mcc-landing-button-quiet" href="/courses">
+                Browse courses <ArrowUpRight size={17} />
               </Link>
             </div>
-            <div className="mcc-restart-hero-note">
-              <span className="mcc-restart-note-line" />
-              Learn with purpose. Build with people.
+            <div className="mcc-landing-principles" aria-label="How to get started">
+              <span><i>01</i> Choose a topic</span>
+              <span><i>02</i> Start a lesson</span>
+              <span><i>03</i> Keep building</span>
             </div>
           </div>
 
-          <div className="mcc-restart-stage" aria-label="MCC MNU learning space">
-            <div className="mcc-restart-stage-top">
-              <span>THE LEARNING SPACE</span>
-              <span>MCC — MNU</span>
+          <div
+            className="mcc-landing-art"
+            role="img"
+            aria-label={`MCC MNU learning space with ${tracks.length} published learning tracks`}
+          >
+            <div className="mcc-landing-art-grid" />
+            <div className="mcc-landing-art-cross mcc-landing-art-cross-x" />
+            <div className="mcc-landing-art-cross mcc-landing-art-cross-y" />
+            <div className="mcc-landing-orbit mcc-landing-orbit-outer" />
+            <div className="mcc-landing-orbit mcc-landing-orbit-middle" />
+            <div className="mcc-landing-orbit mcc-landing-orbit-inner" />
+            <div className="mcc-landing-orbit-point mcc-landing-orbit-point-a" />
+            <div className="mcc-landing-orbit-point mcc-landing-orbit-point-b" />
+            <div className="mcc-landing-art-center">
+              <span className="mcc-landing-art-center-label">MCC / MNU</span>
+              <strong>LEARN<span>.</span><br />BUILD<span>.</span><br />SHARE<span>.</span></strong>
+              <small>CURIOUS MINDS, SHARED WORK</small>
             </div>
-            <div className="mcc-restart-stage-orbit" aria-hidden="true" />
-            <div className="mcc-restart-stage-orbit-two" aria-hidden="true" />
-            <div className="mcc-restart-stage-spark mcc-restart-stage-spark-one" aria-hidden="true">+</div>
-            <div className="mcc-restart-stage-spark mcc-restart-stage-spark-two" aria-hidden="true">✳</div>
-            <div className="mcc-restart-stage-brand">
-              <span>IDEAS IN MOTION</span>
-              <strong>MCC<span>.</span></strong>
-              <div className="mcc-restart-stage-brand-rule"><i /><i /><i /><i /></div>
-              <small>MICROSOFT CAMPUS CLUB<br />MANSOURA NATIONAL UNIVERSITY</small>
+            <div className="mcc-landing-art-callout mcc-landing-art-callout-top">
+              <span>LEARNING SPACE / 01</span>
+              <strong>Start with what interests you.</strong>
             </div>
-            <div className="mcc-restart-stage-count">
+            <div className="mcc-landing-art-count">
+              <small>CURRENTLY PUBLISHED</small>
               <strong>{String(tracks.length).padStart(2, "0")}</strong>
-              <span>TRACKS<br />PUBLISHED</span>
+              <span>LEARNING TRACKS</span>
             </div>
-            <div className="mcc-restart-stage-bottom">
-              <div className="mcc-restart-stage-bottom-head">
-                <span>START EXPLORING</span>
-                <span>01 — 03</span>
-              </div>
-              {tracks.length > 0 ? (
-                tracks.slice(0, 3).map((track, index) => (
-                  <Link
-                    href={"/tracks/" + track.slug}
-                    className={"mcc-restart-stage-track mcc-restart-stage-track-" + index}
-                    key={track.slug}
-                  >
-                    <span className="mcc-restart-stage-track-number">0{index + 1}</span>
-                    <span className="mcc-restart-stage-track-title">{track.title}</span>
-                    <ArrowUpRight size={16} />
-                  </Link>
-                ))
-              ) : (
-                <div className="mcc-restart-stage-empty">
-                  <Layers3 size={17} />
-                  <span>Published learning tracks will appear here.</span>
-                </div>
-              )}
-            </div>
+            <span className="mcc-landing-art-index">MNU · EGYPT</span>
           </div>
         </div>
-        <div className="mcc-restart-hero-bottom">
-          <div className="mcc-restart-shell">
-            <span>CURIOUS BY NATURE</span>
-            <span className="mcc-restart-bottom-dot" />
-            <span>BETTER BY BUILDING</span>
-            <span className="mcc-restart-bottom-right">MANSOURA · EGYPT</span>
+        <div className="mcc-landing-hero-rule">
+          <div className="mcc-landing-wrap">
+            <span>MCC MNU</span>
+            <span>LEARN WITH INTENT</span>
+            <span>BUILD WITH OTHERS</span>
+            <ArrowRight size={16} aria-hidden="true" />
           </div>
         </div>
       </section>
 
-      <section className="mcc-restart-start section" aria-labelledby="mcc-restart-start-title">
-        <div className="mcc-restart-shell">
-          <div className="mcc-restart-section-intro">
+      <section className="mcc-landing-section mcc-landing-start" aria-labelledby="mcc-landing-start-title">
+        <div className="mcc-landing-wrap">
+          <div className="mcc-landing-section-head">
             <div>
-              <p className="mcc-restart-section-label">YOUR FIRST STEP</p>
-              <h2 id="mcc-restart-start-title">Start wherever you are.</h2>
+              <p className="mcc-landing-overline">A GOOD PLACE TO START</p>
+              <h2 id="mcc-landing-start-title">What do you want to learn?</h2>
             </div>
             <p>
-              You do not need a perfect plan. Choose the path that feels useful
-              today and keep moving from there.
+              Start with one useful step. Everything here points to learning
+              material and resources that are actually available on the site.
             </p>
           </div>
-          <div className="mcc-restart-start-list">
-            {startingPoints.map(({ number, title, copy, href, label, Icon }) => (
-              <article className="mcc-restart-start-row" key={number}>
-                <span className="mcc-restart-start-number">{number}</span>
-                <span className="mcc-restart-start-icon"><Icon size={23} strokeWidth={1.7} /></span>
-                <div className="mcc-restart-start-copy">
-                  <h3>{title}</h3>
-                  <p>{copy}</p>
+          <div className="mcc-landing-waypoints">
+            {pathways.map(({ number, label, title, description, href, action, Icon }) => (
+              <article className="mcc-landing-waypoint" key={number}>
+                <div className="mcc-landing-waypoint-top">
+                  <span>{number} <i>/</i> {label}</span>
+                  <Icon size={22} strokeWidth={1.7} aria-hidden="true" />
                 </div>
-                <Link href={href} aria-label={label + ": " + title} className="mcc-restart-round-link">
-                  <ArrowUpRight size={19} />
-                </Link>
+                <h3>{title}</h3>
+                <p>{description}</p>
+                <Link href={href}>{action}<ArrowUpRight size={16} /></Link>
               </article>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="mcc-restart-tracks section" aria-labelledby="mcc-restart-tracks-title">
-        <div className="mcc-restart-shell">
-          <div className="mcc-restart-section-intro mcc-restart-tracks-intro">
+      <section className="mcc-landing-section mcc-landing-published" aria-labelledby="mcc-landing-tracks-title">
+        <div className="mcc-landing-wrap">
+          <div className="mcc-landing-section-head">
             <div>
-              <p className="mcc-restart-section-label">THE CURRENT CATALOGUE</p>
-              <h2 id="mcc-restart-tracks-title">Follow an interest.</h2>
+              <p className="mcc-landing-overline">PUBLISHED BY MCC MNU</p>
+              <h2 id="mcc-landing-tracks-title">Explore the learning tracks.</h2>
             </div>
-            <Link href="/tracks" className="mcc-restart-inline-link">
-              All learning tracks <ArrowRight size={17} />
+            <Link className="mcc-landing-inline-link" href="/tracks">
+              All tracks <ArrowRight size={16} />
             </Link>
           </div>
-
           {tracks.length > 0 ? (
-            <div className="mcc-restart-track-list">
-              {tracks.slice(0, 6).map((track, index) => (
+            <div className="mcc-landing-track-list">
+              {tracks.slice(0, 4).map((track, index) => (
                 <Link
-                  href={"/tracks/" + track.slug}
-                  className={"mcc-restart-track-row mcc-restart-track-tone-" + (index % 3)}
+                  href={`/tracks/${track.slug}`}
+                  className="mcc-landing-track-row"
                   key={track.slug}
                 >
-                  <span className="mcc-restart-track-index">0{index + 1}</span>
-                  <span className="mcc-restart-track-mark" aria-hidden="true">
-                    <i /><i /><i /><i />
-                  </span>
-                  <span className="mcc-restart-track-main">
+                  <span className="mcc-landing-track-number">{String(index + 1).padStart(2, "0")}</span>
+                  <span className="mcc-landing-track-copy">
                     <strong>{track.title}</strong>
-                    <small>{track.description || "Explore the courses and video lessons available in this track."}</small>
+                    <small>{track.description || "Explore the courses available in this learning track."}</small>
                   </span>
-                  <span className="mcc-restart-track-action">Explore <ArrowUpRight size={17} /></span>
+                  <span className="mcc-landing-track-open">View track <ArrowUpRight size={17} /></span>
                 </Link>
               ))}
             </div>
           ) : (
-            <div className="mcc-restart-empty">
-              <span className="mcc-restart-empty-icon"><Layers3 size={23} /></span>
+            <div className="mcc-landing-empty">
+              <BookOpen size={23} aria-hidden="true" />
               <div>
-                <strong>New learning tracks will appear here when published.</strong>
-                <p>Browse the available course catalogue in the meantime.</p>
+                <strong>Learning tracks will appear here when published.</strong>
+                <p>You can still browse the course catalogue to see what is currently available.</p>
               </div>
-              <Link href="/courses" className="mcc-restart-inline-link">Browse courses <ArrowRight size={16} /></Link>
+              <Link href="/courses">View courses <ArrowRight size={16} /></Link>
             </div>
           )}
         </div>
       </section>
 
-      <section className="mcc-restart-community" aria-labelledby="mcc-restart-community-title">
-        <div className="mcc-restart-community-shape" aria-hidden="true">
-          <span className="mcc-restart-community-circle" />
-          <span className="mcc-restart-community-plus">+</span>
-          <span className="mcc-restart-community-label">MCC<br />MNU</span>
-          <span className="mcc-restart-community-index">LEARN / BUILD / SHARE</span>
+      <section className="mcc-landing-community" aria-labelledby="mcc-landing-community-title">
+        <div className="mcc-landing-community-mark" aria-hidden="true">
+          <span className="mcc-landing-community-ring" />
+          <span className="mcc-landing-community-cross">+</span>
+          <span className="mcc-landing-community-stamp">MCC<br />MNU</span>
+          <span className="mcc-landing-community-caption">LEARN / BUILD / CONNECT</span>
         </div>
-        <div className="mcc-restart-community-copy">
-          <p className="mcc-restart-section-label">MORE THAN A COURSE LIST</p>
-          <h2 id="mcc-restart-community-title">The best work rarely happens alone.</h2>
+        <div className="mcc-landing-community-copy">
+          <p className="mcc-landing-overline">A STUDENT COMMUNITY AT MNU</p>
+          <h2 id="mcc-landing-community-title">You bring the curiosity.<br /><span>Start from there.</span></h2>
           <p>
-            MCC MNU is a student community at Mansoura National University
-            built around technology, shared learning, and practical curiosity.
-            Come for a topic that interests you; stay to see what you can do with it.
+            MCC MNU brings students together around technology and practical
+            learning. Start with the material available today, then keep exploring
+            as new learning content is published.
           </p>
-          <Link href="/about" className="mcc-restart-button mcc-restart-button-ink">
-            About the club <ArrowRight size={17} />
-          </Link>
+          <div className="mcc-landing-community-actions">
+            <Link className="mcc-landing-button mcc-landing-button-primary" href="/about">
+              Get to know MCC <ArrowRight size={17} />
+            </Link>
+            <Link className="mcc-landing-inline-link" href="/resources">
+              Explore resources <ArrowUpRight size={16} />
+            </Link>
+          </div>
         </div>
       </section>
 
-      <section className="mcc-restart-final">
-        <div className="mcc-restart-shell mcc-restart-final-inner">
+      <section className="mcc-landing-final-cta">
+        <div className="mcc-landing-wrap">
           <div>
-            <p className="mcc-restart-section-label">READY WHEN YOU ARE</p>
-            <h2>{signedIn ? "Pick up where you left off." : "One topic can be a start."}</h2>
-            <p>
-              {signedIn
-                ? "Head back to your workspace and continue learning."
-                : "Choose a course and take your next step into technology."}
-            </p>
+            <p className="mcc-landing-overline">YOUR NEXT STEP</p>
+            <h2>{signedIn ? "Ready for another lesson?" : "Start with one lesson."}</h2>
+            <p>{signedIn ? "Pick up where you left off in your workspace." : "Choose a course and find a topic worth your time."}</p>
           </div>
-          <Link
-            href={signedIn ? workspaceHref : "/courses"}
-            className="mcc-restart-button mcc-restart-button-ink"
-          >
-            {signedIn ? "Open your workspace" : "See available courses"} <ArrowRight size={17} />
+          <Link className="mcc-landing-button mcc-landing-button-dark" href={signedIn ? dashboardHref : "/courses"}>
+            {signedIn ? "Open your workspace" : "Browse courses"} <ArrowRight size={17} />
           </Link>
         </div>
       </section>
