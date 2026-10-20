@@ -9,7 +9,7 @@ export default async function AdminLessonsPage() {
   await requireAdmin("/admin/lessons");
   const supabase = await createSupabaseServerClient();
   const [{ data: lessons }, { data: courses }] = await Promise.all([
-    supabase.from("lessons").select("*, courses!inner(id, title)").order("position"),
+    supabase.from("lessons").select("id,course_id,slug,title,duration,type,published,position,video_url").order("position"),
     supabase.from("courses").select("id, title").order("title"),
   ]);
 
