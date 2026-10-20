@@ -6,7 +6,6 @@ import {
   Compass,
   Link2,
   PlayCircle,
-  Sparkles,
 } from "lucide-react";
 import { loadTracks } from "@/lib/content-views";
 import { getCurrentProfile, getCurrentUser } from "@/lib/auth";
