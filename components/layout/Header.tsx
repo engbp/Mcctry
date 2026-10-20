@@ -67,13 +67,13 @@ export function Header({ isSignedIn = false, isAdmin = false, isTrackLeader = fa
         <Link href="/about" className={pathname === "/about" ? "mcc-v2-nav-link active" : "mcc-v2-nav-link"}>About</Link>
       </nav>
       <div className="mcc-v2-nav-actions">
-        {isSignedIn ? <Link href={dashboardHref} className="mcc-v2-nav-account"><LayoutDashboard size={16} /> {isAdmin ? "Admin workspace" : isTrackLeader ? "Track workspace" : "My dashboard"}</Link> : <><Link href="/login" className="mcc-v2-nav-login"><LogIn size={16} /> Sign in</Link><Link href="/signup" className="mcc-v2-nav-join">Create account <ArrowUpRight size={15} /></Link></>}
+        {isSignedIn ? <a href={dashboardHref} className="mcc-v2-nav-account"><LayoutDashboard size={16} /> {isAdmin ? "Admin workspace" : isTrackLeader ? "Track workspace" : "My dashboard"}</a> : <><Link href="/login" className="mcc-v2-nav-login"><LogIn size={16} /> Sign in</Link><Link href="/signup" className="mcc-v2-nav-join">Create account <ArrowUpRight size={15} /></Link></>}
       </div>
       <button ref={menuButtonRef} type="button" className="mcc-v2-mobile-toggle" aria-label={mobileOpen ? "Close menu" : "Open menu"} aria-expanded={mobileOpen} onClick={() => setMobileOpen((open) => !open)}>{mobileOpen ? <X size={22} /> : <Menu size={22} />}</button>
     </div>
     {mobileOpen && <nav className="mcc-v2-mobile-nav" aria-label="Mobile navigation">
       <Link href="/courses">Courses</Link><Link href="/tracks">Learning tracks</Link><Link href="/resources">Resources</Link><Link href="/about">About MCC</Link><Link href="/privacy">Privacy &amp; data</Link>
-      {isSignedIn ? <Link href={dashboardHref}>{isAdmin ? "Admin workspace" : isTrackLeader ? "Track workspace" : "My dashboard"}</Link> : <><Link href="/login">Sign in</Link><Link href="/signup">Create account</Link></>}
+      {isSignedIn ? <a href={dashboardHref}>{isAdmin ? "Admin workspace" : isTrackLeader ? "Track workspace" : "My dashboard"}</a> : <><Link href="/login">Sign in</Link><Link href="/signup">Create account</Link></>}
     </nav>}
   </header>;
 }
